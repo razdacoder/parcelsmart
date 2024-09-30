@@ -1,0 +1,80 @@
+"use client";
+
+import logowhite from "@/assets/logo.svg";
+import {
+  BookOpen,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  TruckIcon,
+  WalletCards,
+} from "lucide-react";
+import { NavMain } from "./nav-main";
+import { Button } from "./ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarItem,
+} from "./ui/sidebar";
+
+export const iframeHeight = "870px";
+
+export const containerClassName = "w-full h-full";
+
+const data = {
+  navMain: [
+    {
+      title: "Overview",
+      url: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Shipment",
+      url: "/shipment",
+      icon: TruckIcon,
+    },
+    {
+      title: "Wallet",
+      url: "/wallet",
+      icon: WalletCards,
+    },
+    // {
+    //   title: "Insight",
+    //   url: "/insight",
+    //   icon: ChartNoAxesCombinedIcon,
+    // },
+    {
+      title: "Address Book",
+      url: "/address-book",
+      icon: BookOpen,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ],
+};
+
+export function AppSidebar() {
+  return (
+    <Sidebar className="bg-primary text-white space-y-8">
+      <SidebarHeader className="relative flex justify-center py-5 pe-10">
+        <img src={logowhite} alt="Parcel Smart Logo" className="h-[52px]" />
+        {/* <SidebarTrigger className="absolute top-3 -right-4 z-10 bg-white text-text" /> */}
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarItem>
+          <NavMain items={data.navMain} />
+        </SidebarItem>
+      </SidebarContent>
+      <SidebarFooter>
+        <Button variant="secondary" className="w-full gap-2 text-primary">
+          <LogOut className="size-4 text-primary" /> Log Out
+        </Button>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
