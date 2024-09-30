@@ -32,11 +32,11 @@ export default function Stepper() {
     <div
       className={cn(
         "w-full space-y-12",
-        reviewMode && "col-span-3 p-16 overflow-y-auto"
+        reviewMode && "col-span-1 lg:col-span-3 p-16 overflow-y-auto"
       )}
     >
       {/* Stepper Navigation */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="flex justify-between items-center md:grid grid-cols-5  md:gap-4">
         {steps
           .filter((_, index) => index !== 5)
           .map((step, index) => {
@@ -45,11 +45,11 @@ export default function Stepper() {
             return (
               <div
                 key={`stepper-${index}`}
-                className="flex w-full items-center gap-4"
+                className="flex w-full items-center md:gap-4"
               >
                 <span
                   className={cn(
-                    "font-medium text-muted-foreground",
+                    "text-sm md:text-base font-medium text-muted-foreground",
                     (isActive || isDone) && "text-primary"
                   )}
                 >
@@ -57,7 +57,7 @@ export default function Stepper() {
                 </span>
                 <div
                   className={cn(
-                    "flex-1 w-full h-2 bg-[#EFF0F6] rounded-lg before:transition before:duration-300 relative before:absolute before:block  before:top-0 before:left-0 before:h-full before:bg-primary before:w-0 before:rounded-lg",
+                    "hidden md:block flex-1 w-full h-2 bg-[#EFF0F6] rounded-lg before:transition before:duration-300 relative before:absolute before:block  before:top-0 before:left-0 before:h-full before:bg-primary before:w-0 before:rounded-lg",
                     isActive && "before:w-1/2",
                     isDone && "before:w-full"
                   )}
@@ -78,11 +78,11 @@ export default function Stepper() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center gap-6 mt-6">
+      <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
         {currentStep > 0 && (
           <Button
             size="lg"
-            className="bg-[#E2FAEC] text-primary shadow-none hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
+            className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
             onClick={() => {
               if (currentStep === 5) {
                 setReviewMode(false);
@@ -101,7 +101,7 @@ export default function Stepper() {
           <Button
             size="lg"
             variant="destructive"
-            className="bg-[#E74C3C33] text-destructive shadow-none hover:bg-[#E74C3C33] hover:text-destructive/80 px-8"
+            className="bg-[#E74C3C33] text-destructive w-full md:w-fit shadow-none hover:bg-[#E74C3C33] hover:text-destructive/80 px-8"
             onClick={prevStep}
           >
             Clear All
@@ -118,7 +118,7 @@ export default function Stepper() {
               nextStep();
             }
           }}
-          className="px-12"
+          className="px-12 w-full md:w-fit"
         >
           Continue
         </Button>

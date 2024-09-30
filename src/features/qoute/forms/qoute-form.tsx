@@ -39,7 +39,7 @@ export default function QouteForm() {
       <form className="space-y-8">
         <div className="space-y-3">
           <Label className="font-bold">Shipping From?</Label>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="from_country"
@@ -125,7 +125,7 @@ export default function QouteForm() {
         </div>
         <div className="space-y-3">
           <Label className="font-bold">Shipping To?</Label>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="to_country"
@@ -216,7 +216,7 @@ export default function QouteForm() {
             <FormItem>
               <FormLabel>Estimated Weight (kg)</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} className="h-10" />
               </FormControl>
               <FormMessage />
             </FormItem>

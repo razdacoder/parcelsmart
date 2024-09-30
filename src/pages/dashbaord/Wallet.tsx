@@ -22,8 +22,8 @@ export default function Wallet() {
     <div className="flex flex-col gap-6 w-full overflow-hidden">
       <AppNavBar title="Wallet" />
       <main className="px-4 md:px-8 space-y-6">
-        <div className="flex items-center gap-12">
-          <div className="w-1/3 md:col-span-6 lg:col-span-5 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row items-center gap-12">
+          <div className="w-full lg:w-1/3 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
               <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
@@ -34,7 +34,7 @@ export default function Wallet() {
               Top up <ArrowRight className="size-4" />
             </Button>
           </div>
-          <div className="w-2/3 grid grid-cols-2 gap-8">
+          <div className="w-full lg:w-2/3 grid grid-cols-2 gap-8">
             <div className="bg-white p-4 flex items-center gap-4 text-text rounded-xl">
               <svg
                 width="48"

@@ -11,7 +11,9 @@ export default function InsuranceForm() {
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-2">
-          <h3 className="text-2xl font-bold text-text">Purchase Insurance</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-text">
+            Purchase Insurance
+          </h3>
           <p className="text-sm text-muted-foreground">
             Protect your shipment with an insurance cover.
           </p>
@@ -26,10 +28,18 @@ export default function InsuranceForm() {
           <div className="flex items-center space-x-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
             <div className="flex items-center justify-between w-full px-2">
               <div className="flex items-center gap-4">
-                <img src={logoImage} alt="DHL Image" className="size-12" />
+                <img
+                  src={logoImage}
+                  alt="DHL Image"
+                  className="md:size-8 size-12"
+                />
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Parcels Mart</h4>
-                  <p className="text-sm text-muted-foreground">DOMESTIC</p>
+                  <h4 className="text-xs md:text-sm font-medium">
+                    Parcels Mart
+                  </h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    DOMESTIC
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -39,7 +49,7 @@ export default function InsuranceForm() {
                   className="hidden peer"
                   id="in1"
                 />
-                <h2 className="text-xl font-bold justify-self-end">
+                <h2 className="text-base md:text-xl font-bold justify-self-end">
                   {formatNaira(5000)}
                 </h2>
                 <Label

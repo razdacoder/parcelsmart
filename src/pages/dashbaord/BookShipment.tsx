@@ -14,13 +14,13 @@ export default function BookShipment() {
     >
       <div
         className={cn(
-          "bg-white max-w-6xl w-full p-8",
-          reviewMode && "w-full max-w-full grid grid-cols-5 p-0 relative"
+          "bg-white max-w-6xl w-full p-4 md:p-8",
+          reviewMode && "w-full max-w-full grid lg:grid-cols-5 md:p-0 relative"
         )}
       >
         <Stepper />
         {reviewMode && (
-          <div className="relative col-span-2">
+          <div className="relative col-span-1 lg:col-span-2">
             <ShipmentReview />
           </div>
         )}

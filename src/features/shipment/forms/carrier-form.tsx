@@ -25,7 +25,9 @@ export default function CarrierForm() {
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-2">
-          <h3 className="text-2xl font-bold text-text">Select Carrier</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-text">
+            Select Carrier
+          </h3>
           <p className="text-sm text-muted-foreground">
             Choose your preferred rate.
           </p>
@@ -52,7 +54,7 @@ export default function CarrierForm() {
       </div>
       <div>
         <div className="space-y-2">
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
+          <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
             <div className="flex items-center justify-between w-full px-2">
               <input
                 type="radio"
@@ -61,23 +63,33 @@ export default function CarrierForm() {
                 id="r1"
               />
               <div className="flex items-center gap-4">
-                <img src={dhlImage} alt="DHL Image" className="size-12" />
+                <img
+                  src={dhlImage}
+                  alt="DHL Image"
+                  className="size-8 md:size-12"
+                />
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">DHL Express</h4>
-                  <p className="text-sm text-muted-foreground">DOMESTIC</p>
+                  <h4 className="text-xs md:text-sm font-medium">
+                    DHL Express
+                  </h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    DOMESTIC
+                  </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="hidden md:flex flex-col gap-1">
                 <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
                 <p className="text-xs text-muted-foreground">
                   Delivery: Within 4 days
                 </p>
               </div>
-              <Badge className="bg-muted text-text hover:bg-muted hover:text-text shadow-none">
+              <Badge className="hidden md:inline-flex bg-muted text-text hover:bg-muted hover:text-text shadow-none">
                 Dropoff
               </Badge>
 
-              <h2 className="text-xl font-bold">{formatNaira(4407.69)}</h2>
+              <h2 className="text-base md:text-xl font-bold">
+                {formatNaira(4407.69)}
+              </h2>
 
               <Label
                 onClick={onOpen}
@@ -97,25 +109,33 @@ export default function CarrierForm() {
                 id="r2"
               />
               <div className="flex items-center gap-4">
-                <img src={kwikImage} alt="DHL Image" className="size-12" />
+                <img
+                  src={kwikImage}
+                  alt="DHL Image"
+                  className="size-8 md:size-12"
+                />
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Kwik Delivery</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-xs md:text-sm font-medium">
+                    Kwik Delivery
+                  </h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Standard Delivery
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="hidden md:flex flex-col gap-1">
                 <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
                 <p className="text-xs text-muted-foreground">
                   Delivery: Within 4 days
                 </p>
               </div>
-              <Badge className="bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8] hover:text-primary shadow-none">
+              <Badge className="hidden md:inline-flex bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8] hover:text-primary shadow-none">
                 Save Money
               </Badge>
 
-              <h2 className="text-xl font-bold">{formatNaira(1407.69)}</h2>
+              <h2 className="text-base md:text-xl font-bold">
+                {formatNaira(1407.69)}
+              </h2>
 
               <Label
                 htmlFor="r2"
@@ -134,25 +154,33 @@ export default function CarrierForm() {
                 id="r3"
               />
               <div className="flex items-center gap-4">
-                <img src={upsImage} alt="DHL Image" className="size-12" />
+                <img
+                  src={upsImage}
+                  alt="DHL Image"
+                  className="size-8 md:size-12"
+                />
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">
-                    United Parcel Services
+                  <h4 className="text-xs md:text-sm font-medium truncate">
+                    UPS
                   </h4>
-                  <p className="text-sm text-muted-foreground">Express Saver</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    Express Saver
+                  </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="hidden md:flex flex-col gap-1">
                 <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
                 <p className="text-xs text-muted-foreground">
                   Delivery: Within 4 days
                 </p>
               </div>
-              <Badge className="bg-muted text-text hover:bg-muted hover:text-text shadow-none">
+              <Badge className="hidden md:bg-muted text-text hover:bg-muted hover:text-text shadow-none">
                 Dropoff
               </Badge>
 
-              <h2 className="text-xl font-bold">{formatNaira(1407.69)}</h2>
+              <h2 className="text-base md:text-xl font-bold">
+                {formatNaira(1407.69)}
+              </h2>
 
               <Label
                 htmlFor="r3"
@@ -171,25 +199,33 @@ export default function CarrierForm() {
                 id="r4"
               />
               <div className="flex items-center gap-4">
-                <img src={redStarImage} alt="DHL Image" className="size-12" />
+                <img
+                  src={redStarImage}
+                  alt="DHL Image"
+                  className="size-8 md:size-12"
+                />
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Redstar Express</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-xs md:text-sm font-medium">
+                    Redstar Express
+                  </h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Normal Delivery
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="hidden md:flex flex-col gap-1">
                 <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
                 <p className="text-xs text-muted-foreground">
                   Delivery: Within 4 days
                 </p>
               </div>
-              <Badge className="bg-muted text-text hover:bg-muted hover:text-text shadow-none">
+              <Badge className="hidden md:inline-flex bg-muted text-text hover:bg-muted hover:text-text shadow-none">
                 Dropoff
               </Badge>
 
-              <h2 className="text-xl font-bold">{formatNaira(1407.69)}</h2>
+              <h2 className="text-base md:text-xl font-bold">
+                {formatNaira(1407.69)}
+              </h2>
 
               <Label
                 htmlFor="r4"

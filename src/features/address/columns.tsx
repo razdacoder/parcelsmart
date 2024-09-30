@@ -37,7 +37,7 @@ export const columns: ColumnDef<Address>[] = [
     header: "Location",
     cell: ({ row }) => {
       return (
-        <span className="inline-block w-full line-clamp-1">
+        <span className="inline-block w-full truncate">
           {row.original.location}
         </span>
       );

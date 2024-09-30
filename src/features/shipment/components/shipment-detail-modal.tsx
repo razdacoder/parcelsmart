@@ -17,7 +17,7 @@ export default function ShipmentDetailModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="sm:max-w-xs lg:max-w-4xl">
+      <DialogContent className="sm:max-w-xs md:max-w-2xl lg:max-w-4xl">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="flex flex-row items-center gap-4 p-0">
             Shipment Details

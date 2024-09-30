@@ -66,7 +66,7 @@ export default function ItemsForm() {
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-2">
-          <h3 className="text-2xl font-bold text-text">Add Items</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-text">Add Items</h3>
           <p className="text-sm text-muted-foreground">
             What is in your shipment
           </p>
@@ -80,22 +80,24 @@ export default function ItemsForm() {
           <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-white p-2 rounded-lg ">
-                <Package className="size-8 text-primary " />
+                <Package className="size-6 md:size-8 text-primary " />
               </div>
-              <h3 className="text-white font-semibold">Parcel 1</h3>
+              <h3 className="text-sm md:text-base text-white font-semibold">
+                Parcel 1
+              </h3>
             </div>
             <Button
               onClick={onOpen}
-              className="gap-2 text-primary"
+              className="gap-2 text-primary text-sm"
               variant="secondary"
             >
-              <Plus className="size-5" />
+              <Plus className="size-3.5 md:size-5" />
               Add Item
             </Button>
           </div>
           <div className="p-4">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <Label htmlFor="packaging">Select Packaging</Label>
                   <Select
@@ -134,14 +136,18 @@ export default function ItemsForm() {
                   key={`parcel-${index}-item-${item_index}`}
                   className="bg-white p-4 rounded-lg"
                 >
-                  <div className="grid grid-cols-12 text-sm font-medium">
-                    <span className="col-span-4">{item.name}</span>
-                    <span className="col-span-2">{item.quantity}pcs</span>
-                    <span className="col-span-2">{item.weight}kg</span>
-                    <span className="col-span-2">
+                  <div className="grid grid-cols-12 text-xs md:text-sm font-medium gap-2">
+                    <span className="col-span-4 line-clamp-1">{item.name}</span>
+                    <span className="md:col-span-2 hidden md:inline-block">
+                      {item.quantity}pcs
+                    </span>
+                    <span className="md:col-span-2 hidden md:inline-block">
+                      {item.weight}kg
+                    </span>
+                    <span className="col-span-4 md:col-span-2">
                       {item.itemType === "items" && formatNaira(item.value)}
                     </span>
-                    <div className="col-span-2 flex justify-end items-center gap-2">
+                    <div className="col-span-4 md:col-span-2 flex justify-end items-center gap-2">
                       <button>
                         <Edit className="size-4 text-primary" />
                       </button>
@@ -157,9 +163,9 @@ export default function ItemsForm() {
           <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-white p-2 rounded-lg ">
-                <Upload className="size-8 text-primary " />
+                <Upload className="size-6 md:size-8 text-primary " />
               </div>
-              <h3 className="text-white font-semibold">
+              <h3 className="text-sm md:text-base text-white font-semibold">
                 Click to upload Proof of Purchase
               </h3>
             </div>
@@ -186,9 +192,9 @@ export default function ItemsForm() {
           <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-white p-2 rounded-lg ">
-                <Upload className="size-8 text-primary " />
+                <Upload className="size-6 md:size-8 text-primary " />
               </div>
-              <h3 className="text-white font-semibold">
+              <h3 className="text-sm md:text-base text-white font-semibold line-clamp-2">
                 Click to add an image of your parcel on a scale or with
                 measuring tape
               </h3>
@@ -218,7 +224,7 @@ export default function ItemsForm() {
         </div>
       ))}
       <Button
-        className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl"
+        className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
         size="lg"
       >
         <div className="p-3 bg-white rounded-lg">

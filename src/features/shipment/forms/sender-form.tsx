@@ -43,7 +43,7 @@ export default function SenderForm() {
   });
   return (
     <div className="space-y-6">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between gap-8">
         <div className="flex flex-col gap-2">
           <h3 className="text-2xl font-bold text-text">Add Sender</h3>
           <p className="text-sm text-muted-foreground">
@@ -78,7 +78,7 @@ export default function SenderForm() {
 
       <Form {...form}>
         <form className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <FormField
               name="firstName"
               control={form.control}
@@ -106,7 +106,7 @@ export default function SenderForm() {
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <FormField
               name="email"
               control={form.control}
@@ -167,7 +167,7 @@ export default function SenderForm() {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
             <FormField
               control={form.control}
               name="country"
