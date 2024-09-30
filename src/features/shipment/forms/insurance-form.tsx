@@ -1,4 +1,4 @@
-import logoImage from "@/assets/logo-primary.svg";
+import logoImage from "@/assets/parcels icon.png";
 import { Label } from "@/components/ui/label";
 import { formatNaira } from "@/lib/utils";
 import { XCircle } from "lucide-react";
