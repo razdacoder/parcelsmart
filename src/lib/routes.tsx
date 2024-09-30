@@ -8,6 +8,7 @@ import VerifyEmail from "@/pages/auth/VerifyEmail";
 import AddressBook from "@/pages/dashbaord/AddressBook";
 import BookShipment from "@/pages/dashbaord/BookShipment";
 import DashboardLayout from "@/pages/dashbaord/DashboardLayout";
+import GetQoute from "@/pages/dashbaord/GetQoute";
 import Home from "@/pages/dashbaord/Home";
 import Shipment from "@/pages/dashbaord/Shipment";
 import Wallet from "@/pages/dashbaord/Wallet";
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
       {
         path: "address-book/",
         element: <AddressBook />,
+      },
+      {
+        path: "get-qoute/",
+        element: <GetQoute />,
       },
     ],
   },

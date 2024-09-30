@@ -140,7 +140,7 @@ export default function Home() {
           <h3 className="text-lg font-bold text-text">Quick Actions</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Link
-              to="#"
+              to="/shipment/new"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
             >
               <div className="space-y-8">
@@ -173,7 +173,7 @@ export default function Home() {
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
             <Link
-              to="#"
+              to="/get-qoute"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
             >
               <div className="space-y-8">
