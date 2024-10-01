@@ -10,6 +10,7 @@ import BookShipment from "@/pages/dashbaord/BookShipment";
 import DashboardLayout from "@/pages/dashbaord/DashboardLayout";
 import GetQoute from "@/pages/dashbaord/GetQoute";
 import Home from "@/pages/dashbaord/Home";
+import Settings from "@/pages/dashbaord/Settings";
 import Shipment from "@/pages/dashbaord/Shipment";
 import Wallet from "@/pages/dashbaord/Wallet";
 import { createBrowserRouter } from "react-router-dom";
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: "get-qoute/",
         element: <GetQoute />,
+      },
+      {
+        path: "settings/",
+        element: <Settings />,
       },
     ],
   },
