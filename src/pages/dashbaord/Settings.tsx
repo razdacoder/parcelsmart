@@ -11,26 +11,26 @@ export default function Settings() {
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Settings" />
-      <main className="px-4 md:px-8 space-y-6 ">
-        <div className="bg-white rounded-lg py-12 px-8">
+      <main className="px-4 md:px-8 space-y-6">
+        <div className="bg-white rounded-lg py-12 px-4 md:px-8">
           <div className="flex justify-between">
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="bg-transparent px-0 mb-8 flex justify-between items-center">
-                <div>
-                  <TabsTrigger className="px-6 py-2" value="profile">
+              <TabsList className="bg-transparent px-0 mb-16 lg:mb-8 flex flex-col gap-2 lg:flex-row justify-between items-center">
+                <div className="flex items-center justify-between w-full">
+                  <TabsTrigger className="px-2 md:px-6 py-2" value="profile">
                     Profile
                   </TabsTrigger>
-                  <TabsTrigger className="px-6 py-2" value="packaging">
+                  <TabsTrigger className="px-2 md:px-6 py-2" value="packaging">
                     Packaging
                   </TabsTrigger>
-                  <TabsTrigger className="px-6 py-2" value="carriers">
+                  <TabsTrigger className="px-2 md:px-6 py-2" value="carriers">
                     Carriers
                   </TabsTrigger>
-                  <TabsTrigger className="px-6 py-2" value="apiKeys">
+                  <TabsTrigger className="px-2 md:px-6 py-2" value="apiKeys">
                     API Keys
                   </TabsTrigger>
                 </div>
-                <Button className="gap-2 items-center justify-self-end">
+                <Button className="w-full md:w-fit gap-2 items-center justify-self-end">
                   Complete KYC Verification <ArrowRight className="size-4" />
                 </Button>
               </TabsList>

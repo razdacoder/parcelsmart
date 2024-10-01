@@ -120,7 +120,7 @@ export default function Stepper() {
           }}
           className="px-12 w-full md:w-fit"
         >
-          Continue
+          {reviewMode ? "Make Payment" : "Continue"}
         </Button>
       </div>
     </div>
