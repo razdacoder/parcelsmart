@@ -31,7 +31,7 @@ export type RegisterValues = z.infer<typeof registerSchema>;
 export const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
   password: z.string().trim().min(8),
-  rememberMe: z.coerce.boolean(),
+  // rememberMe: z.coerce.boolean(),
 });
 
 export type LoginValues = z.infer<typeof loginSchema>;

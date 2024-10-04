@@ -19,3 +19,14 @@ export const copyText = (text: string) => {
   window.navigator.clipboard.writeText(text);
   toast.success("Copied to clipboard");
 };
+
+export const getInitials = (
+  first_name?: string,
+  last_name?: string
+): string => {
+  return (
+    `${first_name?.charAt(0).toUpperCase()}${last_name
+      ?.charAt(0)
+      .toUpperCase()}` || ""
+  );
+};

@@ -1,11 +1,9 @@
 import SubmitButton from "@/components/submit-button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -24,7 +22,7 @@ export default function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      // rememberMe: false,
     },
   });
 
@@ -74,8 +72,8 @@ export default function LoginForm() {
           )}
         />
 
-        <div className="flex items-center justify-between">
-          <FormField
+        <div className="flex items-center justify-end">
+          {/* <FormField
             control={form.control}
             name="rememberMe"
             render={({ field }) => (
@@ -95,7 +93,7 @@ export default function LoginForm() {
                 </div>
               </FormItem>
             )}
-          />
+          /> */}
 
           <Link
             to="/auth/reset-password"
