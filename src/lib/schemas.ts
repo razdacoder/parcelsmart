@@ -75,13 +75,16 @@ export const newPasswordSchema = z.object({
     .string()
     .trim()
     .min(8, { message: "Minimum of 8 characters" }),
+  otp: z.string().min(4, {
+    message: "Your one-time password must be 4 characters.",
+  }),
 });
 
 export type NewPasswordValues = z.infer<typeof newPasswordSchema>;
 
 export const otpSchema = z.object({
   pin: z.string().min(4, {
-    message: "Your one-time password must be 6 characters.",
+    message: "Your one-time password must be 4 characters.",
   }),
 });
 

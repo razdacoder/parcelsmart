@@ -27,7 +27,7 @@ export default function NewPassword() {
               New password
             </h3>
             <p className="text-muted-foreground text-sm text-center">
-              Enter your new password
+              Enter OTP and your new password
             </p>
           </div>
           <NewPasswordForm email={locationState.email!} />
