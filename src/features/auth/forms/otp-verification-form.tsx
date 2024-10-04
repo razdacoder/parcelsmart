@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import {
   Form,
   FormControl,
@@ -14,24 +14,30 @@ import {
 import { otpSchema, OTPValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import useVerifyEmail from "../api/useVerifyEmail";
 
-export default function OTPVerificationForm() {
+export default function OTPVerificationForm({ email }: { email: string }) {
+  const { mutate, isPending } = useVerifyEmail();
   const form = useForm<OTPValues>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
       pin: "",
     },
   });
+
+  function onSubmit(values: OTPValues) {
+    mutate({ email: email, otp: values.pin });
+  }
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="pin"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <InputOTP maxLength={6} {...field}>
+                <InputOTP disabled={isPending} maxLength={6} {...field}>
                   <InputOTPGroup className="w-full grid grid-cols-4 text-lg gap-3 text-primary font-semibold">
                     <InputOTPSlot
                       className="w-full h-16 rounded-md border"
@@ -57,10 +63,7 @@ export default function OTPVerificationForm() {
             </FormItem>
           )}
         />
-
-        <Button size="lg" className="w-full">
-          Verify
-        </Button>
+        <SubmitButton isPending={isPending}>Verify</SubmitButton>
       </form>
     </Form>
   );

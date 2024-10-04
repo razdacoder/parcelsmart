@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -18,24 +18,120 @@ import { useForm } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import useRegister from "../api/useRegister";
 
+type ApiErrorResponse = {
+  message: string;
+  errors: {
+    [key in keyof RegisterValues]?: string[];
+  };
+};
 export default function RegisterForm() {
+  const { mutate, isPending } = useRegister();
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
+      first_name: "",
+      last_name: "",
+      phone_number: "",
       email: "",
       password: "",
+      confirm_password: "",
+      username: "",
       acceptTerms: false,
     },
   });
+
+  function onSumbit(values: RegisterValues) {
+    if (!values.acceptTerms) {
+      form.setError("acceptTerms", {
+        message: "Please accept our terms and conditions to register!",
+      });
+      return;
+    }
+    const data: RegsiterUserData = {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      username: values.last_name,
+      email: values.email,
+      phone_number: values.phone_number,
+      password: values.password,
+      confirm_password: values.confirm_password,
+      account_type: "personal",
+    };
+    mutate(data, {
+      onError: (error) => {
+        // Use type casting to specify that `error.response.data` is of type `ApiErrorResponse`
+        const apiErrors = (error.response?.data as ApiErrorResponse)?.errors;
+
+        if (apiErrors) {
+          Object.keys(apiErrors).forEach((field) => {
+            if (form.getValues()[field as keyof RegisterValues] !== undefined) {
+              form.setError(field as keyof RegisterValues, {
+                type: "server",
+                message:
+                  apiErrors[field as keyof RegisterValues]?.[0] ||
+                  "An error occurred",
+              });
+            }
+          });
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
+      },
+    });
+  }
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSumbit)} className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            name="first_name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
+                    <Input
+                      disabled={isPending}
+                      className="ps-10"
+                      type="text"
+                      placeholder="Enter First Name"
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="last_name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
+                    <Input
+                      disabled={isPending}
+                      className="ps-10"
+                      type="text"
+                      placeholder="Enter Last Name"
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
-          name="firstName"
+          name="username"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -43,29 +139,10 @@ export default function RegisterForm() {
                 <div className="relative">
                   <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
                   <Input
+                    disabled={isPending}
                     className="ps-10"
                     type="text"
-                    placeholder="Enter First Name"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="lastName"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="relative">
-                  <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-                  <Input
-                    className="ps-10"
-                    type="text"
-                    placeholder="Enter Last Name"
+                    placeholder="Enter Username"
                     {...field}
                   />
                 </div>
@@ -76,12 +153,13 @@ export default function RegisterForm() {
         />
 
         <FormField
-          name="phoneNumber"
+          name="phone_number"
           control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormControl>
                 <PhoneInput
+                  disabled={isPending}
                   defaultCountry="NG"
                   international
                   placeholder="Enter phone number"
@@ -103,6 +181,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <Mail className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
                   <Input
+                    disabled={isPending}
                     className="ps-10"
                     type="email"
                     placeholder="Enter Email"
@@ -114,21 +193,44 @@ export default function RegisterForm() {
             </FormItem>
           )}
         />
-        <FormField
-          name="password"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <PasswordInput {...field} placeholder="Enter Password" />
-              </FormControl>
-              <FormDescription>
-                Your password must have at least 8 characters
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            name="password"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <PasswordInput
+                    disabled={isPending}
+                    {...field}
+                    placeholder="Enter Password"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Your password must have at least 8 characters
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="confirm_password"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <PasswordInput
+                    disabled={isPending}
+                    {...field}
+                    placeholder="Confirm Password"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -137,12 +239,13 @@ export default function RegisterForm() {
             <FormItem className="flex flex-row items-center space-x-3 space-y-0">
               <FormControl>
                 <Checkbox
+                  disabled={isPending}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   className="size-5"
                 />
               </FormControl>
-              <div className="space-y-1 leading-none">
+              <div className="space-y-2 leading-none">
                 <FormLabel className="text-sm font-light">
                   By creating an account means you agree to the
                   <Link to="#" className="font-medium">
@@ -153,13 +256,12 @@ export default function RegisterForm() {
                     Privacy Policy
                   </Link>
                 </FormLabel>
+                <FormMessage />
               </div>
             </FormItem>
           )}
         />
-        <Button size="lg" className="w-full">
-          Create Account
-        </Button>
+        <SubmitButton isPending={isPending}>Create Account</SubmitButton>
       </form>
     </Form>
   );

@@ -1,3 +1,4 @@
+import ProtectedRoute from "@/components/protected-route";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import NewPassword from "@/pages/auth/NewPassowrd";
 import ResetPassword from "@/pages/auth/ResetPassword";
@@ -18,7 +19,11 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -48,7 +53,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/shipment/new",
-    element: <BookShipment />,
+    element: (
+      <ProtectedRoute>
+        <BookShipment />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "auth/",
@@ -77,7 +86,7 @@ export const router = createBrowserRouter([
     element: <VerifyEmail />,
   },
   {
-    path: "auth/verify-email/:gfghfhgfgfgh/",
+    path: "auth/verify-email/verification/",
     element: <Verification />,
   },
 ]);

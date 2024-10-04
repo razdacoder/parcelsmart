@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import {
   Form,
   FormControl,
@@ -10,25 +10,34 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { newPasswordSchema, NewPasswordValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import useResetPassword from "../api/useResetPassword";
 
-export default function NewPasswordForm() {
+export default function NewPasswordForm({ email }: { email: string }) {
+  const { mutate, isPending } = useResetPassword();
   const form = useForm<NewPasswordValues>({
     resolver: zodResolver(newPasswordSchema),
     defaultValues: {
       password: "",
-      password_confirm: "",
+      confirm_password: "",
     },
   });
+  function onSubmit(values: NewPasswordValues) {
+    mutate({ ...values, email, otp: "" });
+  }
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           name="password"
           control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="New Password" />
+                <PasswordInput
+                  disabled={isPending}
+                  {...field}
+                  placeholder="New Password"
+                />
               </FormControl>
 
               <FormMessage />
@@ -37,22 +46,23 @@ export default function NewPasswordForm() {
         />
 
         <FormField
-          name="password_confirm"
+          name="confirm_password"
           control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="Confirm New Password" />
+                <PasswordInput
+                  disabled={isPending}
+                  {...field}
+                  placeholder="Confirm New Password"
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button size="lg" className="w-full">
-          Set New Password
-        </Button>
+        <SubmitButton isPending={isPending}>Set New Password</SubmitButton>
       </form>
     </Form>
   );

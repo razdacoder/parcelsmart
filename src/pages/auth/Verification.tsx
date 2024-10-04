@@ -1,7 +1,14 @@
 import logoPrimary from "@/assets/logo-primary.svg";
 import OTPVerificationForm from "@/features/auth/forms/otp-verification-form";
+import { Navigate, useLocation } from "react-router-dom";
 
 export default function Verification() {
+  const { state } = useLocation();
+  const locationState = state as { email?: string };
+  if (!locationState) {
+    return <Navigate to="/auth/login" />;
+  }
+
   return (
     <main className="bg-[#F8FAFC] min-h-screen flex flex-col py-10 md:px-24">
       <div className="hidden lg:flex justify-center lg:justify-start items-center">
@@ -21,10 +28,10 @@ export default function Verification() {
               OTP Verification
             </h3>
             <p className="text-muted-foreground text-sm text-center">
-              Enter the OTP sent to your email *****sxs@gmail.com
+              Enter the OTP sent to your email {state.email}
             </p>
           </div>
-          <OTPVerificationForm />
+          <OTPVerificationForm email={locationState.email!} />
         </div>
       </div>
     </main>

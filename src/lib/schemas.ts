@@ -1,17 +1,30 @@
 import { getCountryDataList } from "countries-list";
 import { array, z } from "zod";
-export const registerSchema = z.object({
-  firstName: z.string().trim().min(50, { message: "This field is required" }),
-  lastName: z.string().trim().min(50, { message: "This field is required" }),
-  phoneNumber: z.string().trim().min(15, { message: "This field is required" }),
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Invalid email address" })
-    .min(50, { message: "This field is required" }),
-  password: z.string().trim().min(8, { message: "Minimum of 8 characters" }),
-  acceptTerms: z.coerce.boolean(),
-});
+export const registerSchema = z
+  .object({
+    first_name: z.string().trim().min(2, { message: "This field is required" }),
+    last_name: z.string().trim().min(2, { message: "This field is required" }),
+    username: z.string().trim().min(2, { message: "This field is required" }),
+    phone_number: z
+      .string()
+      .trim()
+      .min(10, { message: "This field is required" }),
+    email: z
+      .string()
+      .trim()
+      .email({ message: "Invalid email address" })
+      .min(5, { message: "This field is required" }),
+    password: z.string().trim().min(8, { message: "Minimum of 8 characters" }),
+    confirm_password: z
+      .string()
+      .trim()
+      .min(8, { message: "Minimum of 8 characters" }),
+    acceptTerms: z.coerce.boolean(),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords does not match",
+    path: ["confirm_password"],
+  });
 
 export type RegisterValues = z.infer<typeof registerSchema>;
 
@@ -58,7 +71,7 @@ export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export const newPasswordSchema = z.object({
   password: z.string().trim().min(8, { message: "Minimum of 8 characters" }),
-  password_confirm: z
+  confirm_password: z
     .string()
     .trim()
     .min(8, { message: "Minimum of 8 characters" }),

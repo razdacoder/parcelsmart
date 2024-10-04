@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -15,8 +15,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import useLogin from "../api/useLogin";
 
 export default function LoginForm() {
+  const { mutate, isPending } = useLogin();
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -25,9 +27,14 @@ export default function LoginForm() {
       rememberMe: false,
     },
   });
+
+  function onSubmit(values: LoginValues) {
+    mutate(values);
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           name="email"
           control={form.control}
@@ -39,6 +46,7 @@ export default function LoginForm() {
                   <Input
                     className="ps-10"
                     type="email"
+                    disabled={isPending}
                     placeholder="Enter Email"
                     {...field}
                   />
@@ -54,7 +62,11 @@ export default function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="Enter Password" />
+                <PasswordInput
+                  disabled={isPending}
+                  {...field}
+                  placeholder="Enter Password"
+                />
               </FormControl>
 
               <FormMessage />
@@ -70,6 +82,7 @@ export default function LoginForm() {
               <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                 <FormControl>
                   <Checkbox
+                    disabled={isPending}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className="size-5"
@@ -91,9 +104,7 @@ export default function LoginForm() {
             Forgot Password?
           </Link>
         </div>
-        <Button size="lg" className="w-full">
-          Sign In
-        </Button>
+        <SubmitButton isPending={isPending}>Sign In</SubmitButton>
       </form>
     </Form>
   );

@@ -1,9 +1,18 @@
 import logoPrimary from "@/assets/logo-primary.svg";
 import verifyImage from "@/assets/verify-email.svg";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function VerifyEmail() {
+  const { state } = useLocation();
+
+  const navigate = useNavigate();
+  const locationState = state as { email?: string };
+
+  if (!locationState) {
+    return <Navigate to="/auth/login" />;
+  }
+
   return (
     <main className="bg-[#F8FAFC] min-h-screen flex flex-col py-10 md:px-24">
       <div className="hidden lg:flex justify-center lg:justify-start items-center">
@@ -30,15 +39,28 @@ export default function VerifyEmail() {
               verify your email
             </p>
           </div>
-          <Button size="lg" className="w-full">
+          <Button
+            onClick={() => {
+              navigate("/auth/verify-email/verification", {
+                state: {
+                  email: state.email,
+                },
+              });
+            }}
+            size="lg"
+            className="w-full"
+          >
             Proceed
           </Button>
           <div className="flex justify-center mt-6">
             <p className="text-text text-sm text-center font-medium">
               Don&apos;t receive an email?&nbsp;
-              <Link to="/auth/register" className="text-primary">
+              <Button
+                variant="link"
+                className="text-primary hover:no-underline p-0"
+              >
                 Resend
-              </Link>
+              </Button>
             </p>
           </div>
         </div>
