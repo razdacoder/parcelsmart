@@ -30,6 +30,43 @@ type Address = {
   location: string;
 };
 
+type AddressBook = {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+  line_1: string;
+  line_2: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  country: string;
+  latitude: string;
+  longitude: string;
+  place_id: string;
+  default: boolean;
+  platform: string;
+  platform_id: string;
+  metadata?: null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
+
+type Pagination = {
+  total: number;
+  current_page: number;
+  per_page: number;
+  last_page: number;
+  next_page: number | null;
+  previous_page: number | null;
+  total_pages: number;
+  has_previous_page: boolean;
+  has_next_page: boolean;
+};
+
 type RegsiterUserData = {
   email: string;
   first_name: string;

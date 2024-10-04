@@ -1,19 +1,23 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-export const columns: ColumnDef<Address>[] = [
+export const columns: ColumnDef<AddressBook>[] = [
   {
     accessorKey: "date",
     header: "Date",
     cell: ({ row }) => {
-      return <span>{format(row.original.date, "dd/MM/yy")}</span>;
+      return <span>{format(row.original.created_at, "dd/MM/yy")}</span>;
     },
   },
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-      return <span className="inline-block w-36">{row.original.name}</span>;
+      return (
+        <span className="inline-block w-36">
+          {row.original.first_name} {row.original.last_name}
+        </span>
+      );
     },
   },
   {
@@ -21,7 +25,7 @@ export const columns: ColumnDef<Address>[] = [
     header: "Phone Number",
     cell: ({ row }) => {
       return (
-        <span className="inline-block w-36">{row.original.phoneNumber}</span>
+        <span className="inline-block w-36">{row.original.phone_number}</span>
       );
     },
   },
@@ -29,7 +33,11 @@ export const columns: ColumnDef<Address>[] = [
     accessorKey: "email",
     header: "Email",
     cell: ({ row }) => {
-      return <span className="inline-block w-36">{row.original.email}</span>;
+      return (
+        <span className="inline-block w-64 line-clamp-1">
+          {row.original.email}
+        </span>
+      );
     },
   },
   {
@@ -37,8 +45,9 @@ export const columns: ColumnDef<Address>[] = [
     header: "Location",
     cell: ({ row }) => {
       return (
-        <span className="inline-block w-full truncate">
-          {row.original.location}
+        <span className="inline-block w-full line-clamp-1">
+          {row.original.line_1}, {row.original.city}, {row.original.state},
+          {row.original.country}
         </span>
       );
     },
