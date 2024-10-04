@@ -1,6 +1,7 @@
 "use client";
 
 import logowhite from "@/assets/logo.svg";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen,
   LayoutDashboard,
@@ -9,6 +10,8 @@ import {
   TruckIcon,
   WalletCards,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./auth-provider";
 import { NavMain } from "./nav-main";
 import { Button } from "./ui/button";
 import {
@@ -59,6 +62,9 @@ const data = {
 };
 
 export function AppSidebar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return (
     <Sidebar className="bg-primary text-white space-y-8">
       <SidebarHeader className="relative flex justify-center py-5 pe-10">
@@ -71,7 +77,15 @@ export function AppSidebar() {
         </SidebarItem>
       </SidebarContent>
       <SidebarFooter>
-        <Button variant="secondary" className="w-full gap-2 text-primary">
+        <Button
+          onClick={() => {
+            logout();
+            queryClient.clear();
+            navigate("/auth/login", { replace: true });
+          }}
+          variant="secondary"
+          className="w-full gap-2 text-primary"
+        >
           <LogOut className="size-4 text-primary" /> Log Out
         </Button>
       </SidebarFooter>

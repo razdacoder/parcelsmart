@@ -53,7 +53,7 @@ export default function RegisterForm() {
     const data: RegsiterUserData = {
       first_name: values.first_name,
       last_name: values.last_name,
-      username: values.last_name,
+      username: values.username,
       email: values.email,
       phone_number: values.phone_number,
       password: values.password,

@@ -5,6 +5,7 @@ import UpdateProfileModal from "@/features/settings/components/update-profile-mo
 import DropOffModal from "@/features/shipment/components/drop-off-modal";
 import NewItemModal from "@/features/shipment/components/new-item-modal";
 import ShipmentDetailModal from "@/features/shipment/components/shipment-detail-modal";
+import TrackModal from "@/features/track/components/track-modal";
 import TransactionDetailModal from "@/features/wallet/components/transaction-detail-modal";
 import { useMountedState } from "react-use";
 export default function ModalProvider() {
@@ -21,6 +22,7 @@ export default function ModalProvider() {
       <AddressDetailModal />
       <UpdateProfileModal />
       <UpdatePasswordModal />
+      <TrackModal />
     </>
   );
 }

@@ -20,7 +20,7 @@ export function NavMain({
       {items.map((item) => {
         const isActive = pathname === item.url;
         return (
-          <li>
+          <li key={item.url}>
             <div className="relative flex items-center">
               <Link
                 to={item.url}

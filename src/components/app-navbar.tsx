@@ -9,7 +9,7 @@ export default function AppNavBar({ title }: { title: string }) {
     <header className="bg-white py-5 shadow-sm px-4 md:px-8 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <SidebarTrigger />
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <h2 className="text-lg md:text-2xl font-bold">{title}</h2>
       </div>
 
       <div className="flex items-center gap-4">

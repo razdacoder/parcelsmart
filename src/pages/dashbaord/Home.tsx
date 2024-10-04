@@ -3,6 +3,7 @@ import AppNavBar from "@/components/app-navbar";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
+import useMe from "@/features/auth/api/useMe";
 import { columns } from "@/features/shipment/columns";
 import { DataTable } from "@/features/shipment/components/data-table";
 import { shipments } from "@/lib/demo";
@@ -11,11 +12,14 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+  const { data: user } = useMe();
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Overview" />
       <main className="px-4 md:px-8 space-y-6">
-        <h3 className="text-xl font-bold text-text">Hi, Shola</h3>
+        <h3 className="text-xl font-bold text-text">
+          Hi, {user?.data.first_name}
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12">
           <div className="w-full md:col-span-6 lg:col-span-5 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
@@ -197,7 +201,7 @@ export default function Home() {
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
             <Link
-              to="#"
+              to="/track"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
             >
               <div className="space-y-8">
