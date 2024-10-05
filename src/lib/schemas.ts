@@ -115,6 +115,29 @@ export const senderSchema = z
 
 export type SenderValues = z.infer<typeof senderSchema>;
 
+export const addressSchema = z
+  .object({
+    first_name: z.string().trim().min(2, { message: "This field is required" }),
+    last_name: z.string().trim().min(2, { message: "This field is required" }),
+    email: z
+      .string({ message: "This field is required" })
+      .trim()
+      .email({ message: "Invalid email address" }),
+    phone_number: z
+      .string()
+      .trim()
+      .min(10, { message: "This field is required" }),
+    line_1: z.string({ message: "This field is required" }).trim(),
+    line_2: z.string().trim().optional(),
+    country: z.string({ message: "This field is required" }).trim(),
+    state: z.string({ message: "This field is required" }).trim(),
+    city: z.string({ message: "This field is required" }).trim(),
+    zip_code: z.string({ message: "This field is required" }).trim(),
+  })
+  .refine((data) => !countries.includes(data.country), { path: ["country"] });
+
+export type AddressValues = z.infer<typeof addressSchema>;
+
 export const recieverSchema = z
   .object({
     firstName: z.string().trim().min(2, { message: "This field is required" }),

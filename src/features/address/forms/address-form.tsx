@@ -15,33 +15,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { senderSchema, SenderValues } from "@/lib/schemas";
+import { addressSchema, AddressValues } from "@/lib/schemas";
 import { Search } from "lucide-react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getCountryDataList } from "countries-list";
+import { City, Country, State } from "country-state-city";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import useCreateAddress from "../api/useCreateAddress";
 import { useNewAddress } from "../hooks/use-new-address";
 
 export default function AddressForm() {
   const { onClose } = useNewAddress();
-  const form = useForm<SenderValues>({
-    resolver: zodResolver(senderSchema),
+  const [stateCode, setStateCode] = useState<string>();
+  const { mutate, isPending } = useCreateAddress();
+  const form = useForm<AddressValues>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       email: "",
-      phoneNumber: "",
-      address1: "",
+      phone_number: "",
+      line_1: "",
+      line_2: "",
       country: "",
       state: "",
       city: "",
-      zipCode: "",
+      zip_code: "",
     },
   });
+
+  function onSubmit(values: AddressValues) {
+    mutate(values, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
+  }
   return (
     <div className="space-y-6 mt-6">
       <div className="space-y-1">
@@ -50,6 +64,7 @@ export default function AddressForm() {
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             id="address"
+            disabled={isPending}
             className="ps-10 bg-[#F4FDF8] h-10"
             type="text"
             placeholder="Search your address on Google (optional)"
@@ -58,29 +73,29 @@ export default function AddressForm() {
       </div>
 
       <Form {...form}>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-4">
             <FormField
-              name="firstName"
+              name="first_name"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              name="lastName"
+              name="last_name"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,14 +110,19 @@ export default function AddressForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} className="h-10" />
+                    <Input
+                      disabled={isPending}
+                      type="email"
+                      {...field}
+                      className="h-10"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              name="phoneNumber"
+              name="phone_number"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -111,6 +131,7 @@ export default function AddressForm() {
                     <PhoneInput
                       defaultCountry="NG"
                       international
+                      disabled={isPending}
                       className="flex h-10 w-full rounded-md border border-primary bg-transparent px-4 py-2 text-sm shadow-sm transition-colors  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 outline-none"
                       {...field}
                     />
@@ -121,20 +142,20 @@ export default function AddressForm() {
             />
           </div>
           <FormField
-            name="address1"
+            name="line_1"
             control={form.control}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Address line 1</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10" />
+                  <Input disabled={isPending} {...field} className="h-10" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
-            name="address2"
+            name="line_2"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -142,7 +163,7 @@ export default function AddressForm() {
                   Address line 2 (add a landmark) - optional
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10" />
+                  <Input disabled={isPending} {...field} className="h-10" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -156,6 +177,7 @@ export default function AddressForm() {
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <Select
+                    disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -165,9 +187,9 @@ export default function AddressForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
+                      {Country.getAllCountries().map((country) => (
+                        <SelectItem value={country.isoCode}>
+                          {country.flag} {country.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -184,7 +206,11 @@ export default function AddressForm() {
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    disabled={isPending}
+                    onValueChange={(value) => {
+                      field.onChange(value.split("-")[0]);
+                      setStateCode(value.split("-")[1]);
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -193,11 +219,13 @@ export default function AddressForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
+                      {State.getStatesOfCountry(form.getValues("country")).map(
+                        (state) => (
+                          <SelectItem value={`${state.name}-${state.isoCode}`}>
+                            {state.name}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
 
@@ -212,6 +240,7 @@ export default function AddressForm() {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <Select
+                    disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -221,7 +250,10 @@ export default function AddressForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
+                      {City.getCitiesOfState(
+                        form.getValues("country"),
+                        stateCode!
+                      ).map((country) => (
                         <SelectItem value={country.name}>
                           {country.name}
                         </SelectItem>
@@ -234,13 +266,13 @@ export default function AddressForm() {
               )}
             />
             <FormField
-              name="zipCode"
+              name="zip_code"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -251,6 +283,7 @@ export default function AddressForm() {
             <Button
               type="button"
               size="lg"
+              disabled={isPending}
               onClick={onClose}
               className="bg-[#E2FAEC] text-primary shadow-none hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
             >
@@ -259,16 +292,16 @@ export default function AddressForm() {
 
             <Button
               size="lg"
+              disabled={isPending}
               type="button"
+              onClick={() => form.reset()}
               variant="destructive"
               className="bg-[#E74C3C33] text-destructive shadow-none hover:bg-[#E74C3C33] hover:text-destructive/80 px-8"
             >
               Clear All
             </Button>
 
-            <Button size="lg" className="px-12">
-              Save Address
-            </Button>
+            <SubmitButton isPending={isPending}>Save Address</SubmitButton>
           </div>
         </form>
       </Form>

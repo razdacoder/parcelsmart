@@ -59,7 +59,7 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className="cursor-pointer"
-                onClick={() => onOpen("hhhh")}
+                onClick={() => onOpen((row.original as AddressBook).id)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="h-12 text-sm ">

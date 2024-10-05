@@ -80,6 +80,9 @@ importers:
       countries-list:
         specifier: ^3.1.1
         version: 3.1.1
+      country-state-city:
+        specifier: ^3.2.1
+        version: 3.2.1
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -1434,6 +1437,9 @@ packages:
 
   country-flag-icons@1.5.13:
     resolution: {integrity: sha512-4JwHNqaKZ19doQoNcBjsoYA+I7NqCH/mC/6f5cBWvdKzcK5TMmzLpq3Z/syVHMHJuDGFwJ+rPpGizvrqJybJow==}
+
+  country-state-city@3.2.1:
+    resolution: {integrity: sha512-kxbanqMc6izjhc/EHkGPCTabSPZ2G6eG4/97akAYHJUN4stzzFEvQPZoF8oXDQ+10gM/O/yUmISCR1ZVxyb6EA==}
 
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
@@ -3696,6 +3702,8 @@ snapshots:
   countries-list@3.1.1: {}
 
   country-flag-icons@1.5.13: {}
+
+  country-state-city@3.2.1: {}
 
   cross-spawn@7.0.3:
     dependencies:
