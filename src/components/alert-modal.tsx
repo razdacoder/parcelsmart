@@ -48,7 +48,7 @@ export const useAlertModal = ({
   };
 
   const AlertModal = () => (
-    <AlertDialog>
+    <AlertDialog open={promise !== null}>
       <AlertDialogTrigger asChild>
         <Button variant="outline">Show Dialog</Button>
       </AlertDialogTrigger>
