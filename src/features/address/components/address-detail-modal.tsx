@@ -11,10 +11,12 @@ import { format } from "date-fns";
 import { ArrowRight, Edit, Loader2, XCircle } from "lucide-react";
 import useAddress from "../api/useAddress";
 import { useAddressDetailModal } from "../hooks/use-address-detail";
+import { useEditAddress } from "../hooks/use-edit-modal";
 
 export default function AddressDetailModal() {
   const { isOpen, onClose, id } = useAddressDetailModal();
   const { data, isLoading, isError } = useAddress({ id });
+  const { onOpen } = useEditAddress();
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
@@ -49,7 +51,10 @@ export default function AddressDetailModal() {
                 <h3 className="text-primary text-lg font-bold">
                   Personal Information
                 </h3>
-                <button className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary">
+                <button
+                  onClick={() => onOpen(data.data)}
+                  className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+                >
                   <Edit className="text-primary size-4" />
                   Edit
                 </button>

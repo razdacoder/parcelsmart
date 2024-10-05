@@ -3,14 +3,9 @@ import { AddressValues } from "@/lib/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { AddressResponseType } from "./useCreateAddress";
 
-export type AddressResponseType = {
-  status: boolean;
-  message: string;
-  data: AddressBook;
-};
-
-export default function useCreateAddress() {
+export default function useEditAddress({ id }: { id?: string }) {
   const queryClient = useQueryClient();
   return useMutation<
     AddressResponseType,
@@ -18,12 +13,12 @@ export default function useCreateAddress() {
     AddressValues
   >({
     mutationFn: async (data) => {
-      const response = await client.post("/addresses", data);
+      const response = await client.put(`/addresses/${id}`, data);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["address-list", 1] });
-      toast.success("Address Created");
+      queryClient.invalidateQueries({ queryKey: ["address", id] });
+      toast.success("Address Updated");
     },
     onError: (error) => {
       console.log(error);

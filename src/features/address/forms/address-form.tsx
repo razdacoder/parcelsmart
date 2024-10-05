@@ -27,34 +27,57 @@ import { City, Country, State } from "country-state-city";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useCreateAddress from "../api/useCreateAddress";
+import useEditAddress from "../api/useEditAddress";
 import { useNewAddress } from "../hooks/use-new-address";
 
-export default function AddressForm() {
+type AddressFormProps = {
+  address?: AddressBook;
+};
+
+export default function AddressForm({ address }: AddressFormProps) {
   const { onClose } = useNewAddress();
+  const isEditMode = Boolean(address);
   const [stateCode, setStateCode] = useState<string>();
-  const { mutate, isPending } = useCreateAddress();
+  const { mutate: createAddress, isPending: createPending } =
+    useCreateAddress();
+  const { mutate: editAddress, isPending: editPending } = useEditAddress({
+    id: address?.id,
+  });
+
+  function getStateValue(): string {
+    const state = State.getStatesOfCountry(address?.country).find(
+      (state) => state.name === address?.state
+    );
+    setStateCode(state?.isoCode);
+    return `${state?.name}-${state?.isoCode}`;
+  }
+
+  const isPending = createPending || editPending;
+
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone_number: "",
-      line_1: "",
-      line_2: "",
-      country: "",
-      state: "",
-      city: "",
-      zip_code: "",
+      first_name: isEditMode ? address?.first_name : "",
+      last_name: isEditMode ? address?.last_name : "",
+      email: isEditMode ? address?.email : "",
+      phone_number: isEditMode ? address?.phone_number : "",
+      line_1: isEditMode ? address?.line_1 : "",
+      line_2: isEditMode ? address?.line_2 : "",
+      country: isEditMode ? address?.country : "",
+      state: isEditMode ? address?.state : "",
+      city: isEditMode ? address?.city : "",
+      zip_code: isEditMode ? address?.zip_code : "",
     },
   });
 
   function onSubmit(values: AddressValues) {
-    mutate(values, {
-      onSuccess: () => {
-        onClose();
-      },
-    });
+    isEditMode
+      ? editAddress(values)
+      : createAddress(values, {
+          onSuccess: () => {
+            onClose();
+          },
+        });
   }
   return (
     <div className="space-y-6 mt-6">
@@ -211,7 +234,7 @@ export default function AddressForm() {
                       field.onChange(value.split("-")[0]);
                       setStateCode(value.split("-")[1]);
                     }}
-                    defaultValue={field.value}
+                    defaultValue={isEditMode ? getStateValue() : field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="h-10">
@@ -233,6 +256,7 @@ export default function AddressForm() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="city"
