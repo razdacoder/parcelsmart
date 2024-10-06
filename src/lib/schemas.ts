@@ -92,29 +92,6 @@ export type OTPValues = z.infer<typeof otpSchema>;
 
 const countries = getCountryDataList().map((country) => country.name);
 
-export const senderSchema = z
-  .object({
-    firstName: z.string().trim().min(2, { message: "This field is required" }),
-    lastName: z.string().trim().min(2, { message: "This field is required" }),
-    email: z
-      .string({ message: "This field is required" })
-      .trim()
-      .email({ message: "Invalid email address" }),
-    phoneNumber: z
-      .string()
-      .trim()
-      .min(15, { message: "This field is required" }),
-    address1: z.string({ message: "This field is required" }).trim(),
-    address2: z.string().trim().optional(),
-    country: z.string({ message: "This field is required" }).trim(),
-    state: z.string({ message: "This field is required" }).trim(),
-    city: z.string({ message: "This field is required" }).trim(),
-    zipCode: z.string({ message: "This field is required" }).trim(),
-  })
-  .refine((data) => !countries.includes(data.country), { path: ["country"] });
-
-export type SenderValues = z.infer<typeof senderSchema>;
-
 export const addressSchema = z
   .object({
     first_name: z.string().trim().min(2, { message: "This field is required" }),
@@ -137,29 +114,6 @@ export const addressSchema = z
   .refine((data) => !countries.includes(data.country), { path: ["country"] });
 
 export type AddressValues = z.infer<typeof addressSchema>;
-
-export const recieverSchema = z
-  .object({
-    firstName: z.string().trim().min(2, { message: "This field is required" }),
-    lastName: z.string().trim().min(2, { message: "This field is required" }),
-    email: z
-      .string({ message: "This field is required" })
-      .trim()
-      .email({ message: "Invalid email address" }),
-    phoneNumber: z
-      .string()
-      .trim()
-      .min(15, { message: "This field is required" }),
-    address1: z.string({ message: "This field is required" }).trim(),
-    address2: z.string().trim().optional(),
-    country: z.string({ message: "This field is required" }).trim(),
-    state: z.string({ message: "This field is required" }).trim(),
-    city: z.string({ message: "This field is required" }).trim(),
-    zipCode: z.string({ message: "This field is required" }).trim(),
-  })
-  .refine((data) => !countries.includes(data.country), { path: ["country"] });
-
-export type RecieverValues = z.infer<typeof recieverSchema>;
 
 export const itemTypeSchema = z.object({
   itemType: z.literal("items"),

@@ -5,7 +5,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -49,9 +48,6 @@ export const useAlertModal = ({
 
   const AlertModal = () => (
     <AlertDialog open={promise !== null}>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline">Show Dialog</Button>
-      </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col items-center gap-6">
         <button className="flex justify-center items-center size-10 absolute bg-white -top-12 right-0 rounded-full">
           <X className="size-5" />

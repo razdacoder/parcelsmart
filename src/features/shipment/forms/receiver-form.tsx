@@ -14,31 +14,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { recieverSchema, RecieverValues } from "@/lib/schemas";
+import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getCountryDataList } from "countries-list";
+import { City, Country, State } from "country-state-city";
 import { Search, XCircle } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 export default function ReceiverForm() {
   const navigate = useNavigate();
-  const form = useForm<RecieverValues>({
-    resolver: zodResolver(recieverSchema),
+  const [stateCode, setStateCode] = useState<string>();
+
+  const form = useForm<AddressValues>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       email: "",
-      phoneNumber: "",
-      address1: "",
+      phone_number: "",
+      line_1: "",
+      line_2: "",
       country: "",
       state: "",
       city: "",
-      zipCode: "",
+      zip_code: "",
     },
   });
   return (
@@ -80,7 +84,7 @@ export default function ReceiverForm() {
         <form className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <FormField
-              name="firstName"
+              name="first_name"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -93,7 +97,7 @@ export default function ReceiverForm() {
               )}
             />
             <FormField
-              name="lastName"
+              name="last_name"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -121,7 +125,7 @@ export default function ReceiverForm() {
               )}
             />
             <FormField
-              name="phoneNumber"
+              name="phone_number"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -140,7 +144,7 @@ export default function ReceiverForm() {
             />
           </div>
           <FormField
-            name="address1"
+            name="line_1"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -153,7 +157,7 @@ export default function ReceiverForm() {
             )}
           />
           <FormField
-            name="address2"
+            name="line_2"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -175,6 +179,7 @@ export default function ReceiverForm() {
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <Select
+                    // disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -184,9 +189,9 @@ export default function ReceiverForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
+                      {Country.getAllCountries().map((country) => (
+                        <SelectItem value={country.isoCode}>
+                          {country.flag} {country.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -203,7 +208,11 @@ export default function ReceiverForm() {
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    // disabled={isPending}
+                    onValueChange={(value) => {
+                      field.onChange(value.split("-")[0]);
+                      setStateCode(value.split("-")[1]);
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -212,11 +221,13 @@ export default function ReceiverForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
+                      {State.getStatesOfCountry(form.getValues("country")).map(
+                        (state) => (
+                          <SelectItem value={`${state.name}-${state.isoCode}`}>
+                            {state.name}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
 
@@ -231,6 +242,7 @@ export default function ReceiverForm() {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <Select
+                    // disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -240,10 +252,11 @@ export default function ReceiverForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
+                      {City.getCitiesOfState(
+                        form.getValues("country"),
+                        stateCode!
+                      ).map((city) => (
+                        <SelectItem value={city.name}>{city.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -253,7 +266,7 @@ export default function ReceiverForm() {
               )}
             />
             <FormField
-              name="zipCode"
+              name="zip_code"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
