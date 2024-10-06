@@ -55,14 +55,14 @@ export default function CarrierForm() {
       <div>
         <div className="space-y-2">
           <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="flex items-center justify-between w-full px-2">
+            <div className="grid grid-cols-12 gap-8 w-full px-2">
               <input
                 type="radio"
                 name="carrier"
                 className="hidden peer"
                 id="r1"
               />
-              <div className="flex items-center gap-4">
+              <div className="col-span-3 flex items-center gap-4">
                 <img
                   src={dhlImage}
                   alt="DHL Image"
@@ -77,24 +77,29 @@ export default function CarrierForm() {
                   </p>
                 </div>
               </div>
-              <div className="hidden md:flex flex-col gap-1">
-                <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
-                <p className="text-xs text-muted-foreground">
-                  Delivery: Within 4 days
-                </p>
+              <div className="col-span-3 flex items-center">
+                <div className="hidden md:flex flex-col gap-1">
+                  <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Delivery: Within 4 days
+                  </p>
+                </div>
               </div>
-              <Badge className="hidden md:inline-flex bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                Dropoff
-              </Badge>
-
-              <h2 className="text-base md:text-xl font-bold">
-                {formatNaira(4407.69)}
-              </h2>
+              <div className="col-span-1 flex items-center justify-center">
+                <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
+                  Dropoff
+                </Badge>
+              </div>
+              <div className="col-span-3 flex items-center justify-center">
+                <h2 className="text-center text-base md:text-xl font-bold">
+                  {formatNaira(4407.69)}
+                </h2>
+              </div>
 
               <Label
                 onClick={onOpen}
                 htmlFor="r1"
-                className="px-6 py-3 rounded-xl border-2 cursor-pointer peer-checked:bg-primary peer-checked:text-white"
+                className="col-span-2 px-6 py-3 rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white"
               >
                 Select
               </Label>
