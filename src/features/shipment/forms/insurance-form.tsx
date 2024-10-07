@@ -4,9 +4,11 @@ import { Label } from "@/components/ui/label";
 import { formatNaira } from "@/lib/utils";
 import { XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function InsuranceForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
+  const { clearAll } = useShipmentApplication();
 
   return (
     <div className="space-y-6">
@@ -19,7 +21,13 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
             Protect your shipment with an insurance cover.
           </p>
         </div>
-        <button onClick={() => navigate(-1)} className="cursor-pointer">
+        <button
+          onClick={() => {
+            clearAll();
+            navigate(-1);
+          }}
+          className="cursor-pointer"
+        >
           <XCircle className="size-6" />
         </button>
       </div>

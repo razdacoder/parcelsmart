@@ -13,10 +13,12 @@ import { formatNaira } from "@/lib/utils";
 import { RefreshCw, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDropOff } from "../hooks/use-drop-off";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function CarrierForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useDropOff();
+  const { clearAll } = useShipmentApplication();
 
   return (
     <div className="space-y-6">
@@ -29,7 +31,13 @@ export default function CarrierForm({ next, prev }: StepsProps) {
             Choose your preferred rate.
           </p>
         </div>
-        <button onClick={() => navigate(-1)} className="cursor-pointer">
+        <button
+          onClick={() => {
+            clearAll();
+            navigate(-1);
+          }}
+          className="cursor-pointer"
+        >
           <XCircle className="size-6" />
         </button>
       </div>

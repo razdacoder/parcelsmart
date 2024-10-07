@@ -16,7 +16,6 @@ import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import useCreateAddress from "@/features/address/api/useCreateAddress";
-import useDeleteAddress from "@/features/address/api/useDeleteAddress";
 import useEditAddress from "@/features/address/api/useEditAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City, Country, State } from "country-state-city";
@@ -28,10 +27,9 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 
 export default function RecieverForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  const { setReceiverValues, receiver, clearReceiverValues } =
+  const { setReceiverValues, receiver, clearReceiverValues, clearAll } =
     useShipmentApplication();
   const { mutate: createAddress, isPending: creating } = useCreateAddress();
-  const { mutate: deleteAddress, isPending: deleting } = useDeleteAddress();
   const { mutate: updateAddress, isPending: editing } = useEditAddress({
     id: receiver?.id,
   });
@@ -43,7 +41,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
     return null;
   });
 
-  const isPending = creating || deleting || editing;
+  const isPending = creating || editing;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -105,28 +103,21 @@ export default function RecieverForm({ next, prev }: StepsProps) {
   }
 
   function clearValues() {
-    deleteAddress(
-      { id: receiver?.id! },
-      {
-        onSuccess: () => {
-          clearReceiverValues();
-          form.reset({
-            first_name: "",
-            last_name: "",
-            email: "",
-            phone_number: "",
-            line_1: "",
-            line_2: "",
-            country: "",
-            state: "",
-            city: "",
-            zip_code: "",
-          });
-          setCountryCode(null);
-          setStateCode(null);
-        },
-      }
-    );
+    clearReceiverValues();
+    form.reset({
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone_number: "",
+      line_1: "",
+      line_2: "",
+      country: "",
+      state: "",
+      city: "",
+      zip_code: "",
+    });
+    setCountryCode(null);
+    setStateCode(null);
   }
 
   return (
@@ -138,7 +129,13 @@ export default function RecieverForm({ next, prev }: StepsProps) {
             Search from your saved addresses or create a new address.
           </p>
         </div>
-        <button onClick={() => navigate(-1)} className="cursor-pointer">
+        <button
+          onClick={() => {
+            clearAll();
+            navigate(-1);
+          }}
+          className="cursor-pointer"
+        >
           <XCircle className="size-6" />
         </button>
       </div>

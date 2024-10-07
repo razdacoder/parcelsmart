@@ -24,10 +24,13 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useNewItemModal } from "../hooks/use-new-item-modal";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function ItemsForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useNewItemModal();
+  const { clearAll } = useShipmentApplication();
+
   const { register, getValues } = useForm<ParcelListValues>({
     resolver: zodResolver(parcelListSchema),
     defaultValues: {
@@ -71,7 +74,13 @@ export default function ItemsForm({ next, prev }: StepsProps) {
             What is in your shipment
           </p>
         </div>
-        <button onClick={() => navigate(-1)} className="cursor-pointer">
+        <button
+          onClick={() => {
+            clearAll();
+            navigate(-1);
+          }}
+          className="cursor-pointer"
+        >
           <XCircle className="size-6" />
         </button>
       </div>

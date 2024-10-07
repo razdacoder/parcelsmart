@@ -8,6 +8,7 @@ type ShipmentApplicationState = {
   setReceiverValues: (values: AddressBook) => void;
   clearSenderValues: () => void;
   clearReceiverValues: () => void;
+  clearAll: () => void;
 };
 
 export const useShipmentApplication = create(
@@ -19,6 +20,7 @@ export const useShipmentApplication = create(
       setReceiverValues: (values: AddressBook) => set({ receiver: values }),
       clearSenderValues: () => set({ sender: undefined }),
       clearReceiverValues: () => set({ receiver: undefined }),
+      clearAll: () => set({ sender: undefined, receiver: undefined }),
     }),
     {
       name: "shipment-application",
