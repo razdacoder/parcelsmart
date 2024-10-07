@@ -1,10 +1,11 @@
 import logoImage from "@/assets/parcels icon.png";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { formatNaira } from "@/lib/utils";
 import { XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function InsuranceForm() {
+export default function InsuranceForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
 
   return (
@@ -62,6 +63,24 @@ export default function InsuranceForm() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
+        <Button
+          type="button"
+          onClick={() => prev?.()}
+          size="lg"
+          className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
+        >
+          Previous
+        </Button>
+
+        <Button
+          onClick={() => next()}
+          size="lg"
+          className="px-12 w-full md:w-fit"
+        >
+          Continue
+        </Button>
       </div>
     </div>
   );

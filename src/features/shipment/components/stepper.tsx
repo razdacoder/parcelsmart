@@ -22,6 +22,9 @@ export default function Stepper() {
   ];
 
   const nextStep = async () => {
+    if (currentStep == 4) {
+      setReviewMode(true);
+    }
     setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
   };
 
@@ -76,9 +79,15 @@ export default function Stepper() {
         {currentStep === 2 && (
           <ItemsForm next={() => nextStep()} prev={() => prevStep()} />
         )}
-        {currentStep === 3 && <CarrierForm />}
-        {currentStep === 4 && <InsuranceForm />}
-        {currentStep === 5 && <Review />}
+        {currentStep === 3 && (
+          <CarrierForm next={() => nextStep()} prev={() => prevStep()} />
+        )}
+        {currentStep === 4 && (
+          <InsuranceForm next={() => nextStep()} prev={() => prevStep()} />
+        )}
+        {currentStep === 5 && (
+          <Review next={() => nextStep()} prev={() => prevStep()} />
+        )}
       </div>
 
       {/* Navigation Buttons */}

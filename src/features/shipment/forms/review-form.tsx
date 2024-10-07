@@ -1,8 +1,11 @@
 import kwikImage from "@/assets/kwik.png";
+import { Button } from "@/components/ui/button";
 import { formatNaira } from "@/lib/utils";
 import { Edit } from "lucide-react";
+import { useReviewMode } from "../hooks/use-review-mode";
 
-export default function Review() {
+export default function Review({ next, prev }: StepsProps) {
+  const { setReviewMode } = useReviewMode();
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
@@ -116,6 +119,28 @@ export default function Review() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
+        <Button
+          type="button"
+          onClick={() => {
+            setReviewMode(false);
+            prev?.();
+          }}
+          size="lg"
+          className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
+        >
+          Previous
+        </Button>
+
+        <Button
+          onClick={() => next()}
+          size="lg"
+          className="px-12 w-full md:w-fit"
+        >
+          Make Payment
+        </Button>
       </div>
     </div>
   );
