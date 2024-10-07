@@ -1,12 +1,11 @@
-import { AddressValues } from "@/lib/schemas";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 type ShipmentApplicationState = {
-  sender?: AddressValues;
-  receiver?: AddressValues;
-  setSenderValues: (values: AddressValues) => void;
-  setReceiverValues: (values: AddressValues) => void;
+  sender?: AddressBook;
+  receiver?: AddressBook;
+  setSenderValues: (values: AddressBook) => void;
+  setReceiverValues: (values: AddressBook) => void;
   clearSenderValues: () => void;
   clearReceiverValues: () => void;
 };
@@ -16,8 +15,8 @@ export const useShipmentApplication = create(
     (set) => ({
       sender: undefined,
       reciever: undefined,
-      setSenderValues: (values: AddressValues) => set({ sender: values }),
-      setReceiverValues: (values: AddressValues) => set({ receiver: values }),
+      setSenderValues: (values: AddressBook) => set({ sender: values }),
+      setReceiverValues: (values: AddressBook) => set({ receiver: values }),
       clearSenderValues: () => set({ sender: undefined }),
       clearReceiverValues: () => set({ receiver: undefined }),
     }),

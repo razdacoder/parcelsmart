@@ -7,19 +7,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { PSelect } from "@/components/select";
+import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import useCreateAddress from "@/features/address/api/useCreateAddress";
+import useDeleteAddress from "@/features/address/api/useDeleteAddress";
+import useEditAddress from "@/features/address/api/useEditAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City, Country, State } from "country-state-city";
 import { Search, XCircle } from "lucide-react";
@@ -32,13 +30,20 @@ export default function RecieverForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { setReceiverValues, receiver, clearReceiverValues } =
     useShipmentApplication();
-  const [stateCode, setStateCode] = useState<string>();
+  const { mutate: createAddress, isPending: creating } = useCreateAddress();
+  const { mutate: deleteAddress, isPending: deleting } = useDeleteAddress();
+  const { mutate: updateAddress, isPending: editing } = useEditAddress({
+    id: receiver?.id,
+  });
+  const [stateCode, setStateCode] = useState<string | null>();
   const [countryCode, setCountryCode] = useState<string | null>(() => {
     if (receiver?.country) {
       return receiver.country;
     }
     return null;
   });
+
+  const isPending = creating || deleting || editing;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -56,6 +61,25 @@ export default function RecieverForm({ next, prev }: StepsProps) {
     },
   });
 
+  const countryOptions: Optiontype[] = Country.getAllCountries().map(
+    (country) => ({
+      label: country.name,
+      value: country.isoCode,
+    })
+  );
+
+  const stateOptions: Optiontype[] = State.getStatesOfCountry(countryCode!).map(
+    (state) => ({
+      label: state.name,
+      value: `${state.name}-${state.isoCode}`,
+    })
+  );
+
+  const getCitiesOptions: Optiontype[] = City.getCitiesOfState(
+    countryCode!,
+    stateCode!
+  ).map((city) => ({ label: city.name, value: city.name }));
+
   function getStateValue(): string {
     const state = State.getStatesOfCountry(receiver?.country).find(
       (state) => state.name === receiver?.state
@@ -65,25 +89,44 @@ export default function RecieverForm({ next, prev }: StepsProps) {
   }
 
   function onSubmit(values: AddressValues) {
-    setReceiverValues(values);
-    next();
+    receiver
+      ? updateAddress(values, {
+          onSuccess: (data) => {
+            setReceiverValues(data.data);
+            next();
+          },
+        })
+      : createAddress(values, {
+          onSuccess: (data) => {
+            setReceiverValues(data.data);
+            next();
+          },
+        });
   }
 
   function clearValues() {
-    clearReceiverValues();
-    form.reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone_number: "",
-      line_1: "",
-      line_2: "",
-      country: "",
-      state: "",
-      city: "",
-      zip_code: "",
-    });
-    setCountryCode(null);
+    deleteAddress(
+      { id: receiver?.id! },
+      {
+        onSuccess: () => {
+          clearReceiverValues();
+          form.reset({
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone_number: "",
+            line_1: "",
+            line_2: "",
+            country: "",
+            state: "",
+            city: "",
+            zip_code: "",
+          });
+          setCountryCode(null);
+          setStateCode(null);
+        },
+      }
+    );
   }
 
   return (
@@ -219,94 +262,66 @@ export default function RecieverForm({ next, prev }: StepsProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Country</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setCountryCode(value);
-                    }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Country.getAllCountries().map((country) => (
-                        <SelectItem value={country.isoCode}>
-                          {country.flag} {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setCountryCode(value!);
+                      }}
+                      options={countryOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="state"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>State</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={(value) => {
-                      field.onChange(value.split("-")[0]);
-                      setStateCode(value.split("-")[1]);
-                    }}
-                    defaultValue={receiver ? getStateValue() : field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {State.getStatesOfCountry(countryCode!).map((state) => (
-                        <SelectItem value={`${state.name}-${state.isoCode}`}>
-                          {state.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={receiver ? getStateValue() : field.value}
+                      onChange={(value) => {
+                        field.onChange(value?.split("-")[0]);
+                        setStateCode(value?.split("-")[1]);
+                      }}
+                      options={stateOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {City.getCitiesOfState(
-                        form.getValues("country"),
-                        stateCode!
-                      ).map((city) => (
-                        <SelectItem value={city.name}>{city.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={getCitiesOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               name="zip_code"
               control={form.control}
@@ -314,7 +329,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -325,6 +340,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
             <Button
               type="button"
               onClick={() => prev?.()}
+              disabled={isPending}
               size="lg"
               className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
             >
@@ -332,18 +348,22 @@ export default function RecieverForm({ next, prev }: StepsProps) {
             </Button>
 
             <Button
+              disabled={isPending}
               type="button"
               size="lg"
-              onClick={clearValues}
               variant="destructive"
+              onClick={() => clearValues()}
               className="bg-[#E74C3C33] text-destructive w-full md:w-fit shadow-none hover:bg-[#E74C3C33] hover:text-destructive/80 px-8"
             >
               Clear All
             </Button>
 
-            <Button size="lg" className="px-12 w-full md:w-fit">
+            <SubmitButton
+              className="w-fit px-12"
+              isPending={creating || editing}
+            >
               Continue
-            </Button>
+            </SubmitButton>
           </div>
         </form>
       </Form>

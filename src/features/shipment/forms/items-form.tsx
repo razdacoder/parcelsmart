@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useNewItemModal } from "../hooks/use-new-item-modal";
 
-export default function ItemsForm() {
+export default function ItemsForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useNewItemModal();
   const { register, getValues } = useForm<ParcelListValues>({
@@ -232,6 +232,25 @@ export default function ItemsForm() {
         </div>
         Click to add new parcel
       </Button>
+
+      <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
+        <Button
+          type="button"
+          onClick={() => prev?.()}
+          size="lg"
+          className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
+        >
+          Previous
+        </Button>
+
+        <Button
+          onClick={() => next()}
+          size="lg"
+          className="px-12 w-full md:w-fit"
+        >
+          Continue
+        </Button>
+      </div>
     </div>
   );
 }

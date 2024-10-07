@@ -73,7 +73,9 @@ export default function Stepper() {
         {currentStep === 1 && (
           <ReceiverForm next={() => nextStep()} prev={() => prevStep()} />
         )}
-        {currentStep === 2 && <ItemsForm />}
+        {currentStep === 2 && (
+          <ItemsForm next={() => nextStep()} prev={() => prevStep()} />
+        )}
         {currentStep === 3 && <CarrierForm />}
         {currentStep === 4 && <InsuranceForm />}
         {currentStep === 5 && <Review />}

@@ -133,3 +133,8 @@ type StepsProps = {
   next: () => void;
   prev?: () => void;
 };
+
+type Optiontype = {
+  label: string;
+  value: string;
+};

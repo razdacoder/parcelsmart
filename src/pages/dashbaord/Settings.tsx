@@ -15,8 +15,8 @@ export default function Settings() {
         <div className="bg-white rounded-lg py-12 px-4 md:px-8">
           <div className="flex justify-between">
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="bg-transparent px-0 mb-16 lg:mb-8 flex flex-col gap-2 lg:flex-row justify-between items-center">
-                <div className="flex items-center justify-between w-full">
+              <TabsList className="bg-transparent px-0 mb-16 lg:mb-8 flex flex-col gap-2 lg:flex-row justify-between lg:justify-start items-center">
+                <div className="flex items-center justify-between lg:justify-start w-full">
                   <TabsTrigger className="px-2 md:px-6 py-2" value="profile">
                     Profile
                   </TabsTrigger>

@@ -7,19 +7,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { PSelect } from "@/components/select";
+import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import useCreateAddress from "@/features/address/api/useCreateAddress";
+import useDeleteAddress from "@/features/address/api/useDeleteAddress";
+import useEditAddress from "@/features/address/api/useEditAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City, Country, State } from "country-state-city";
 import { Search, XCircle } from "lucide-react";
@@ -32,13 +31,20 @@ export default function SenderForm({ next }: StepsProps) {
   const navigate = useNavigate();
   const { setSenderValues, sender, clearSenderValues } =
     useShipmentApplication();
-  const [stateCode, setStateCode] = useState<string>();
+  const { mutate: createAddress, isPending: creating } = useCreateAddress();
+  const { mutate: deleteAddress, isPending: deleting } = useDeleteAddress();
+  const { mutate: updateAddress, isPending: editing } = useEditAddress({
+    id: sender?.id,
+  });
+  const [stateCode, setStateCode] = useState<string | null>();
   const [countryCode, setCountryCode] = useState<string | null>(() => {
     if (sender?.country) {
       return sender.country;
     }
     return null;
   });
+
+  const isPending = creating || deleting || editing;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -56,6 +62,25 @@ export default function SenderForm({ next }: StepsProps) {
     },
   });
 
+  const countryOptions: Optiontype[] = Country.getAllCountries().map(
+    (country) => ({
+      label: country.name,
+      value: country.isoCode,
+    })
+  );
+
+  const stateOptions: Optiontype[] = State.getStatesOfCountry(countryCode!).map(
+    (state) => ({
+      label: state.name,
+      value: `${state.name}-${state.isoCode}`,
+    })
+  );
+
+  const getCitiesOptions: Optiontype[] = City.getCitiesOfState(
+    countryCode!,
+    stateCode!
+  ).map((city) => ({ label: city.name, value: city.name }));
+
   function getStateValue(): string {
     const state = State.getStatesOfCountry(sender?.country).find(
       (state) => state.name === sender?.state
@@ -65,25 +90,44 @@ export default function SenderForm({ next }: StepsProps) {
   }
 
   function onSubmit(values: AddressValues) {
-    setSenderValues(values);
-    next();
+    sender
+      ? updateAddress(values, {
+          onSuccess: (data) => {
+            setSenderValues(data.data);
+            next();
+          },
+        })
+      : createAddress(values, {
+          onSuccess: (data) => {
+            setSenderValues(data.data);
+            next();
+          },
+        });
   }
 
   function clearValues() {
-    clearSenderValues();
-    form.reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone_number: "",
-      line_1: "",
-      line_2: "",
-      country: "",
-      state: "",
-      city: "",
-      zip_code: "",
-    });
-    setCountryCode(null);
+    deleteAddress(
+      { id: sender?.id! },
+      {
+        onSuccess: () => {
+          clearSenderValues();
+          form.reset({
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone_number: "",
+            line_1: "",
+            line_2: "",
+            country: "",
+            state: "",
+            city: "",
+            zip_code: "",
+          });
+          setCountryCode(null);
+          setStateCode(null);
+        },
+      }
+    );
   }
 
   return (
@@ -131,7 +175,7 @@ export default function SenderForm({ next }: StepsProps) {
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,7 +188,7 @@ export default function SenderForm({ next }: StepsProps) {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +203,12 @@ export default function SenderForm({ next }: StepsProps) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} className="h-10" />
+                    <Input
+                      disabled={isPending}
+                      type="email"
+                      {...field}
+                      className="h-10"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,6 +222,7 @@ export default function SenderForm({ next }: StepsProps) {
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <PhoneInput
+                      disabled={isPending}
                       defaultCountry="NG"
                       international
                       className="flex h-10 w-full rounded-md border border-primary bg-transparent px-4 py-2 text-sm shadow-sm transition-colors  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 outline-none"
@@ -191,7 +241,7 @@ export default function SenderForm({ next }: StepsProps) {
               <FormItem>
                 <FormLabel>Address line 1</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10" />
+                  <Input disabled={isPending} {...field} className="h-10" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -206,7 +256,7 @@ export default function SenderForm({ next }: StepsProps) {
                   Address line 2 (add a landmark) - optional
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10" />
+                  <Input disabled={isPending} {...field} className="h-10" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -219,94 +269,66 @@ export default function SenderForm({ next }: StepsProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Country</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setCountryCode(value);
-                    }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Country.getAllCountries().map((country) => (
-                        <SelectItem value={country.isoCode}>
-                          {country.flag} {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setCountryCode(value!);
+                      }}
+                      options={countryOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="state"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>State</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={(value) => {
-                      field.onChange(value.split("-")[0]);
-                      setStateCode(value.split("-")[1]);
-                    }}
-                    defaultValue={sender ? getStateValue() : field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {State.getStatesOfCountry(countryCode!).map((state) => (
-                        <SelectItem value={`${state.name}-${state.isoCode}`}>
-                          {state.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={sender ? getStateValue() : field.value}
+                      onChange={(value) => {
+                        field.onChange(value?.split("-")[0]);
+                        setStateCode(value?.split("-")[1]);
+                      }}
+                      options={stateOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
-                  <Select
-                    // disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {City.getCitiesOfState(
-                        form.getValues("country"),
-                        stateCode!
-                      ).map((city) => (
-                        <SelectItem value={city.name}>{city.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={getCitiesOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               name="zip_code"
               control={form.control}
@@ -314,7 +336,7 @@ export default function SenderForm({ next }: StepsProps) {
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10" />
+                    <Input disabled={isPending} {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -323,6 +345,7 @@ export default function SenderForm({ next }: StepsProps) {
           </div>
           <div className="flex flex-col md:flex-row items-center gap-6 mt-12">
             <Button
+              disabled={isPending}
               type="button"
               size="lg"
               variant="destructive"
@@ -332,9 +355,12 @@ export default function SenderForm({ next }: StepsProps) {
               Clear All
             </Button>
 
-            <Button size="lg" className="px-12 w-full md:w-fit">
+            <SubmitButton
+              className="w-fit px-12"
+              isPending={creating || editing}
+            >
               Continue
-            </Button>
+            </SubmitButton>
           </div>
         </form>
       </Form>
