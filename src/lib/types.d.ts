@@ -128,3 +128,8 @@ type AuthSuccessType = {
     token_type: string;
   };
 };
+
+type StepsProps = {
+  next: () => void;
+  prev?: () => void;
+};

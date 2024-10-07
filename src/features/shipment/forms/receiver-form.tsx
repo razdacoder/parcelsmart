@@ -18,6 +18,7 @@ import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City, Country, State } from "country-state-city";
@@ -25,14 +26,52 @@ import { Search, XCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function ReceiverForm() {
+export default function RecieverForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
+  const { setReceiverValues, receiver, clearReceiverValues } =
+    useShipmentApplication();
   const [stateCode, setStateCode] = useState<string>();
+  const [countryCode, setCountryCode] = useState<string | null>(() => {
+    if (receiver?.country) {
+      return receiver.country;
+    }
+    return null;
+  });
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
+      first_name: receiver ? receiver.first_name : "",
+      last_name: receiver ? receiver.last_name : "",
+      email: receiver ? receiver.email : "",
+      phone_number: receiver ? receiver.phone_number : "",
+      line_1: receiver ? receiver.line_1 : "",
+      line_2: receiver ? receiver.line_2 : "",
+      country: receiver ? receiver.country : "",
+      state: receiver ? receiver.state : "",
+      city: receiver ? receiver.city : "",
+      zip_code: receiver ? receiver.zip_code : "",
+    },
+  });
+
+  function getStateValue(): string {
+    const state = State.getStatesOfCountry(receiver?.country).find(
+      (state) => state.name === receiver?.state
+    );
+    setStateCode(state?.isoCode);
+    return `${state?.name}-${state?.isoCode}`;
+  }
+
+  function onSubmit(values: AddressValues) {
+    setReceiverValues(values);
+    next();
+  }
+
+  function clearValues() {
+    clearReceiverValues();
+    form.reset({
       first_name: "",
       last_name: "",
       email: "",
@@ -43,8 +82,10 @@ export default function ReceiverForm() {
       state: "",
       city: "",
       zip_code: "",
-    },
-  });
+    });
+    setCountryCode(null);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between gap-8">
@@ -81,7 +122,7 @@ export default function ReceiverForm() {
       </div>
 
       <Form {...form}>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid md:grid-cols-2 gap-4">
             <FormField
               name="first_name"
@@ -180,7 +221,10 @@ export default function ReceiverForm() {
                   <FormLabel>Country</FormLabel>
                   <Select
                     // disabled={isPending}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setCountryCode(value);
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -213,7 +257,7 @@ export default function ReceiverForm() {
                       field.onChange(value.split("-")[0]);
                       setStateCode(value.split("-")[1]);
                     }}
-                    defaultValue={field.value}
+                    defaultValue={receiver ? getStateValue() : field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="h-10">
@@ -221,13 +265,11 @@ export default function ReceiverForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {State.getStatesOfCountry(form.getValues("country")).map(
-                        (state) => (
-                          <SelectItem value={`${state.name}-${state.isoCode}`}>
-                            {state.name}
-                          </SelectItem>
-                        )
-                      )}
+                      {State.getStatesOfCountry(countryCode!).map((state) => (
+                        <SelectItem value={`${state.name}-${state.isoCode}`}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -278,6 +320,30 @@ export default function ReceiverForm() {
                 </FormItem>
               )}
             />
+          </div>
+          <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
+            <Button
+              type="button"
+              onClick={() => prev?.()}
+              size="lg"
+              className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
+            >
+              Previous
+            </Button>
+
+            <Button
+              type="button"
+              size="lg"
+              onClick={clearValues}
+              variant="destructive"
+              className="bg-[#E74C3C33] text-destructive w-full md:w-fit shadow-none hover:bg-[#E74C3C33] hover:text-destructive/80 px-8"
+            >
+              Clear All
+            </Button>
+
+            <Button size="lg" className="px-12 w-full md:w-fit">
+              Continue
+            </Button>
           </div>
         </form>
       </Form>

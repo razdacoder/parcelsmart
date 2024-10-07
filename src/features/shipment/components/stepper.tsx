@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import CarrierForm from "../forms/carrier-form";
@@ -12,6 +11,7 @@ import { useReviewMode } from "../hooks/use-review-mode";
 export default function Stepper() {
   const [currentStep, setCurrentStep] = useState(0);
   const { setReviewMode, reviewMode } = useReviewMode();
+
   const steps = [
     "Sender",
     "Receiver",
@@ -21,7 +21,7 @@ export default function Stepper() {
     "Review",
   ];
 
-  const nextStep = () => {
+  const nextStep = async () => {
     setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
   };
 
@@ -69,8 +69,10 @@ export default function Stepper() {
 
       {/* Stepper Content */}
       <div className="">
-        {currentStep === 0 && <SenderForm />}
-        {currentStep === 1 && <ReceiverForm />}
+        {currentStep === 0 && <SenderForm next={() => nextStep()} />}
+        {currentStep === 1 && (
+          <ReceiverForm next={() => nextStep()} prev={() => prevStep()} />
+        )}
         {currentStep === 2 && <ItemsForm />}
         {currentStep === 3 && <CarrierForm />}
         {currentStep === 4 && <InsuranceForm />}
@@ -78,7 +80,7 @@ export default function Stepper() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
+      {/* <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
         {currentStep > 0 && (
           <Button
             size="lg"
@@ -108,21 +110,10 @@ export default function Stepper() {
           </Button>
         )}
 
-        <Button
-          size="lg"
-          onClick={() => {
-            if (currentStep === 4) {
-              setReviewMode(true);
-              nextStep();
-            } else {
-              nextStep();
-            }
-          }}
-          className="px-12 w-full md:w-fit"
-        >
+        <Button size="lg" onClick={nextStep} className="px-12 w-full md:w-fit">
           {reviewMode ? "Make Payment" : "Continue"}
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
