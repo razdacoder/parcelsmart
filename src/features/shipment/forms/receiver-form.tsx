@@ -11,16 +11,18 @@ import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { AddressBookSearch } from "@/components/address-book-search";
 import { PSelect } from "@/components/select";
 import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import useAddress from "@/features/address/api/useAddress";
 import useCreateAddress from "@/features/address/api/useCreateAddress";
 import useEditAddress from "@/features/address/api/useEditAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City, Country, State } from "country-state-city";
 import { Search, XCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
@@ -33,6 +35,8 @@ export default function RecieverForm({ next, prev }: StepsProps) {
   const { mutate: updateAddress, isPending: editing } = useEditAddress({
     id: receiver?.id,
   });
+  const [addressId, setAddressId] = useState<string>();
+
   const [stateCode, setStateCode] = useState<string | null>();
   const [countryCode, setCountryCode] = useState<string | null>(() => {
     if (receiver?.country) {
@@ -41,7 +45,8 @@ export default function RecieverForm({ next, prev }: StepsProps) {
     return null;
   });
 
-  const isPending = creating || editing;
+  const { refetch, isLoading } = useAddress({ id: addressId });
+  const isPending = creating || editing || isLoading;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -58,6 +63,30 @@ export default function RecieverForm({ next, prev }: StepsProps) {
       zip_code: receiver ? receiver.zip_code : "",
     },
   });
+
+  useEffect(() => {
+    const fetchNewAddress = async () => {
+      if (addressId) {
+        console.log(addressId);
+        const newQueryData = await refetch();
+        const newAddressData = newQueryData.data?.data;
+
+        if (newAddressData) {
+          // Reset the form with the new address data
+          form.reset(newAddressData);
+          setReceiverValues(newAddressData);
+          // Update country and state codes
+          setCountryCode(newAddressData.country);
+          const state = State.getStatesOfCountry(newAddressData.country).find(
+            (state) => state.name === newAddressData.state
+          );
+          setStateCode(state?.isoCode || null);
+        }
+      }
+    };
+
+    fetchNewAddress();
+  }, [addressId, refetch]);
 
   const countryOptions: Optiontype[] = Country.getAllCountries().map(
     (country) => ({
@@ -140,14 +169,11 @@ export default function RecieverForm({ next, prev }: StepsProps) {
         </button>
       </div>
 
-      <div className="relative">
-        <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-        <Input
-          className="ps-10 bg-[#F4FDF8] h-10"
-          type="text"
-          placeholder="Search from address book"
-        />
-      </div>
+      <AddressBookSearch
+        onChange={(value) => {
+          setAddressId(value);
+        }}
+      />
       <div className="space-y-1">
         <Label htmlFor="addresss">Address</Label>
         <div className="relative">
