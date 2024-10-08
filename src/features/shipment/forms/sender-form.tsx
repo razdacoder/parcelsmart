@@ -12,6 +12,7 @@ import { addressSchema, AddressValues } from "@/lib/schemas";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { AddressBookSearch } from "@/components/address-book-search";
 import { PSelect } from "@/components/select";
 import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
@@ -141,14 +142,7 @@ export default function SenderForm({ next }: StepsProps) {
         </button>
       </div>
 
-      <div className="relative">
-        <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-        <Input
-          className="ps-10 bg-[#F4FDF8] h-10"
-          type="text"
-          placeholder="Search from address book"
-        />
-      </div>
+      <AddressBookSearch onChange={() => {}} options={[]} />
       <div className="space-y-1">
         <Label htmlFor="addresss">Address</Label>
         <div className="relative">

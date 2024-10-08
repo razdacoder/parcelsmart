@@ -26,7 +26,7 @@ export const PSelect = ({
   return (
     <Select
       placeholder={placeholder}
-      className="text-sm h-10 dark:text-black shadow-sm border-input"
+      className="text-sm h-10 dark:text-black shadow-sm border-input rounded-md"
       theme={(theme) => ({
         ...theme,
         colors: {
@@ -37,6 +37,11 @@ export const PSelect = ({
       styles={{
         control: (base) => ({
           ...base,
+          borderRadius: "6px",
+        }),
+        indicatorSeparator: (base) => ({
+          ...base,
+          display: "none",
         }),
       }}
       value={formattedValue}
