@@ -34,8 +34,9 @@ export default function Stepper() {
   return (
     <div
       className={cn(
-        "w-full space-y-12",
-        reviewMode && "col-span-1 lg:col-span-3 p-16 overflow-y-auto"
+        "w-full space-y-12 p-4 md:p-8 bg-white max-w-6xl",
+        reviewMode && "col-span-1 lg:col-span-3 p-16 overflow-y-auto",
+        currentStep === 3 && "max-w-screen-2xl mx-auto"
       )}
     >
       {/* Stepper Navigation */}

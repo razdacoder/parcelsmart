@@ -1,4 +1,3 @@
-import dhlImage from "@/assets/dhl.png";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,17 +8,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatNaira } from "@/lib/utils";
-import { RefreshCw, XCircle } from "lucide-react";
+import { formatNaira, isLeastExpensiveRate } from "@/lib/utils";
+import { Loader, RefreshCw, XCircle } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDropOff } from "../hooks/use-drop-off";
+import useGetRates from "../api/getRates";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function CarrierForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  const { onOpen } = useDropOff();
-  const { clearAll } = useShipmentApplication();
-
+  // const { onOpen } = useDropOff();
+  const { clearAll, shipmentID } = useShipmentApplication();
+  const {
+    data,
+    isLoading: loading,
+    refetch,
+    isRefetching,
+  } = useGetRates({ shipment_id: shipmentID });
+  const [selectedCarrier, setSelectedCarrier] = useState<string | null>(null);
+  const isLoading = loading || isRefetching;
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
@@ -52,218 +59,97 @@ export default function CarrierForm({ next, prev }: StepsProps) {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Button className="gap-2 bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8]/80 hover:text-primary/90 shadow-none">
+        <Button
+          onClick={() => refetch()}
+          className="gap-2 bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8]/80 hover:text-primary/90 shadow-none"
+        >
           <RefreshCw className="text-primary size-4" />
           Refresh
         </Button>
       </div>
       <div>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="grid grid-cols-12 gap-8 w-full px-2">
-              <input
-                type="radio"
-                name="carrier"
-                className="hidden peer"
-                id="r1"
-              />
-              <div className="col-span-3 flex items-center gap-4">
-                <img
-                  src={dhlImage}
-                  alt="DHL Image"
-                  className="size-8 md:size-12"
-                />
-                <div className="flex flex-col gap-1">
-                  <h4 className="text-xs md:text-sm font-medium">
-                    DHL Express
-                  </h4>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    DOMESTIC
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-3 flex items-center">
-                <div className="hidden md:flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Delivery: Within 4 days
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-1 flex items-center justify-center">
-                <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                  Dropoff
-                </Badge>
-              </div>
-              <div className="col-span-3 flex items-center justify-center">
-                <h2 className="text-center text-base md:text-xl font-bold">
-                  {formatNaira(4407.69)}
-                </h2>
-              </div>
-
-              <Label
-                onClick={onOpen}
-                htmlFor="r1"
-                className="col-span-2 px-6 py-3 rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white"
-              >
-                Select
-              </Label>
-            </div>
-          </div>{" "}
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="grid grid-cols-12 gap-8 w-full px-2">
-              <input
-                type="radio"
-                name="carrier"
-                className="hidden peer"
-                id="r1"
-              />
-              <div className="col-span-3 flex items-center gap-4">
-                <img
-                  src={dhlImage}
-                  alt="DHL Image"
-                  className="size-8 md:size-12"
-                />
-                <div className="flex flex-col gap-1">
-                  <h4 className="text-xs md:text-sm font-medium">
-                    DHL Express
-                  </h4>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    DOMESTIC
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-3 flex items-center">
-                <div className="hidden md:flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Delivery: Within 4 days
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-1 flex items-center justify-center">
-                <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                  Dropoff
-                </Badge>
-              </div>
-              <div className="col-span-3 flex items-center justify-center">
-                <h2 className="text-center text-base md:text-xl font-bold">
-                  {formatNaira(4407.69)}
-                </h2>
-              </div>
-
-              <Label
-                onClick={onOpen}
-                htmlFor="r1"
-                className="col-span-2 px-6 py-3 rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white"
-              >
-                Select
-              </Label>
-            </div>
-          </div>{" "}
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="grid grid-cols-12 gap-8 w-full px-2">
-              <input
-                type="radio"
-                name="carrier"
-                className="hidden peer"
-                id="r1"
-              />
-              <div className="col-span-3 flex items-center gap-4">
-                <img
-                  src={dhlImage}
-                  alt="DHL Image"
-                  className="size-8 md:size-12"
-                />
-                <div className="flex flex-col gap-1">
-                  <h4 className="text-xs md:text-sm font-medium">
-                    DHL Express
-                  </h4>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    DOMESTIC
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-3 flex items-center">
-                <div className="hidden md:flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Delivery: Within 4 days
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-1 flex items-center justify-center">
-                <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                  Dropoff
-                </Badge>
-              </div>
-              <div className="col-span-3 flex items-center justify-center">
-                <h2 className="text-center text-base md:text-xl font-bold">
-                  {formatNaira(4407.69)}
-                </h2>
-              </div>
-
-              <Label
-                onClick={onOpen}
-                htmlFor="r1"
-                className="col-span-2 px-6 py-3 rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white"
-              >
-                Select
-              </Label>
-            </div>
-          </div>{" "}
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="grid grid-cols-12 gap-8 w-full px-2">
-              <input
-                type="radio"
-                name="carrier"
-                className="hidden peer"
-                id="r1"
-              />
-              <div className="col-span-3 flex items-center gap-4">
-                <img
-                  src={dhlImage}
-                  alt="DHL Image"
-                  className="size-8 md:size-12"
-                />
-                <div className="flex flex-col gap-1">
-                  <h4 className="text-xs md:text-sm font-medium">
-                    DHL Express
-                  </h4>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    DOMESTIC
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-3 flex items-center">
-                <div className="hidden md:flex flex-col gap-1">
-                  <h4 className="text-sm font-medium">Pickup: Within 2 days</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Delivery: Within 4 days
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-1 flex items-center justify-center">
-                <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                  Dropoff
-                </Badge>
-              </div>
-              <div className="col-span-3 flex items-center justify-center">
-                <h2 className="text-center text-base md:text-xl font-bold">
-                  {formatNaira(4407.69)}
-                </h2>
-              </div>
-
-              <Label
-                onClick={onOpen}
-                htmlFor="r1"
-                className="col-span-2 px-6 py-3 rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white"
-              >
-                Select
-              </Label>
-            </div>
+        {isLoading && (
+          <div className="flex justify-center items-center">
+            <Loader className="size-5 animate-spin text-primary" />
           </div>
-        </div>
+        )}
+        {data && !isLoading && (
+          <div className="space-y-2">
+            {data.data.map((rate) => {
+              const saveMoney = isLeastExpensiveRate(data.data, rate);
+              return (
+                <div
+                  key={rate.id}
+                  className="flex items-center space-x-2 w-full border-2 px-2 py-3 md:py-4 rounded-lg has-[:checked]:border-primary"
+                >
+                  <div className="grid grid-cols-12 gap-8 w-full px-2">
+                    <input
+                      type="radio"
+                      name="carrier"
+                      className="hidden peer"
+                      checked={selectedCarrier === rate.carrier_slug}
+                      value={rate.carrier_slug}
+                      onChange={(e) => setSelectedCarrier(e.target.value)}
+                      id={rate.carrier_slug}
+                    />
+                    <div className="col-span-3 flex items-center gap-4">
+                      <img
+                        src={rate.carrier_logo}
+                        alt="DHL Image"
+                        className="size-8 md:size-12"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <h4 className="text-xs md:text-sm font-medium">
+                          {rate.carrier_name}
+                        </h4>
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                          DOMESTIC
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-span-3 flex items-center">
+                      <div className="hidden md:flex flex-col gap-1">
+                        <h4 className="text-sm font-medium">
+                          Pickup: {rate.estimated_pickup_time}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">
+                          Delivery: {rate.estimated_delivery_time}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-span-4 flex items-center justify-center gap-2">
+                      {rate.dropoff_available && (
+                        <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
+                          Dropoff
+                        </Badge>
+                      )}
+                      {saveMoney && (
+                        <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8] hover:text-primary shadow-none">
+                          Save Money
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="col-span-1 flex items-center justify-center">
+                      <h2 className="text-center text-base md:text-lg font-bold">
+                        {formatNaira(rate.amount)}
+                      </h2>
+                    </div>
+
+                    <Label
+                      // onClick={onOpen}
+                      htmlFor={rate.carrier_slug}
+                      className="col-span-1 w-full flex items-center justify-center rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary"
+                    >
+                      {selectedCarrier === rate.carrier_slug
+                        ? "Selected"
+                        : "Select"}
+                    </Label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row items-center gap-6 mt-6">

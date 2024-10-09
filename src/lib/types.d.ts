@@ -181,3 +181,35 @@ type Parcel = {
   deleted_at: Date | null;
   items: Item[];
 };
+
+type ShipmentRate = {
+  platform_id: string;
+  platform: string;
+  amount: number;
+  platform_amount: number;
+  currency: string;
+  carrier_name: string;
+  carrier_logo: string;
+  carrier_slug: string;
+  carrier_reference: string;
+  estimated_delivery_date: Date;
+  estimated_delivery_eta: string;
+  estimated_delivery_time: string;
+  estimated_pickup_eta: string;
+  estimated_pickup_time: string;
+  dropoff_available: boolean;
+  dropoff_only: boolean;
+  dropoff_required: boolean;
+  origin_address: AddressBook;
+  destination_address: AddressBook;
+  return_address: AddressBook;
+  parcel: {
+    id: string;
+    total_weight: number;
+    parcel_items: Item[];
+  };
+  user_id: string;
+  id: string;
+  updated_at: Date;
+  created_at: Date;
+};

@@ -14,7 +14,7 @@ export default function BookShipment() {
     >
       <div
         className={cn(
-          "bg-white max-w-6xl w-full p-4 md:p-8 min-h-[60vh]",
+          " w-full  min-h-[60vh]",
           reviewMode && "w-full max-w-full grid lg:grid-cols-5 md:p-0 relative"
         )}
       >

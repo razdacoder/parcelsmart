@@ -30,3 +30,18 @@ export const getInitials = (
       .toUpperCase()}` || ""
   );
 };
+
+export function isLeastExpensiveRate(
+  rates: ShipmentRate[],
+  rateToCheck: ShipmentRate
+): boolean {
+  if (rates.length === 0) return false;
+
+  const leastExpensiveRate = rates.reduce((leastExpensive, currentRate) => {
+    return currentRate.amount < leastExpensive.amount
+      ? currentRate
+      : leastExpensive;
+  });
+
+  return leastExpensiveRate === rateToCheck;
+}
