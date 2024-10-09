@@ -138,3 +138,46 @@ type Optiontype = {
   label: string;
   value: string;
 };
+
+type Packaging = {
+  height: string;
+  length: string;
+  name: string;
+  size_unit: string;
+  type: string;
+  weight: string;
+  weight_unit: string;
+  width: string;
+  packaging_id: string;
+};
+
+type Item = {
+  id: string;
+  parcel_id: string;
+  name: string;
+  description: string;
+  currency: string;
+  quantity: number;
+  value: number;
+  weight: number;
+  hs_code: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
+
+type Parcel = {
+  id: string;
+  user_id: string;
+  description: string;
+  packaging_id: string;
+  weight_unit: string;
+  proof_of_payments: string[];
+  platform: string;
+  platform_id: string;
+  metadata: null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  items: Item[];
+};

@@ -33,36 +33,58 @@ import { useForm } from "react-hook-form";
 import useHSCodeCategories from "../api/useHSCodeCategories";
 import useHSCodes from "../api/useHSCodes";
 import useHSCodesChapters from "../api/useHSCodesChapters";
-import { useNewItemModal } from "../hooks/use-new-item-modal";
+import { useEditItemModal } from "../hooks/use-edit-item-modal";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function NewItemModal() {
-  const { isOpen, onClose, parcel_id } = useNewItemModal();
-  const [itemType, setItemType] = useState<"items" | "documents">("items");
-  const { addItem } = useShipmentApplication();
+export default function EditItemModal() {
+  const { isOpen, onClose, parcel_id, item_id } = useEditItemModal();
+  const { editItem, parcels } = useShipmentApplication();
+  const item = parcels?.[parcel_id!]?.items?.[item_id!];
+  const [itemType, setItemType] = useState<"items" | "documents">(
+    item?.itemType || "items"
+  );
+
   const { data: chapterCodes, isLoading: chapterLoading } =
     useHSCodesChapters();
-  const [chapterId, setChapterId] = useState<string>();
-  const [categoryId, setCategoryId] = useState<string>();
+
+  const [chapterId, setChapterId] = useState<string | undefined>(() => {
+    if (item.itemType === "items") {
+      return item.category;
+    }
+    return undefined;
+  });
+  const [categoryId, setCategoryId] = useState<string | undefined>(() => {
+    if (item.itemType === "items") {
+      return item.subCategory;
+    }
+    return undefined;
+  });
   const { data: subCategories, isLoading: categoryLoading } =
     useHSCodeCategories({
       chapter_id: chapterId,
     });
+
   const { data: hs_codes, isLoading: codesLoading } = useHSCodes({
     category_id: categoryId,
   });
+
   const form = useForm<ItemValues>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
-      itemType: itemType,
-      value: 0,
-      weight: 1,
-      quantity: 1,
+      itemType: item?.itemType,
+      name: item?.itemType === "items" ? item?.name : undefined,
+      value: item?.itemType === "items" ? item?.value : undefined,
+      category: item?.itemType === "items" ? item?.category : undefined,
+      subCategory: item?.itemType === "items" ? item?.subCategory : undefined,
+      description: item?.itemType === "items" ? undefined : item?.description,
+      weight: item?.weight,
+      quantity: item?.quantity,
+      hsCode: item?.itemType === "items" ? item?.hsCode : undefined,
     },
   });
 
   function onSubmit(values: ItemValues) {
-    addItem(parcel_id!, values);
+    editItem(parcel_id!, item_id!, values);
     onClose();
   }
 
@@ -75,7 +97,7 @@ export default function NewItemModal() {
         </DialogClose>
         <DialogHeader className="relative justify-center items-center bg-[#F4FDF8] py-4 md:py-8 gap-2 md:gap-4">
           <DialogTitle className="text-2xl md:text-3xl font-medium text-text">
-            Add Items
+            Edit Item
           </DialogTitle>
           <DialogDescription className="hidden md:flex flex-col md:flex-row items-center gap-2 bg-white p-2 text-xs rounded-md text-muted-foreground">
             <TriangleAlert className="fill-yellow-500 stroke-white" />

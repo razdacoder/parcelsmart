@@ -148,10 +148,10 @@ export const itemSchema = z.discriminatedUnion("itemType", [
 export type ItemValues = z.infer<typeof itemSchema>;
 
 export const parcelSchema = z.object({
-  packaging: z.enum(["default", "More"]),
+  packaging: z.string({ message: "This field is required" }).trim(),
   currency: z.enum(["NGN", "USD", "GBP"]),
-  proofOfResidence: z.instanceof(File, { message: "This field is required" }),
-  proofOfWeight: z.instanceof(File, { message: "This field is required" }),
+  proofOfPayment: z.array(z.string().url()),
+  proofOfWeight: z.array(z.string().url()),
   items: z.array(itemSchema),
 });
 

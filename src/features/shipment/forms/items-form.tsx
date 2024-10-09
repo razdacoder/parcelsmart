@@ -7,9 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { parcelListSchema, ParcelListValues } from "@/lib/schemas";
 import { formatNaira } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Edit,
   Eye,
@@ -21,49 +19,58 @@ import {
   Upload,
   XCircle,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useGetPackaging from "../api/useGetPackaging";
+import { useEditItemModal } from "../hooks/use-edit-item-modal";
 import { useNewItemModal } from "../hooks/use-new-item-modal";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function ItemsForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useNewItemModal();
-  const { clearAll } = useShipmentApplication();
+  const { onOpen: openEdit } = useEditItemModal();
+  const {
+    clearAll,
+    parcels,
+    updateParcel,
+    deleteProofOfPayment,
+    deleteProofOfWeight,
+  } = useShipmentApplication();
+  const { data, isLoading } = useGetPackaging();
 
-  const { register, getValues } = useForm<ParcelListValues>({
-    resolver: zodResolver(parcelListSchema),
-    defaultValues: {
-      parcels: [
-        {
-          packaging: "default",
-          currency: "NGN",
-          items: [
-            {
-              itemType: "items",
-              name: "HP Laptop",
-              category: "Electronics",
-              subCategory: "",
-              hsCode: "888",
-              weight: 25,
-              quantity: 3,
-              value: 900000,
-            },
-            {
-              itemType: "items",
-              name: "Lenovo Laptop",
-              category: "Electronics",
-              subCategory: "",
-              hsCode: "888",
-              weight: 25,
-              quantity: 3,
-              value: 900000,
-            },
-          ],
-        },
-      ],
-    },
-  });
+  // const { register, getValues } = useForm<ParcelListValues>({
+  //   resolver: zodResolver(parcelListSchema),
+  //   defaultValues: {
+  //     parcels: [
+  //       {
+  //         packaging: "",
+  //         currency: "NGN",
+  //         items: [
+  //           {
+  //             itemType: "items",
+  //             name: "HP Laptop",
+  //             category: "Electronics",
+  //             subCategory: "",
+  //             hsCode: "888",
+  //             weight: 25,
+  //             quantity: 3,
+  //             value: 900000,
+  //           },
+  //           {
+  //             itemType: "items",
+  //             name: "Lenovo Laptop",
+  //             category: "Electronics",
+  //             subCategory: "",
+  //             hsCode: "888",
+  //             weight: 25,
+  //             quantity: 3,
+  //             value: 900000,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // });
 
   return (
     <div className="space-y-6">
@@ -84,7 +91,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
           <XCircle className="size-6" />
         </button>
       </div>
-      {getValues("parcels").map((_, index) => (
+      {parcels.map((parcel, index) => (
         <div key={`percel-${index}`} className="flex flex-col bg-[#F4FDF8]">
           <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -96,7 +103,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
               </h3>
             </div>
             <Button
-              onClick={onOpen}
+              onClick={() => onOpen(index)}
               className="gap-2 text-primary text-sm"
               variant="secondary"
             >
@@ -110,16 +117,21 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                 <div className="space-y-1">
                   <Label htmlFor="packaging">Select Packaging</Label>
                   <Select
-                    defaultValue="packaging"
-                    {...register(`parcels.${index}.packaging`)}
+                    disabled={isLoading}
+                    defaultValue={parcels[index].packaging}
+                    onValueChange={(value) =>
+                      updateParcel(index, value, undefined)
+                    }
                   >
                     <SelectTrigger id="packaging" className="h-10">
-                      <SelectValue />
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="default">
-                        Parcelsmart Default Standard
-                      </SelectItem>
+                      {data?.data.packaging.map((packaging) => (
+                        <SelectItem value={packaging.packaging_id}>
+                          {packaging.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -128,10 +140,16 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                   <Label htmlFor="packaging">Select Currency</Label>
                   <Select
                     defaultValue="NGN"
-                    {...register(`parcels.${index}.currency`)}
+                    onValueChange={(value) =>
+                      updateParcel(
+                        index,
+                        undefined,
+                        value as "NGN" | "USD" | "GBP"
+                      )
+                    }
                   >
                     <SelectTrigger id="packaging" className="h-10">
-                      <SelectValue />
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="NGN">Nigeria Naira (N)</SelectItem>
@@ -140,7 +158,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                   </Select>
                 </div>
               </div>
-              {getValues(`parcels.${index}.items`).map((item, item_index) => (
+              {parcel.items.map((item, item_index) => (
                 <div
                   key={`parcel-${index}-item-${item_index}`}
                   className="bg-white p-4 rounded-lg"
@@ -157,7 +175,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                       {item.itemType === "items" && formatNaira(item.value)}
                     </span>
                     <div className="col-span-4 md:col-span-2 flex justify-end items-center gap-2">
-                      <button>
+                      <button onClick={() => openEdit(index, item_index)}>
                         <Edit className="size-4 text-primary" />
                       </button>
                       <button>
@@ -178,25 +196,38 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                 Click to upload Proof of Purchase
               </h3>
             </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="px-6 text-primary h-10"
+            >
+              Upload
+            </Button>
           </div>
-          <div className="p-4">
-            <div className="p-4 bg-white rounded-lg flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <File className="text-blue-500" />
-                <div className="flex flex-col text-xs ">
-                  <h6 className="font-semibold text-text">Proof of Purchase</h6>
-                  <p className="text-muted-foreground">50kb</p>
+          <div className="p-4 space-y-2">
+            {parcel.proofOfPayment.map((proof, proof_index) => (
+              <div className="p-4 bg-white rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <File className="text-blue-500" />
+                  <div className="flex flex-col text-xs ">
+                    <h6 className="font-semibold text-text">
+                      Proof of Purchase {index + 1}
+                    </h6>
+                    <p className="text-muted-foreground">50kb</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link to={proof}>
+                    <Eye className="size-4 text-primary" />
+                  </Link>
+                  <button
+                    onClick={() => deleteProofOfPayment(index, proof_index)}
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button>
-                  <Eye className="size-4 text-primary" />
-                </button>
-                <button>
-                  <Trash2 className="size-4 text-destructive" />
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
           <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -208,27 +239,38 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                 measuring tape
               </h3>
             </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="px-6 text-primary h-10"
+            >
+              Upload
+            </Button>
           </div>
-          <div className="p-4">
-            <div className="p-4 bg-white rounded-lg flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <File className="text-blue-500" />
-                <div className="flex flex-col text-xs ">
-                  <h6 className="font-semibold text-text">
-                    Reconciliation document
-                  </h6>
-                  <p className="text-muted-foreground">50kb</p>
+          <div className="p-4 space-y-2">
+            {parcel.proofOfWeight.map((proof, proof_index) => (
+              <div className="p-4 bg-white rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <File className="text-blue-500" />
+                  <div className="flex flex-col text-xs ">
+                    <h6 className="font-semibold text-text">
+                      Reconciliation document {index + 1}
+                    </h6>
+                    <p className="text-muted-foreground">50kb</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link to={proof}>
+                    <Eye className="size-4 text-primary" />
+                  </Link>
+                  <button
+                    onClick={() => deleteProofOfWeight(index, proof_index)}
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button>
-                  <Eye className="size-4 text-primary" />
-                </button>
-                <button>
-                  <Trash2 className="size-4 text-destructive" />
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       ))}
