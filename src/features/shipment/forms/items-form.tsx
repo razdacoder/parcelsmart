@@ -12,6 +12,7 @@ import {
   Edit,
   Eye,
   File,
+  Loader,
   Package,
   PackagePlus,
   Plus,
@@ -20,6 +21,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import useCreateParcel, { ParcelRequestType } from "../api/useCreateParcel";
+import useCreateShipment from "../api/useCreateShipment";
 import useGetPackaging from "../api/useGetPackaging";
 import { useEditItemModal } from "../hooks/use-edit-item-modal";
 import { useNewItemModal } from "../hooks/use-new-item-modal";
@@ -30,47 +33,75 @@ export default function ItemsForm({ next, prev }: StepsProps) {
   const { onOpen } = useNewItemModal();
   const { onOpen: openEdit } = useEditItemModal();
   const {
+    sender,
+    receiver,
     clearAll,
     parcels,
     updateParcel,
     deleteProofOfPayment,
     deleteProofOfWeight,
+    // addParcelId,
+    parcels_id,
+    setShipmentID,
   } = useShipmentApplication();
-  const { data, isLoading } = useGetPackaging();
 
-  // const { register, getValues } = useForm<ParcelListValues>({
-  //   resolver: zodResolver(parcelListSchema),
-  //   defaultValues: {
-  //     parcels: [
-  //       {
-  //         packaging: "",
-  //         currency: "NGN",
-  //         items: [
-  //           {
-  //             itemType: "items",
-  //             name: "HP Laptop",
-  //             category: "Electronics",
-  //             subCategory: "",
-  //             hsCode: "888",
-  //             weight: 25,
-  //             quantity: 3,
-  //             value: 900000,
-  //           },
-  //           {
-  //             itemType: "items",
-  //             name: "Lenovo Laptop",
-  //             category: "Electronics",
-  //             subCategory: "",
-  //             hsCode: "888",
-  //             weight: 25,
-  //             quantity: 3,
-  //             value: 900000,
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // });
+  const { data, isLoading } = useGetPackaging();
+  const { mutate: createParcel, isPending: creating } = useCreateParcel();
+  const { mutate: createShipment, isPending: creatingShipment } =
+    useCreateShipment();
+
+  const isPending = creating || creatingShipment;
+  const isCreating = creating || creatingShipment;
+
+  async function onSubmit() {
+    const parcelIds: string[] = [];
+
+    const parcelRequests = parcels.map((parcel, index) => {
+      const values: ParcelRequestType = {
+        description: `Parcel ${index + 1}`,
+        packaging_id: parcel.packaging,
+        weight_unit: "kg",
+        items: parcel.items.map((item) => ({
+          description: `${item.name} description`,
+          name: item.name,
+          quantity: item.quantity,
+          value: item.itemType === "items" ? item.value : 1000000, // Decide by Company
+          hs_code: item.itemType === "items" ? item.hsCode : "49011000", // Decide Later
+          weight: item.weight,
+          currency: parcel.currency,
+        })),
+      };
+
+      // Return a promise for each parcel creation request
+      return new Promise<void>((resolve) => {
+        createParcel(values, {
+          onSuccess: (data) => {
+            parcelIds.push(data.data.id);
+            resolve();
+          },
+        });
+      });
+    });
+
+    // Wait for all parcel creation promises to resolve
+    await Promise.all(parcelRequests);
+
+    // Now, create the shipment with all parcel IDs
+    createShipment(
+      {
+        origin_address_id: sender?.id!,
+        destination_address_id: receiver?.id!,
+        parcel_id: parcelIds.at(0)!, // Should be populated at this point
+        purpose: "personal",
+      },
+      {
+        onSuccess: (data) => {
+          setShipmentID(data.data.id);
+          next();
+        },
+      }
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -117,7 +148,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                 <div className="space-y-1">
                   <Label htmlFor="packaging">Select Packaging</Label>
                   <Select
-                    disabled={isLoading}
+                    disabled={isLoading || isPending}
                     defaultValue={parcels[index].packaging}
                     onValueChange={(value) =>
                       updateParcel(index, value, undefined)
@@ -140,6 +171,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                   <Label htmlFor="packaging">Select Currency</Label>
                   <Select
                     defaultValue="NGN"
+                    disabled={isPending}
                     onValueChange={(value) =>
                       updateParcel(
                         index,
@@ -197,6 +229,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
               </h3>
             </div>
             <Button
+              disabled={isPending}
               size="sm"
               variant="secondary"
               className="px-6 text-primary h-10"
@@ -221,6 +254,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                     <Eye className="size-4 text-primary" />
                   </Link>
                   <button
+                    disabled={isPending}
                     onClick={() => deleteProofOfPayment(index, proof_index)}
                   >
                     <Trash2 className="size-4 text-destructive" />
@@ -264,6 +298,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                     <Eye className="size-4 text-primary" />
                   </Link>
                   <button
+                    disabled={isPending}
                     onClick={() => deleteProofOfWeight(index, proof_index)}
                   >
                     <Trash2 className="size-4 text-destructive" />
@@ -275,6 +310,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
         </div>
       ))}
       <Button
+        disabled={isPending}
         className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
         size="lg"
       >
@@ -287,6 +323,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
       <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
         <Button
           type="button"
+          disabled={isPending}
           onClick={() => prev?.()}
           size="lg"
           className="bg-[#E2FAEC] text-primary shadow-none w-full md:w-fit hover:bg-[#E2FAEC]/80 hover:text-primary/80 px-12"
@@ -295,11 +332,12 @@ export default function ItemsForm({ next, prev }: StepsProps) {
         </Button>
 
         <Button
-          onClick={() => next()}
+          onClick={() => onSubmit()}
+          disabled={isPending}
           size="lg"
           className="px-12 w-full md:w-fit"
         >
-          Continue
+          {isCreating ? <Loader className="size-5 animate-spin" /> : "Continue"}
         </Button>
       </div>
     </div>

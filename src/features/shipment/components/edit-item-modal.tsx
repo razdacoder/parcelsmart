@@ -48,13 +48,13 @@ export default function EditItemModal() {
     useHSCodesChapters();
 
   const [chapterId, setChapterId] = useState<string | undefined>(() => {
-    if (item.itemType === "items") {
+    if (item?.itemType === "items") {
       return item.category;
     }
     return undefined;
   });
   const [categoryId, setCategoryId] = useState<string | undefined>(() => {
-    if (item.itemType === "items") {
+    if (item?.itemType === "items") {
       return item.subCategory;
     }
     return undefined;

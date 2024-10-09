@@ -29,6 +29,11 @@ type ShipmentApplicationState = {
   deleteProofOfPayment: (parcel_index: number, item_index: number) => void;
   addProofOfWeight: (parcel_index: number, value: string) => void;
   deleteProofOfWeight: (parcel_index: number, item_index: number) => void;
+  parcels_id: string[];
+  addParcelId: (value: string) => void;
+  deleteParcelId: (value: string) => void;
+  shipmentID?: string;
+  setShipmentID: (value: string) => void;
 };
 
 export const useShipmentApplication = create(
@@ -169,6 +174,21 @@ export const useShipmentApplication = create(
           updatedParcels[parcel_index] = updatedParcel;
           return { parcels: updatedParcels };
         }),
+
+      parcels_id: [],
+      addParcelId: (value) =>
+        set((state) => {
+          const updatedParcelIds = [...state.parcels_id, value];
+          return { parcels_id: updatedParcelIds };
+        }),
+      deleteParcelId: (value) =>
+        set((state) => {
+          const parcelIds = [...state.parcels_id];
+          const updatedParcelIds = parcelIds.filter((id) => id !== value);
+          return { parcels_id: updatedParcelIds };
+        }),
+      shipmentID: undefined,
+      setShipmentID: (value: string) => set({ shipmentID: value }),
       clearAll: () =>
         set({
           sender: undefined,
