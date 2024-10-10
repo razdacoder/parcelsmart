@@ -1,23 +1,23 @@
 import AppNavBar from "@/components/app-navbar";
+import Paginator from "@/components/paginator";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import useTransactions from "@/features/wallet/api/useTransactions";
+import useWallet from "@/features/wallet/api/useWallet";
 import { columns } from "@/features/wallet/columns";
 import { DataTable } from "@/features/wallet/components/data-table";
-import { transactions } from "@/lib/demo";
 import { formatNaira } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
 export default function Wallet() {
+  const { data } = useWallet();
+  const {
+    data: transactions,
+    isLoading,
+    isError,
+  } = useTransactions({ page: 1, limit: 10 });
   return (
     <div className="flex flex-col gap-6 w-full overflow-hidden">
       <AppNavBar title="Wallet" />
@@ -26,9 +26,11 @@ export default function Wallet() {
           <div className="w-full lg:w-1/3 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
-              <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
-                {formatNaira(100000)}
-              </h1>
+              {data && (
+                <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
+                  {formatNaira(parseFloat(data?.data[0].balance!))}
+                </h1>
+              )}
             </div>
             <Button className="items-center gap-2 rounded-lg" size="sm">
               Top up <ArrowRight className="size-4" />
@@ -118,39 +120,56 @@ export default function Wallet() {
               </div>
             </div>
             <div>
-              <DataTable columns={columns} data={transactions} />
-            </div>
+              {isLoading && (
+                <div className="w-full space-y-4">
+                  <div className="grid grid-cols-3 space-x-6">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>{" "}
+                  <div className="grid grid-cols-3 space-x-6">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>{" "}
+                  <div className="grid grid-cols-3 space-x-6">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>{" "}
+                  <div className="grid grid-cols-3 space-x-6">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>{" "}
+                  <div className="grid grid-cols-3 space-x-6">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>
+                </div>
+              )}
+              {transactions && (
+                <>
+                  <div>
+                    <DataTable
+                      columns={columns}
+                      data={transactions.data.transactions}
+                    />
+                  </div>
 
-            <Pagination className="md:justify-end mt-8">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    className="text-primary hover:text-primary"
-                  />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    className="text-primary hover:text-primary"
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  <Paginator pagination={transactions.data.pagination} />
+                </>
+              )}
+
+              {isError && (
+                <div className="flex justify-center items-center py-24">
+                  <p className="text-sm font-medium text-destructive">
+                    Failed to load addresses
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

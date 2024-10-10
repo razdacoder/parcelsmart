@@ -6,17 +6,17 @@ import { toast } from "sonner";
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    accessorKey: "date",
+    accessorKey: "created_at",
     header: "Date",
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-4 w-56">
-          {row.original.type === "inflow" ? (
+          {row.original.type === "credit" ? (
             <MoveUp className="size-5 text-primary" />
           ) : (
             <MoveDown className="size-5 text-destructive" />
           )}
-          <span>{format(row.original.date, "d MMM, hh.mm a")}</span>
+          <span>{format(row.original.created_at, "d MMM, hh.mm a")}</span>
         </div>
       );
     },
@@ -61,10 +61,10 @@ export const columns: ColumnDef<Transaction>[] = [
         <span
           className={cn(
             "w-full inline-block text-right",
-            row.original.type === "inflow" ? "text-primary" : "text-destructive"
+            row.original.type === "credit" ? "text-primary" : "text-destructive"
           )}
         >
-          {formatNaira(row.original.amount)}
+          {formatNaira(parseFloat(row.original.amount))}
         </span>
       );
     },

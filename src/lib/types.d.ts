@@ -14,14 +14,6 @@ interface ErrorResponseType {
   message: string;
 }
 
-type Transaction = {
-  date: Date;
-  type: "inflow" | "outflow";
-  description: string;
-  reference: string;
-  amount: number;
-};
-
 type Address = {
   date: Date;
   name: string;
@@ -212,4 +204,43 @@ type ShipmentRate = {
   id: string;
   updated_at: Date;
   created_at: Date;
+};
+
+type Wallet = {
+  id: string;
+  user_id: string;
+  balance: string;
+  pending_balance: string;
+  currency: string;
+  default: boolean;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
+
+type Transaction = {
+  id: string;
+  user_id: string;
+  wallet_id: string;
+  amount: string;
+  amount_received: string;
+  type: "credit" | "debit";
+  status: string;
+  description: string;
+  reference: string;
+  tx_ref: string;
+  metadata: string;
+  channel: string;
+  platform: string;
+  fee: string;
+  currency: string;
+  channel_reference: string;
+  channel_response: string;
+  wallet_balance: string;
+  wallet_before_balance: string;
+  wallet_after_balance: string;
+  reversed: boolean;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
 };
