@@ -8,6 +8,7 @@ import useTransactions from "@/features/wallet/api/useTransactions";
 import useWallet from "@/features/wallet/api/useWallet";
 import { columns } from "@/features/wallet/columns";
 import { DataTable } from "@/features/wallet/components/data-table";
+import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
 import { formatNaira } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -18,6 +19,7 @@ export default function Wallet() {
     isLoading,
     isError,
   } = useTransactions({ page: 1, limit: 10 });
+  const { onOpen } = useTopUpModal();
   return (
     <div className="flex flex-col gap-6 w-full overflow-hidden">
       <AppNavBar title="Wallet" />
@@ -32,7 +34,11 @@ export default function Wallet() {
                 </h1>
               )}
             </div>
-            <Button className="items-center gap-2 rounded-lg" size="sm">
+            <Button
+              onClick={() => onOpen(data?.data[0].id!)}
+              className="items-center gap-2 rounded-lg"
+              size="sm"
+            >
               Top up <ArrowRight className="size-4" />
             </Button>
           </div>

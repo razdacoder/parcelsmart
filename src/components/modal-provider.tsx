@@ -8,6 +8,7 @@ import EditItemModal from "@/features/shipment/components/edit-item-modal";
 import NewItemModal from "@/features/shipment/components/new-item-modal";
 import ShipmentDetailModal from "@/features/shipment/components/shipment-detail-modal";
 import TrackModal from "@/features/track/components/track-modal";
+import TopUpModal from "@/features/wallet/components/top-up-modal";
 import TransactionDetailModal from "@/features/wallet/components/transaction-detail-modal";
 import { useMountedState } from "react-use";
 export default function ModalProvider() {
@@ -27,6 +28,7 @@ export default function ModalProvider() {
       <TrackModal />
       <EditAddressModal />
       <EditItemModal />
+      <TopUpModal />
     </>
   );
 }
