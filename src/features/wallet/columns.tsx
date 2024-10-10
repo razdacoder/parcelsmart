@@ -12,9 +12,9 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex items-center gap-4 w-56">
           {row.original.type === "credit" ? (
-            <MoveUp className="size-5 text-primary" />
+            <MoveDown className="size-5 text-primary" />
           ) : (
-            <MoveDown className="size-5 text-destructive" />
+            <MoveUp className="size-5 text-destructive" />
           )}
           <span>{format(row.original.created_at, "d MMM, hh.mm a")}</span>
         </div>
@@ -26,7 +26,9 @@ export const columns: ColumnDef<Transaction>[] = [
     header: "Description",
     cell: ({ row }) => {
       return (
-        <span className="inline-block w-36">{row.original.description}</span>
+        <span className="inline-block w-48 truncate">
+          {row.original.description}
+        </span>
       );
     },
   },

@@ -14,15 +14,17 @@ type ResponseType = {
 export default function useTransactions({
   page,
   limit,
+  type,
 }: {
   page?: number;
   limit?: number;
+  type: string | null;
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
-    queryKey: ["transactions"],
+    queryKey: ["transactions", page, limit, type],
     queryFn: async () => {
       const response = await client.get("/transactions", {
-        params: { page, limit },
+        params: { page, limit, type },
       });
       return response.data;
     },

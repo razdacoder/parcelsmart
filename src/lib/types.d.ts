@@ -244,3 +244,21 @@ type Transaction = {
   updated_at: Date;
   deleted_at: Date | null;
 };
+
+type VirtualAccount = {
+  id: string;
+  user_id: string;
+  account_number: string;
+  account_name: string;
+  bank_code: string;
+  bank_name: string;
+  status: string;
+  default: boolean;
+  platform: string;
+  platform_id: string;
+  platform_customer_code: string;
+  currency: string;
+  deleted_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+};

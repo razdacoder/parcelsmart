@@ -4,22 +4,42 @@ import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import useTransactionMetrics from "@/features/wallet/api/useTransactionMetrics";
 import useTransactions from "@/features/wallet/api/useTransactions";
 import useWallet from "@/features/wallet/api/useWallet";
 import { columns } from "@/features/wallet/columns";
 import { DataTable } from "@/features/wallet/components/data-table";
 import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
-import { formatNaira } from "@/lib/utils";
+import { cn, formatNaira } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 export default function Wallet() {
-  const { data } = useWallet();
+  const { data, isLoading: walletLoading } = useWallet();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const currentFilter = searchParams.get("type");
   const {
     data: transactions,
     isLoading,
     isError,
-  } = useTransactions({ page: 1, limit: 10 });
+  } = useTransactions({ page: currentPage, limit: 15, type: currentFilter });
+  const { data: metrics, isLoading: metricsLoading } = useTransactionMetrics();
   const { onOpen } = useTopUpModal();
+
+  const handleFilterClick = (filter: string | null) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    // Update the 'filter' parameter or remove it if filter is null
+    if (filter) {
+      newSearchParams.set("type", filter);
+    } else {
+      newSearchParams.delete("type");
+    }
+
+    // Update the URL with the new search parameters
+    setSearchParams(newSearchParams);
+  };
   return (
     <div className="flex flex-col gap-6 w-full overflow-hidden">
       <AppNavBar title="Wallet" />
@@ -28,6 +48,11 @@ export default function Wallet() {
           <div className="w-full lg:w-1/3 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
+              {walletLoading && (
+                <div className="w-full">
+                  <Skeleton className="h-8 w-full bg-gray-600" />
+                </div>
+              )}
               {data && (
                 <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
                   {formatNaira(parseFloat(data?.data[0].balance!))}
@@ -36,8 +61,7 @@ export default function Wallet() {
             </div>
             <Button
               onClick={() => onOpen(data?.data[0].id!)}
-              className="items-center gap-2 rounded-lg"
-              size="sm"
+              className="items-center gap-2 rounded-lg font-medium"
             >
               Top up <ArrowRight className="size-4" />
             </Button>
@@ -60,7 +84,14 @@ export default function Wallet() {
 
               <div className="space-y-1">
                 <h6 className="text-xs font-medium">Total Inflow</h6>
-                <h3 className="text-lg font-bold">89</h3>
+                {metricsLoading && (
+                  <Skeleton className="h-8 w-full bg-gray-200" />
+                )}
+                {metrics && (
+                  <h3 className="text-lg font-bold">
+                    {formatNaira(metrics.data.credit)}
+                  </h3>
+                )}
               </div>
             </div>
             <div className="bg-white p-4 flex items-center gap-4 text-text rounded-xl">
@@ -86,7 +117,14 @@ export default function Wallet() {
 
               <div className="space-y-1">
                 <h6 className="text-xs font-medium">Total Outflow</h6>
-                <h3 className="text-lg font-bold">14</h3>
+                {metricsLoading && (
+                  <Skeleton className="h-8 w-full bg-gray-200" />
+                )}
+                {metrics && (
+                  <h3 className="text-lg font-bold">
+                    {formatNaira(metrics.data.debit)}
+                  </h3>
+                )}
               </div>
             </div>
           </div>
@@ -99,20 +137,35 @@ export default function Wallet() {
             <div className="flex flex-col lg:flex-row md:justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <Button
+                  onClick={() => handleFilterClick(null)}
                   size="sm"
-                  className="px-8 h-9 bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary font-semibold"
+                  className={cn(
+                    "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                    !currentFilter &&
+                      "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+                  )}
                 >
                   All
                 </Button>
                 <Button
+                  onClick={() => handleFilterClick("credit")}
                   size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
+                  className={cn(
+                    "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                    currentFilter === "credit" &&
+                      "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+                  )}
                 >
                   Inflow
                 </Button>
                 <Button
+                  onClick={() => handleFilterClick("debit")}
                   size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
+                  className={cn(
+                    "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                    currentFilter === "debit" &&
+                      "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+                  )}
                 >
                   Outflow
                 </Button>

@@ -6,13 +6,15 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatNaira } from "@/lib/utils";
-import { Copy, X } from "lucide-react";
-import { toast } from "sonner";
+import { copyText, formatNaira } from "@/lib/utils";
+import { format } from "date-fns";
+import { Copy, Loader, X } from "lucide-react";
+import useTransactionDetail from "../api/useTransactionDetail";
 import { useTransactionDetailModal } from "../hooks/use-transaction-details";
 
 export default function TransactionDetailModal() {
-  const { isOpen, onClose } = useTransactionDetailModal();
+  const { isOpen, onClose, id } = useTransactionDetailModal();
+  const { data, isLoading } = useTransactionDetail({ id });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -27,44 +29,50 @@ export default function TransactionDetailModal() {
           </DialogTitle>
         </DialogHeader>
         <div className="px-12 py-8 space-y-4">
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Date</span>
-            <span>29/09/2024</span>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Time</span>
-            <span>11:00:22 PM</span>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Transaction</span>
-            <span>Fund</span>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Amount</span>
-            <span>{formatNaira(5000)}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Status</span>
-            <span>Successful</span>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">Reference</span>
-            <div className="flex items-center gap-2 ">
-              <span>#576576576565</span>
-              <button
-                onClick={() => {
-                  window.navigator.clipboard.writeText("#65657657676");
-                  toast.success("Copied to clipboard");
-                }}
-              >
-                <Copy className="size-4 text-primary" />
-              </button>
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <Loader className="text-primary animate-spin size-5" />
             </div>
-          </div>
-          <div className="flex justify-between items-center text-sm text-text">
-            <span className="font-bold t">From</span>
-            <span>John Doe</span>
-          </div>
+          )}
+          {data && (
+            <>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">Date</span>
+                <span>{format(data.data.created_at, "dd/MM/yyyy")}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">Time</span>
+                <span>{format(data.data.created_at, "hh:mm:ss a")}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold ">Transaction</span>
+                <span>Fund</span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">Amount</span>
+                <span>{formatNaira(parseFloat(data.data.amount))}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">Status</span>
+                <span>
+                  {data.data.status === "success" ? "Successfull" : "Failed"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">Reference</span>
+                <div className="flex items-center gap-2 ">
+                  <span>{data.data.reference}</span>
+                  <button onClick={() => copyText(data.data.reference)}>
+                    <Copy className="size-4 text-primary" />
+                  </button>
+                </div>
+              </div>
+              {/* <div className="flex justify-between items-center text-sm text-text">
+                <span className="font-bold t">From</span>
+                <span>John Doe</span>
+              </div> */}
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

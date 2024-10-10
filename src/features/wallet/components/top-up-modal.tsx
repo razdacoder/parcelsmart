@@ -11,13 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { copyText, formatNaira } from "@/lib/utils";
-import { Copy, TriangleAlert, X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Copy, Loader, TriangleAlert, X } from "lucide-react";
 import { useState } from "react";
+import useVirtualAccount from "../api/useVirtualAccount";
 import { useTopUpModal } from "../hooks/use-top-up-modal";
 
 export default function TopUpModal() {
   const { isOpen, onClose } = useTopUpModal();
   const [fundType, setFundType] = useState<"transfer" | "card">("transfer");
+  const { data: virtualAccount, isLoading } = useVirtualAccount();
+  const queryClient = useQueryClient();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -150,34 +154,61 @@ export default function TopUpModal() {
           </div>
           {fundType === "transfer" && (
             <div className="space-y-4">
-              <div className="mt-4 rounded-lg border p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Account Name</span>
-                  <span className="text-sm font-medium">John-Does/Parcels</span>
+              {isLoading && (
+                <div className="flex items-center justify-center">
+                  <Loader className="animate-spin size-6 text-primary" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Account Number</span>
-                  <span className="text-sm font-medium flex items-center gap-1">
-                    012548796
-                    <button onClick={() => copyText("012548796")}>
-                      <Copy className="size-3.5 text-primary" />
-                    </button>
-                  </span>
-                </div>{" "}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Bank</span>
-                  <span className="text-sm font-medium ">Access Bank</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Charge</span>
-                  <span className="text-sm font-medium ">
-                    {formatNaira(50)}
-                  </span>
-                </div>
-              </div>
-              <Button size="lg" className="w-full">
-                I have made payment
-              </Button>
+              )}
+              {virtualAccount && (
+                <>
+                  <div className="mt-4 rounded-lg border p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold">Account Name</span>
+                      <span className="text-sm font-medium">
+                        {virtualAccount.data[0].account_name}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold">Account Number</span>
+                      <span className="text-sm font-medium flex items-center gap-1">
+                        {virtualAccount.data[0].account_number}
+                        <button
+                          onClick={() =>
+                            copyText(virtualAccount.data[0].account_number)
+                          }
+                        >
+                          <Copy className="size-3.5 text-primary" />
+                        </button>
+                      </span>
+                    </div>{" "}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold">Bank</span>
+                      <span className="text-sm font-medium ">
+                        {virtualAccount.data[0].bank_name}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold">Charge</span>
+                      <span className="text-sm font-medium ">
+                        {formatNaira(50)}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+                      queryClient.invalidateQueries({
+                        queryKey: ["transactions"],
+                      });
+                      onClose();
+                    }}
+                    size="lg"
+                    className="w-full"
+                  >
+                    I have made payment
+                  </Button>
+                </>
+              )}
             </div>
           )}
           {fundType === "card" && (
@@ -206,6 +237,7 @@ export default function TopUpModal() {
                 Continue with Flutterwave
               </Button>
               <Button
+                onClick={() => onClose()}
                 size="lg"
                 className="w-full bg-[#F4FDF8] text-primary hover:text-primary hover:bg-[#F4FDF8]"
               >
