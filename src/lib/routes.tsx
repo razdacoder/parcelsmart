@@ -1,3 +1,4 @@
+import AuthRoute from "@/components/auth-route";
 import ProtectedRoute from "@/components/protected-route";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import NewPassword from "@/pages/auth/NewPassowrd";
@@ -66,7 +67,12 @@ export const router = createBrowserRouter([
   },
   {
     path: "auth/",
-    element: <AuthLayout />,
+
+    element: (
+      <AuthRoute>
+        <AuthLayout />
+      </AuthRoute>
+    ),
     children: [
       {
         path: "register/",
@@ -80,18 +86,34 @@ export const router = createBrowserRouter([
   },
   {
     path: "auth/reset-password/",
-    element: <ResetPassword />,
+    element: (
+      <AuthRoute>
+        <ResetPassword />
+      </AuthRoute>
+    ),
   },
   {
     path: "auth/reset-password-confirm/",
-    element: <NewPassword />,
+    element: (
+      <AuthRoute>
+        <NewPassword />
+      </AuthRoute>
+    ),
   },
   {
     path: "auth/verify-email/",
-    element: <VerifyEmail />,
+    element: (
+      <AuthRoute>
+        <VerifyEmail />
+      </AuthRoute>
+    ),
   },
   {
     path: "auth/verify-email/verification/",
-    element: <Verification />,
+    element: (
+      <AuthRoute>
+        <Verification />
+      </AuthRoute>
+    ),
   },
 ]);

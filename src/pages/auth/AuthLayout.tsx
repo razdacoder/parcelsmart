@@ -23,11 +23,6 @@ export default function AuthLayout() {
             to make shipping a fun and hassle-free experience for you!
           </p>
         </div>
-        {/* <div className="flex justify-center items-center gap-3">
-          <span className="size-3 bg-white rounded-full"></span>
-          <span className="size-3 bg-white/30 rounded-full"></span>
-          <span className="size-3 bg-white/30 rounded-full"></span>
-        </div> */}
       </div>
       <div className="flex items-center justify-center">
         <Outlet />
