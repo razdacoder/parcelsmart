@@ -43,6 +43,8 @@ export default function useShipments({
           start_date,
           end_date,
           search: search === "" ? undefined : search,
+          sortBy: "created_at",
+          sortOrder: "desc",
         },
       });
       return response.data;

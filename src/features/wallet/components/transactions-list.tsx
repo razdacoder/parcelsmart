@@ -177,7 +177,7 @@ export default function TransactionList() {
           {isError && (
             <div className="flex justify-center items-center py-24">
               <p className="text-sm font-medium text-destructive">
-                Failed to load addresses
+                Failed to load transactions
               </p>
             </div>
           )}
