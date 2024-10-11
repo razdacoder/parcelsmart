@@ -3,16 +3,17 @@ import TableLoader from "@/components/table-loader";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
-import useTransactions from "@/features/wallet/api/useTransactions";
-import { columns } from "@/features/wallet/columns";
-import { DataTable } from "@/features/wallet/components/data-table";
+import useShipments from "@/features/shipment/api/useShipments";
+import { columns } from "@/features/shipment/columns";
+import { DataTable } from "@/features/shipment/components/data-table";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "react-use";
-export default function TransactionList() {
+
+export default function ShipmentList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const from = searchParams.get("start_date");
@@ -35,22 +36,13 @@ export default function TransactionList() {
   const [debouncedValue, setDebouncedValue] = useState(search || "");
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
-  const currentFilter = searchParams.get("type");
-  const {
-    data: transactions,
-    isLoading,
-    isError,
-  } = useTransactions({
-    page: currentPage,
-    limit: 15,
-    type: currentFilter,
-    start_date: dateRange?.from
-      ? format(dateRange.from, "yyyy-MM-dd")
-      : undefined,
-    end_date: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
-    search: debouncedValue,
-  });
-
+  const currentFilter = searchParams.get("status") as
+    | "draft"
+    | "confirmed"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | null;
   const [] = useDebounce(
     () => {
       setDebouncedValue(searchInput);
@@ -68,14 +60,22 @@ export default function TransactionList() {
     [searchInput]
   );
 
-  const handleFilterClick = (filter: string | null) => {
+  const handleFilterClick = (
+    filter:
+      | "draft"
+      | "confirmed"
+      | "in_transit"
+      | "delivered"
+      | "cancelled"
+      | null
+  ) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
 
     // Update the 'filter' parameter or remove it if filter is null
     if (filter) {
-      newSearchParams.set("type", filter);
+      newSearchParams.set("status", filter);
     } else {
-      newSearchParams.delete("type");
+      newSearchParams.delete("status");
     }
 
     // Update the URL with the new search parameters
@@ -101,9 +101,23 @@ export default function TransactionList() {
 
     setSearchParams(newSearchParams);
   };
+  const {
+    data: shipments,
+    isLoading: shipmentLoading,
+    isError: shipmentError,
+  } = useShipments({
+    page: currentPage,
+    limit: 15,
+    status: currentFilter,
+    start_date: dateRange?.from
+      ? format(dateRange.from, "yyyy-MM-dd")
+      : undefined,
+    end_date: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+    search: debouncedValue,
+  });
   return (
     <div className="space-y-2">
-      <h3 className="text-lg font-bold text-text">All Transactions</h3>
+      <h3 className="text-lg font-bold text-text">All Shipments</h3>
 
       <div className="bg-white w-full p-8 space-y-2">
         <div className="flex flex-col lg:flex-row md:justify-between gap-3">
@@ -120,26 +134,59 @@ export default function TransactionList() {
               All
             </Button>
             <Button
-              onClick={() => handleFilterClick("credit")}
+              onClick={() => handleFilterClick("confirmed")}
               size="sm"
               className={cn(
                 "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
-                currentFilter === "credit" &&
+                currentFilter === "confirmed" &&
                   "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
               )}
             >
-              Inflow
+              Confirmed
             </Button>
             <Button
-              onClick={() => handleFilterClick("debit")}
+              onClick={() => handleFilterClick("draft")}
               size="sm"
               className={cn(
                 "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
-                currentFilter === "debit" &&
+                currentFilter === "draft" &&
                   "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
               )}
             >
-              Outflow
+              Draft
+            </Button>
+            <Button
+              onClick={() => handleFilterClick("in_transit")}
+              size="sm"
+              className={cn(
+                "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                currentFilter === "in_transit" &&
+                  "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+              )}
+            >
+              In Transit
+            </Button>
+            <Button
+              onClick={() => handleFilterClick("cancelled")}
+              size="sm"
+              className={cn(
+                "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                currentFilter === "cancelled" &&
+                  "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+              )}
+            >
+              Canceled
+            </Button>
+            <Button
+              onClick={() => handleFilterClick("delivered")}
+              size="sm"
+              className={cn(
+                "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                currentFilter === "delivered" &&
+                  "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
+              )}
+            >
+              Delivered
             </Button>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-2">
@@ -154,34 +201,29 @@ export default function TransactionList() {
             <DatePickerWithRange
               value={dateRange}
               onChange={handleDateChange}
-              disabled={isLoading}
+              disabled={shipmentLoading}
               className="h-11 w-full md:w-1/2 lg:w-fit"
             />
           </div>
         </div>
-        <div>
-          {isLoading && <TableLoader />}
-          {transactions && (
-            <>
-              <div>
-                <DataTable
-                  columns={columns}
-                  data={transactions.data.transactions}
-                />
-              </div>
-
-              <Paginator pagination={transactions.data.pagination} />
-            </>
-          )}
-
-          {isError && (
-            <div className="flex justify-center items-center py-24">
-              <p className="text-sm font-medium text-destructive">
-                Failed to load addresses
-              </p>
+        {shipmentLoading && <TableLoader />}
+        {shipments && (
+          <>
+            <div>
+              <DataTable columns={columns} data={shipments.data.shipments} />
             </div>
-          )}
-        </div>
+
+            <Paginator pagination={shipments.data.pagination} />
+          </>
+        )}
+
+        {shipmentError && (
+          <div className="flex justify-center items-center py-24">
+            <p className="text-sm font-medium text-destructive">
+              Failed to load shipments
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

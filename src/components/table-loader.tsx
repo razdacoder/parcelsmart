@@ -10,28 +10,28 @@ export default function TableLoader() {
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
       </div>{" "}
-      <div className="grid grid-cols-3 space-x-6">
+      <div className="grid grid-cols-5 space-x-6">
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
       </div>{" "}
-      <div className="grid grid-cols-3 space-x-6">
+      <div className="grid grid-cols-5 space-x-6">
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
       </div>{" "}
-      <div className="grid grid-cols-3 space-x-6">
+      <div className="grid grid-cols-5 space-x-6">
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
       </div>{" "}
-      <div className="grid grid-cols-3 space-x-6">
+      <div className="grid grid-cols-5 space-x-6">
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />

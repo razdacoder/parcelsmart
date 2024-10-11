@@ -1,15 +1,12 @@
 import AppNavBar from "@/components/app-navbar";
 import { Button } from "@/components/ui/button";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { Input } from "@/components/ui/input";
-import { columns } from "@/features/shipment/columns";
-import { DataTable } from "@/features/shipment/components/data-table";
-import { shipments } from "@/lib/demo";
+import ShipmentList from "@/features/shipment/components/shipment-list";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Shipment() {
   const navigate = useNavigate();
+
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Shipment" />
@@ -131,62 +128,7 @@ export default function Shipment() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-bold text-text">All Shipments</h3>
-
-          <div className="bg-white w-full p-8 space-y-2">
-            <div className="flex flex-col lg:flex-row md:justify-between gap-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Button
-                  size="sm"
-                  className="px-8 h-9 bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary font-semibold"
-                >
-                  All
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
-                >
-                  Confirmed
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
-                >
-                  Draft
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
-                >
-                  In Transit
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
-                >
-                  Canceled
-                </Button>
-                <Button
-                  size="sm"
-                  className="h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary font-semibold"
-                >
-                  Delivered
-                </Button>
-              </div>
-              <div className="flex flex-col md:flex-row items-center gap-2">
-                <Input
-                  placeholder="Search..."
-                  className="py-2 h-11 w-full md:w-1/2 lg:w-56"
-                />
-                <DatePickerWithRange className="h-11 w-full md:w-1/2 lg:w-fit" />
-              </div>
-            </div>
-            <div>
-              <DataTable columns={columns} data={shipments} />
-            </div>
-          </div>
-        </div>
+        <ShipmentList />
       </main>
     </div>
   );
