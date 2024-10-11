@@ -1,7 +1,7 @@
 import Paginator from "@/components/paginator";
+import TableLoader from "@/components/table-loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import useAddressList from "@/features/address/api/useAddressList";
 import { columns } from "@/features/address/columns";
 import { DataTable } from "@/features/address/components/data-table";
@@ -23,35 +23,7 @@ export default function AddressList() {
           <Input placeholder="Search..." className="py-2 h-11 w-full lg:w-56" />
         </div>
       </div>
-      {isLoading && (
-        <div className="w-full space-y-4">
-          <div className="grid grid-cols-3 space-x-6">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>{" "}
-          <div className="grid grid-cols-3 space-x-6">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>{" "}
-          <div className="grid grid-cols-3 space-x-6">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>{" "}
-          <div className="grid grid-cols-3 space-x-6">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>{" "}
-          <div className="grid grid-cols-3 space-x-6">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>
-        </div>
-      )}
+      {isLoading && <TableLoader />}
       {data && (
         <>
           <div>
