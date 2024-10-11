@@ -17,7 +17,7 @@ type ResponseType = {
 export default function useStateList({
   country_code,
 }: {
-  country_code?: string;
+  country_code?: string | null;
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
     enabled: !!country_code,

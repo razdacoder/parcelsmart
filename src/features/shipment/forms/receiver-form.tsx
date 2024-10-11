@@ -17,10 +17,12 @@ import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import useAddress from "@/features/address/api/useAddress";
+import useCity from "@/features/address/api/useCity";
+import useCountries from "@/features/address/api/useCountries";
 import useCreateAddress from "@/features/address/api/useCreateAddress";
 import useEditAddress from "@/features/address/api/useEditAddress";
+import useStateList from "@/features/address/api/useState";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { City, Country, State } from "country-state-city";
 import { Search, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,17 +38,27 @@ export default function RecieverForm({ next, prev }: StepsProps) {
     id: receiver?.id,
   });
   const [addressId, setAddressId] = useState<string>();
-
-  const [stateCode, setStateCode] = useState<string | null>();
-  const [countryCode, setCountryCode] = useState<string | null>(() => {
-    if (receiver?.country) {
-      return receiver.country;
+  const [stateCode, setStateCode] = useState<string | null | undefined>();
+  const [countryCode, setCountryCode] = useState<string | null | undefined>(
+    () => {
+      if (receiver?.country) {
+        return receiver.country;
+      }
+      return null;
     }
-    return null;
-  });
+  );
 
   const { refetch, isLoading } = useAddress({ id: addressId });
   const isPending = creating || editing || isLoading;
+
+  const { data: countryList, isLoading: countryListPending } = useCountries();
+  const { data: stateList, isLoading: stateListPending } = useStateList({
+    country_code: countryCode,
+  });
+  const { data: cityList, isLoading: cityListPending } = useCity({
+    country_code: countryCode,
+    state_code: stateCode,
+  });
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -77,10 +89,10 @@ export default function RecieverForm({ next, prev }: StepsProps) {
           setReceiverValues(newAddressData);
           // Update country and state codes
           setCountryCode(newAddressData.country);
-          const state = State.getStatesOfCountry(newAddressData.country).find(
+          const state = stateList?.data.find(
             (state) => state.name === newAddressData.state
           );
-          setStateCode(state?.isoCode || null);
+          setStateCode(state?.state_code || null);
         }
       }
     };
@@ -88,31 +100,27 @@ export default function RecieverForm({ next, prev }: StepsProps) {
     fetchNewAddress();
   }, [addressId, refetch]);
 
-  const countryOptions: Optiontype[] = Country.getAllCountries().map(
-    (country) => ({
-      label: country.name,
-      value: country.isoCode,
-    })
-  );
+  const countryOptions = countryList?.data.map((country) => ({
+    label: country.name,
+    value: country.country_code,
+  }));
 
-  const stateOptions: Optiontype[] = State.getStatesOfCountry(countryCode!).map(
-    (state) => ({
-      label: state.name,
-      value: `${state.name}-${state.isoCode}`,
-    })
-  );
+  const cityOptions = cityList?.data.map((city) => ({
+    label: city.name,
+    value: city.name,
+  }));
 
-  const getCitiesOptions: Optiontype[] = City.getCitiesOfState(
-    countryCode!,
-    stateCode!
-  ).map((city) => ({ label: city.name, value: city.name }));
+  const stateOptions = stateList?.data.map((state) => ({
+    label: state.name,
+    value: `${state.name}-${state.state_code}`,
+  }));
 
   function getStateValue(): string {
-    const state = State.getStatesOfCountry(receiver?.country).find(
+    const state = stateList?.data.find(
       (state) => state.name === receiver?.state
     );
-    setStateCode(state?.isoCode);
-    return `${state?.name}-${state?.isoCode}`;
+    setStateCode(state?.state_code);
+    return `${state?.name}-${state?.state_code}`;
   }
 
   function onSubmit(values: AddressValues) {
@@ -287,6 +295,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
                   <FormLabel>Country</FormLabel>
                   <FormControl>
                     <PSelect
+                      disabled={countryListPending}
                       placeholder="Select"
                       value={field.value}
                       onChange={(value) => {
@@ -310,6 +319,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
                   <FormLabel>State</FormLabel>
                   <FormControl>
                     <PSelect
+                      disabled={stateListPending}
                       placeholder="Select"
                       value={receiver ? getStateValue() : field.value}
                       onChange={(value) => {
@@ -333,10 +343,11 @@ export default function RecieverForm({ next, prev }: StepsProps) {
                   <FormLabel>City</FormLabel>
                   <FormControl>
                     <PSelect
+                      disabled={cityListPending}
                       placeholder="Select"
                       value={field.value}
                       onChange={field.onChange}
-                      options={getCitiesOptions}
+                      options={cityOptions}
                     />
                   </FormControl>
 

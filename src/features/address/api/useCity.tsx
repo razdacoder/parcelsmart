@@ -18,8 +18,8 @@ export default function useCity({
   country_code,
   state_code,
 }: {
-  country_code?: string;
-  state_code?: string;
+  country_code?: string | null;
+  state_code?: string | null;
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
     enabled: !!country_code && !!state_code,
