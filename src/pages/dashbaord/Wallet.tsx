@@ -11,19 +11,44 @@ import { columns } from "@/features/wallet/columns";
 import { DataTable } from "@/features/wallet/components/data-table";
 import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
 import { cn, formatNaira } from "@/lib/utils";
+import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
 import { useSearchParams } from "react-router-dom";
 
 export default function Wallet() {
   const { data, isLoading: walletLoading } = useWallet();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const from = searchParams.get("start_date");
+    const to = searchParams.get("end_date");
+    const fromDate = from ? new Date(from) : undefined;
+    const toDate = to ? new Date(to) : undefined;
+
+    if (fromDate && !isNaN(fromDate.getTime())) {
+      return {
+        from: fromDate,
+        to: toDate && !isNaN(toDate.getTime()) ? toDate : undefined,
+      };
+    }
+
+    return undefined;
+  });
+
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const currentFilter = searchParams.get("type");
   const {
     data: transactions,
     isLoading,
     isError,
-  } = useTransactions({ page: currentPage, limit: 15, type: currentFilter });
+  } = useTransactions({
+    page: currentPage,
+    limit: 15,
+    type: currentFilter,
+    start_date: format(dateRange?.from!, "yyyy-MM-dd") || undefined,
+    end_date: format(dateRange?.to!, "yyyy-MM-dd") || undefined,
+  });
   const { data: metrics, isLoading: metricsLoading } = useTransactionMetrics();
   const { onOpen } = useTopUpModal();
 
@@ -38,6 +63,26 @@ export default function Wallet() {
     }
 
     // Update the URL with the new search parameters
+    setSearchParams(newSearchParams);
+  };
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    if (range?.from) {
+      newSearchParams.set("start_date", format(range.from, "yyyy-MM-dd"));
+    } else {
+      newSearchParams.delete("start_date");
+    }
+
+    if (range?.to) {
+      newSearchParams.set("end_date", format(range.to, "yyyy-MM-dd"));
+    } else {
+      newSearchParams.delete("end_date");
+    }
+
     setSearchParams(newSearchParams);
   };
   return (
@@ -175,7 +220,12 @@ export default function Wallet() {
                   placeholder="Search..."
                   className="py-2 h-11 w-full md:w-1/2 lg:w-56"
                 />
-                <DatePickerWithRange className="h-11 w-full md:w-1/2 lg:w-fit" />
+                <DatePickerWithRange
+                  value={dateRange}
+                  onChange={handleDateChange}
+                  disabled={isLoading}
+                  className="h-11 w-full md:w-1/2 lg:w-fit"
+                />
               </div>
             </div>
             <div>

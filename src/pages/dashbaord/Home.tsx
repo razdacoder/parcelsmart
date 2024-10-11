@@ -3,9 +3,12 @@ import AppNavBar from "@/components/app-navbar";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import useMe from "@/features/auth/api/useMe";
 import { columns } from "@/features/shipment/columns";
 import { DataTable } from "@/features/shipment/components/data-table";
+import useWallet from "@/features/wallet/api/useWallet";
+import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
 import { shipments } from "@/lib/demo";
 import { formatNaira } from "@/lib/utils";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -13,6 +16,9 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
   const { data: user } = useMe();
+  const { data, isLoading: walletLoading } = useWallet();
+  const { onOpen } = useTopUpModal();
+
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Overview" />
@@ -25,11 +31,21 @@ export default function Home() {
           <div className="w-full md:col-span-6 lg:col-span-5 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
-              <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
-                {formatNaira(100000)}
-              </h1>
+              {walletLoading && (
+                <div className="w-full">
+                  <Skeleton className="h-8 w-full bg-gray-600" />
+                </div>
+              )}
+              {data && (
+                <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
+                  {formatNaira(parseFloat(data?.data[0].balance!))}
+                </h1>
+              )}
             </div>
-            <Button className="items-center gap-2 rounded-lg" size="sm">
+            <Button
+              onClick={() => onOpen(data?.data[0].id!)}
+              className="items-center gap-2 rounded-lg"
+            >
               Top up <ArrowRight className="size-4" />
             </Button>
           </div>

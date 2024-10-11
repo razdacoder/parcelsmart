@@ -15,16 +15,20 @@ export default function useTransactions({
   page,
   limit,
   type,
+  start_date,
+  end_date,
 }: {
   page?: number;
   limit?: number;
   type: string | null;
+  start_date?: string;
+  end_date?: string;
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
-    queryKey: ["transactions", page, limit, type],
+    queryKey: ["transactions", page, limit, type, start_date, end_date],
     queryFn: async () => {
       const response = await client.get("/transactions", {
-        params: { page, limit, type },
+        params: { page, limit, type, start_date, end_date },
       });
       return response.data;
     },
