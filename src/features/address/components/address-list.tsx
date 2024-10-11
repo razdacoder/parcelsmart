@@ -6,6 +6,7 @@ import useAddressList from "@/features/address/api/useAddressList";
 import { columns } from "@/features/address/columns";
 import { DataTable } from "@/features/address/components/data-table";
 import { useNewAddress } from "@/features/address/hooks/use-new-address";
+import { Plus } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 export default function AddressList() {
   const { onOpen } = useNewAddress();
@@ -17,7 +18,11 @@ export default function AddressList() {
     <div className="bg-white w-full p-8 space-y-2 ">
       <div className="flex flex-col md:flex-row md:justify-end gap-6">
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <Button className="w-full md:w-fit" onClick={onOpen}>
+          <Button
+            className="w-full md:w-fit flex items-center gap-2"
+            onClick={onOpen}
+          >
+            <Plus className="size-4 text-current" />
             Create address
           </Button>
           <Input placeholder="Search..." className="py-2 h-11 w-full lg:w-56" />

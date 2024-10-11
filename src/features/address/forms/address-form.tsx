@@ -8,26 +8,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { addressSchema, AddressValues } from "@/lib/schemas";
 import { Search } from "lucide-react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
+import { PSelect } from "@/components/select";
 import SubmitButton from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { City, Country, State } from "country-state-city";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import useCity from "../api/useCity";
+import useCountries from "../api/useCountries";
 import useCreateAddress from "../api/useCreateAddress";
 import useEditAddress from "../api/useEditAddress";
+import useStateList from "../api/useState";
 import { useNewAddress } from "../hooks/use-new-address";
 
 type AddressFormProps = {
@@ -45,12 +41,38 @@ export default function AddressForm({ address }: AddressFormProps) {
   });
 
   function getStateValue(): string {
-    const state = State.getStatesOfCountry(address?.country).find(
+    const state = stateList?.data.find(
       (state) => state.name === address?.state
     );
-    setStateCode(state?.isoCode);
-    return `${state?.name}-${state?.isoCode}`;
+    setStateCode(state?.state_code);
+    return `${state?.name}-${state?.state_code}`;
   }
+
+  const [countryCode, setCountryCode] = useState<string>();
+
+  const { data: countryList, isLoading: countryListPending } = useCountries();
+  const { data: stateList, isLoading: stateListPending } = useStateList({
+    country_code: countryCode,
+  });
+  const { data: cityList, isLoading: cityListPending } = useCity({
+    country_code: countryCode,
+    state_code: stateCode,
+  });
+
+  const countryOptions = countryList?.data.map((country) => ({
+    label: country.name,
+    value: country.country_code,
+  }));
+
+  const cityOptions = cityList?.data.map((city) => ({
+    label: city.name,
+    value: city.name,
+  }));
+
+  const stateOptions = stateList?.data.map((state) => ({
+    label: state.name,
+    value: `${state.name}-${state.state_code}`,
+  }));
 
   const isPending = createPending || editPending;
 
@@ -199,24 +221,19 @@ export default function AddressForm({ address }: AddressFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Country</FormLabel>
-                  <Select
-                    disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Country.getAllCountries().map((country) => (
-                        <SelectItem value={country.isoCode}>
-                          {country.flag} {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      disabled={countryListPending}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setCountryCode(value!);
+                      }}
+                      options={countryOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -228,29 +245,19 @@ export default function AddressForm({ address }: AddressFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>State</FormLabel>
-                  <Select
-                    disabled={isPending}
-                    onValueChange={(value) => {
-                      field.onChange(value.split("-")[0]);
-                      setStateCode(value.split("-")[1]);
-                    }}
-                    defaultValue={isEditMode ? getStateValue() : field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {State.getStatesOfCountry(form.getValues("country")).map(
-                        (state) => (
-                          <SelectItem value={`${state.name}-${state.isoCode}`}>
-                            {state.name}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={isEditMode ? getStateValue() : field.value}
+                      disabled={stateListPending || !stateList}
+                      onChange={(value) => {
+                        field.onChange(value?.split("-")[0]);
+                        setStateCode(value?.split("-")[1]);
+                      }}
+                      options={stateOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -263,27 +270,16 @@ export default function AddressForm({ address }: AddressFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
-                  <Select
-                    disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {City.getCitiesOfState(
-                        form.getValues("country"),
-                        stateCode!
-                      ).map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                  <FormControl>
+                    <PSelect
+                      placeholder="Select"
+                      value={field.value}
+                      disabled={cityListPending || !cityList}
+                      onChange={field.onChange}
+                      options={cityOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
