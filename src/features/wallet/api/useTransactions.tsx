@@ -17,18 +17,27 @@ export default function useTransactions({
   type,
   start_date,
   end_date,
+  search,
 }: {
   page?: number;
   limit?: number;
   type: string | null;
   start_date?: string;
   end_date?: string;
+  search: string;
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
-    queryKey: ["transactions", page, limit, type, start_date, end_date],
+    queryKey: ["transactions", page, limit, type, start_date, end_date, search],
     queryFn: async () => {
       const response = await client.get("/transactions", {
-        params: { page, limit, type, start_date, end_date },
+        params: {
+          page,
+          limit,
+          type,
+          start_date,
+          end_date,
+          search: search === "" ? undefined : search,
+        },
       });
       return response.data;
     },

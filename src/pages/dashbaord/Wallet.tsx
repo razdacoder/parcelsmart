@@ -16,6 +16,7 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useSearchParams } from "react-router-dom";
+import { useDebounce } from "react-use";
 
 export default function Wallet() {
   const { data, isLoading: walletLoading } = useWallet();
@@ -26,15 +27,19 @@ export default function Wallet() {
     const fromDate = from ? new Date(from) : undefined;
     const toDate = to ? new Date(to) : undefined;
 
-    if (fromDate && !isNaN(fromDate.getTime())) {
+    if (fromDate) {
       return {
         from: fromDate,
-        to: toDate && !isNaN(toDate.getTime()) ? toDate : undefined,
+        to: toDate ? toDate : undefined,
       };
     }
 
     return undefined;
   });
+  const search = searchParams.get("search");
+
+  const [searchInput, setSearchInput] = useState(search || "");
+  const [debouncedValue, setDebouncedValue] = useState(search || "");
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const currentFilter = searchParams.get("type");
@@ -46,11 +51,30 @@ export default function Wallet() {
     page: currentPage,
     limit: 15,
     type: currentFilter,
-    start_date: format(dateRange?.from!, "yyyy-MM-dd") || undefined,
-    end_date: format(dateRange?.to!, "yyyy-MM-dd") || undefined,
+    start_date: dateRange?.from
+      ? format(dateRange.from, "yyyy-MM-dd")
+      : undefined,
+    end_date: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+    search: debouncedValue,
   });
   const { data: metrics, isLoading: metricsLoading } = useTransactionMetrics();
   const { onOpen } = useTopUpModal();
+  const [] = useDebounce(
+    () => {
+      setDebouncedValue(searchInput);
+      if (searchInput) {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set("search", debouncedValue); // Add/update 'search' param
+        setSearchParams(newSearchParams);
+      } else {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete("search"); // Remove 'search' param if empty
+        setSearchParams(newSearchParams);
+      }
+    },
+    1500,
+    [searchInput]
+  );
 
   const handleFilterClick = (filter: string | null) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -217,6 +241,11 @@ export default function Wallet() {
               </div>
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <Input
+                  value={searchInput || ""}
+                  // disabled={!!isReady()}
+                  onChange={({ currentTarget }) => {
+                    setSearchInput(currentTarget.value);
+                  }}
                   placeholder="Search..."
                   className="py-2 h-11 w-full md:w-1/2 lg:w-56"
                 />
