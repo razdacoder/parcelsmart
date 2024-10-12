@@ -31,11 +31,8 @@ export const getInitials = (
   );
 };
 
-export function isLeastExpensiveRate(
-  rates: ShipmentRate[],
-  rateToCheck: ShipmentRate
-): boolean {
-  if (rates.length === 0) return false;
+export function isLeastExpensiveRate(rates?: ShipmentRate[]): string {
+  if (rates?.length === 0 || !rates) return "";
 
   const leastExpensiveRate = rates.reduce((leastExpensive, currentRate) => {
     return currentRate.amount < leastExpensive.amount
@@ -43,5 +40,5 @@ export function isLeastExpensiveRate(
       : leastExpensive;
   });
 
-  return leastExpensiveRate === rateToCheck;
+  return leastExpensiveRate.carrier_slug;
 }

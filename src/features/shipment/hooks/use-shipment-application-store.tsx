@@ -33,6 +33,10 @@ type ShipmentApplicationState = {
   deleteParcelId: (value: string) => void;
   shipmentID?: string;
   setShipmentID: (value: string) => void;
+  rate_id?: string;
+  setRateID: (value: string) => void;
+  drop_off_id?: string;
+  setDropOffId: (value: string) => void;
 };
 
 export const useShipmentApplication = create<ShipmentApplicationState>(
@@ -180,6 +184,8 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
       }),
     shipmentID: undefined,
     setShipmentID: (value: string) => set({ shipmentID: value }),
+    setRateID: (value: string) => set({ rate_id: value }),
+    setDropOffId: (value: string) => set({ rate_id: value }),
     clearAll: () =>
       set({
         sender: undefined,

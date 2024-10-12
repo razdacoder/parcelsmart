@@ -13,19 +13,20 @@ import { Loader, RefreshCw, XCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGetRates from "../api/getRates";
+import { useDropOff } from "../hooks/use-drop-off";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function CarrierForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  // const { onOpen } = useDropOff();
-  const { clearAll, shipmentID } = useShipmentApplication();
+  const { onOpen } = useDropOff();
+  const { clearAll, shipmentID, setRateID, rate_id } = useShipmentApplication();
   const {
     data,
     isLoading: loading,
     refetch,
     isRefetching,
   } = useGetRates({ shipment_id: shipmentID });
-  const [selectedCarrier, setSelectedCarrier] = useState<string | null>(null);
+  const [selectedCarrier, setSelectedCarrier] = useState<string | null>();
   const isLoading = loading || isRefetching;
   return (
     <div className="space-y-6">
@@ -76,7 +77,6 @@ export default function CarrierForm({ next, prev }: StepsProps) {
         {data && !isLoading && (
           <div className="space-y-2">
             {data.data.map((rate) => {
-              const saveMoney = isLeastExpensiveRate(data.data, rate);
               return (
                 <div
                   key={rate.id}
@@ -89,7 +89,10 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                       className="hidden peer"
                       checked={selectedCarrier === rate.carrier_slug}
                       value={rate.carrier_slug}
-                      onChange={(e) => setSelectedCarrier(e.target.value)}
+                      onChange={(e) => {
+                        setSelectedCarrier(e.target.value);
+                        setRateID(rate.id);
+                      }}
                       id={rate.carrier_slug}
                     />
                     <div className="col-span-3 flex items-center gap-4">
@@ -118,12 +121,15 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                       </div>
                     </div>
                     <div className="col-span-4 flex items-center justify-center gap-2">
-                      {rate.dropoff_available && (
+                      {(rate.dropoff_available ||
+                        rate.dropoff_required ||
+                        rate.dropoff_only) && (
                         <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-muted text-text hover:bg-muted hover:text-text shadow-none">
-                          Dropoff
+                          Drop Off
                         </Badge>
                       )}
-                      {saveMoney && (
+                      {isLeastExpensiveRate(data.data) ===
+                        rate.carrier_slug && (
                         <Badge className="hidden md:inline-flex h-6 px-3 text-center bg-[#F4FDF8] text-primary hover:bg-[#F4FDF8] hover:text-primary shadow-none">
                           Save Money
                         </Badge>
@@ -136,7 +142,11 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                     </div>
 
                     <Label
-                      // onClick={onOpen}
+                      onClick={() => {
+                        if (rate.dropoff_available || rate.dropoff_available) {
+                          onOpen(rate.dropoff_required, rate.carrier_slug);
+                        }
+                      }}
                       htmlFor={rate.carrier_slug}
                       className="col-span-1 w-full flex items-center justify-center rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary"
                     >
@@ -163,6 +173,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
         </Button>
 
         <Button
+          disabled={!rate_id}
           onClick={() => next()}
           size="lg"
           className="px-12 w-full md:w-fit"
