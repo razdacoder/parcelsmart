@@ -26,6 +26,7 @@ import useStateList from "@/features/address/api/useState";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import Autocomplete from "react-google-autocomplete";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
@@ -157,6 +158,33 @@ export default function SenderForm({ next }: StepsProps) {
     setStateCode(null);
   }
 
+  const handlePlaceSelected = (place: google.maps.places.PlaceResult) => {
+    const addressComponents = place.address_components;
+
+    if (addressComponents) {
+      const getComponent = (
+        components: google.maps.GeocoderAddressComponent[],
+        type: string
+      ): google.maps.GeocoderAddressComponent | undefined => {
+        return components.find((comp) => comp.types.includes(type));
+      };
+
+      form.reset({
+        line_1: place.formatted_address,
+        city: getComponent(addressComponents, "locality")?.long_name,
+        state: getComponent(addressComponents, "administrative_area_level_1")
+          ?.long_name,
+        country: getComponent(addressComponents, "country")?.short_name,
+        zip_code: getComponent(addressComponents, "postal_code")?.long_name,
+      });
+      setCountryCode(getComponent(addressComponents, "country")?.short_name);
+      setStateCode(
+        getComponent(addressComponents, "administrative_area_level_1")
+          ?.short_name
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between gap-8">
@@ -186,11 +214,15 @@ export default function SenderForm({ next }: StepsProps) {
         <Label htmlFor="addresss">Address</Label>
         <div className="relative">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-          <Input
-            id="address"
-            className="ps-10 bg-[#F4FDF8] h-10"
-            type="text"
+
+          <Autocomplete
+            className="flex h-10 ps-10 bg-[#F4FDF8] w-full rounded-md border border-input px-4 py-2 text-sm shadow-sm transition-colors  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+            apiKey={import.meta.env.VITE_GOOGLE_PLACES_API_KEY}
+            onPlaceSelected={(place) => handlePlaceSelected(place)}
             placeholder="Search your address on Google (optional)"
+            options={{
+              types: ["address"],
+            }}
           />
         </div>
       </div>
