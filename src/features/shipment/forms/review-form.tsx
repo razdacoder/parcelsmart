@@ -7,7 +7,7 @@ import useArrangeShipment from "../api/useArrangeShipment";
 import { useReviewMode } from "../hooks/use-review-mode";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function Review({ prev }: StepsProps) {
+export default function Review({ prev, moveToStep }: StepsProps) {
   const { setReviewMode } = useReviewMode();
   const navigate = useNavigate();
   const {
@@ -26,7 +26,7 @@ export default function Review({ prev }: StepsProps) {
 
   const [AlertModal, confirm] = useAlertModal({
     title: "Success!!",
-    message: "Congratulations! Your account has been created successfully",
+    message: "Congratulations! Your shipment has been arranged successfully",
     primaryLabel: "Continue",
     secondaryLabel: "Close",
     type: "success",
@@ -88,7 +88,10 @@ export default function Review({ prev }: StepsProps) {
           <div className="bg-[#F4FDF8] p-4 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-primary text-lg font-bold">Sender</h3>
-              <button className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary">
+              <button
+                onClick={() => moveToStep?.(0)}
+                className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+              >
                 <Edit className="text-primary size-4" />
                 Edit
               </button>
@@ -112,7 +115,10 @@ export default function Review({ prev }: StepsProps) {
           <div className="bg-[#F4FDF8] p-4 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-primary text-lg font-bold">Receiver</h3>
-              <button className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary">
+              <button
+                onClick={() => moveToStep?.(1)}
+                className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+              >
                 <Edit className="text-primary size-4" />
                 Edit
               </button>
@@ -138,7 +144,10 @@ export default function Review({ prev }: StepsProps) {
               <h3 className="text-primary text-lg font-bold">
                 Parcel Information
               </h3>
-              <button className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary">
+              <button
+                onClick={() => moveToStep?.(2)}
+                className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+              >
                 <Edit className="text-primary size-4" />
                 Edit
               </button>
@@ -176,7 +185,10 @@ export default function Review({ prev }: StepsProps) {
               <h3 className="text-primary text-lg font-bold">
                 Carrier Information
               </h3>
-              <button className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary">
+              <button
+                onClick={() => moveToStep?.(3)}
+                className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+              >
                 <Edit className="text-primary size-4" />
                 Edit
               </button>

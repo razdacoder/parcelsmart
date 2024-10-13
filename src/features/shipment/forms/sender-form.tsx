@@ -129,13 +129,13 @@ export default function SenderForm({ next }: StepsProps) {
       ? updateAddress(values, {
           onSuccess: (data) => {
             setSenderValues(data.data);
-            next();
+            next?.();
           },
         })
       : createAddress(values, {
           onSuccess: (data) => {
             setSenderValues(data.data);
-            next();
+            next?.();
           },
         });
   }

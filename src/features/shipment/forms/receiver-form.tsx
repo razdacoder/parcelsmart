@@ -130,13 +130,13 @@ export default function RecieverForm({ next, prev }: StepsProps) {
       ? updateAddress(values, {
           onSuccess: (data) => {
             setReceiverValues(data.data);
-            next();
+            next?.();
           },
         })
       : createAddress(values, {
           onSuccess: (data) => {
             setReceiverValues(data.data);
-            next();
+            next?.();
           },
         });
   }

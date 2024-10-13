@@ -63,6 +63,18 @@ export default function NewItemModal() {
 
   function onSubmit(values: ItemValues) {
     addItem(parcel_id!, values);
+    form.reset({
+      itemType: "items",
+      value: 0,
+      weight: 1,
+      quantity: 1,
+      name: "",
+      category: "",
+      hsCode: "",
+      subCategory: "",
+    });
+    setChapterId(undefined);
+    setCategoryId(undefined);
     onClose();
   }
 

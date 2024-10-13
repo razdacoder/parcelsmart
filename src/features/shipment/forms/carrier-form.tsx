@@ -180,7 +180,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
 
         <Button
           disabled={!rate_id}
-          onClick={() => next()}
+          onClick={() => next?.()}
           size="lg"
           className="px-12 w-full md:w-fit"
         >

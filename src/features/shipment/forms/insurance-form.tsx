@@ -16,7 +16,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
       name: "Parcel Mart Insurance",
       price: 500,
     });
-    next();
+    next?.();
   }
   return (
     <div className="space-y-6">

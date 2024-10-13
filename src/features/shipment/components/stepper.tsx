@@ -31,6 +31,10 @@ export default function Stepper() {
   const prevStep = () => {
     setCurrentStep((prev) => (prev > 0 ? prev - 1 : prev));
   };
+
+  const moveToStep = (step: number) => {
+    setCurrentStep(step);
+  };
   return (
     <div
       className={cn(
@@ -87,7 +91,10 @@ export default function Stepper() {
           <InsuranceForm next={() => nextStep()} prev={() => prevStep()} />
         )}
         {currentStep === 5 && (
-          <Review next={() => nextStep()} prev={() => prevStep()} />
+          <Review
+            moveToStep={(step) => moveToStep(step)}
+            prev={() => prevStep()}
+          />
         )}
       </div>
 

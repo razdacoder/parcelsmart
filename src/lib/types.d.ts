@@ -122,8 +122,9 @@ type AuthSuccessType = {
 };
 
 type StepsProps = {
-  next: () => void;
+  next?: () => void;
   prev?: () => void;
+  moveToStep?: (step: number) => void;
 };
 
 type Optiontype = {

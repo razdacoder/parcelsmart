@@ -104,7 +104,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
       {
         onSuccess: (data) => {
           setShipmentID(data.data.id);
-          next();
+          next?.();
         },
       }
     );
@@ -126,6 +126,10 @@ export default function ItemsForm({ next, prev }: StepsProps) {
       createPrcelsandShipment();
     }
   }
+
+  const isValidToSubmit = parcels.every(
+    (parcel) => !!parcel.packaging && parcel.items.length > 0
+  );
 
   return (
     <>
@@ -180,7 +184,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                       defaultValue={parcels[index].packaging}
                       onValueChange={(value) => {
                         const p = value.split("_");
-                        console.log(p);
+
                         updateParcel(
                           index,
                           { id: p[0], value: p[1] },
@@ -371,7 +375,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
 
           <Button
             onClick={() => onSubmit()}
-            disabled={isPending}
+            disabled={isPending || !isValidToSubmit}
             size="lg"
             className="px-12 w-full md:w-fit"
           >
