@@ -2,11 +2,20 @@ import AppNavBar from "@/components/app-navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTrackModal } from "@/features/track/hooks/use-track-modal";
-import { ArrowRight, Search } from "lucide-react";
+import useTrackShipment, {
+  TrackShipmentResponseType,
+} from "@/features/shipment/api/useTrackShipment";
+import TrackResult from "@/features/track/components/track-modal";
+import { ArrowRight, Loader, Search } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function TrackShipment() {
-  const { onOpen } = useTrackModal();
+  const [shipmentId, setShipmentId] = useState<string>("");
+  const { mutate: trackShipment, isPending } = useTrackShipment();
+  const [data, setData] = useState<TrackShipmentResponseType>();
+
+  const isValid = shipmentId === "";
   return (
     <div className="flex flex-col gap-6 w-full overflow-hidden">
       <AppNavBar title="Track Shipment" />
@@ -18,16 +27,41 @@ export default function TrackShipment() {
               <div className="relative">
                 <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
                 <Input
+                  value={shipmentId}
+                  onChange={(e) => setShipmentId(e.target.value)}
                   className="ps-10"
                   type="text"
                   placeholder="SDY668b76228"
                 />
               </div>
             </div>
-            <Button onClick={onOpen} className="gap-2" size="lg">
+            <Button
+              disabled={isValid || isPending}
+              onClick={() => {
+                trackShipment(
+                  { shipment_id: shipmentId },
+                  {
+                    onSuccess: (data) => {
+                      setData(data);
+                    },
+                    onError: async (error) => {
+                      toast.error(error.response?.data.message);
+                    },
+                  }
+                );
+              }}
+              className="gap-2"
+              size="lg"
+            >
               Track Shipment <ArrowRight className="size-4 " />{" "}
             </Button>
           </div>
+          {isPending && !data && (
+            <div className="flex justify-center items-center py-24">
+              <Loader className="text-primary size-6 animate-spin" />
+            </div>
+          )}
+          {data && <TrackResult data={data} />}
         </div>
       </main>
     </div>

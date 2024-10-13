@@ -51,7 +51,12 @@ export const columns: ColumnDef<Shipment>[] = [
       return (
         <div className="flex items-center gap-2 w-36">
           <span className="truncate flex-1">{row.original.id}</span>
-          <button onClick={() => copyText(row.original.id)}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              copyText(row.original.id);
+            }}
+          >
             <Copy className="size-4 text-primary" />
           </button>
         </div>
