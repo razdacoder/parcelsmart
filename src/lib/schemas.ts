@@ -149,6 +149,7 @@ export type ItemValues = z.infer<typeof itemSchema>;
 
 export const parcelSchema = z.object({
   packaging: z.string({ message: "This field is required" }).trim(),
+  packaging_value: z.string().optional(),
   currency: z.enum(["NGN", "USD", "GBP"]),
   proofOfPayment: z.array(z.string().url()),
   proofOfWeight: z.array(z.string().url()),

@@ -178,16 +178,24 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                     <Select
                       disabled={isLoading || isPending}
                       defaultValue={parcels[index].packaging}
-                      onValueChange={(value) =>
-                        updateParcel(index, value, undefined)
-                      }
+                      onValueChange={(value) => {
+                        const p = value.split("_");
+                        console.log(p);
+                        updateParcel(
+                          index,
+                          { id: p[0], value: p[1] },
+                          undefined
+                        );
+                      }}
                     >
                       <SelectTrigger id="packaging" className="h-10">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
                         {data?.data.packaging.map((packaging) => (
-                          <SelectItem value={packaging.packaging_id}>
+                          <SelectItem
+                            value={`${packaging.packaging_id}_${packaging.name}`}
+                          >
                             {packaging.name}
                           </SelectItem>
                         ))}

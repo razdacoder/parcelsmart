@@ -1,6 +1,18 @@
 import { ItemValues, ParcelValues } from "@/lib/schemas";
 import { create } from "zustand";
 
+type Carrier = {
+  name: string;
+  logo: string;
+  rate: number;
+};
+
+type Insurance = {
+  id: string;
+  name: string;
+  price: number;
+};
+
 type ShipmentApplicationState = {
   sender?: AddressBook;
   receiver?: AddressBook;
@@ -21,7 +33,7 @@ type ShipmentApplicationState = {
   deleteParcel: (parcel_index: number) => void;
   updateParcel: (
     parcel_index: number,
-    packaging?: string,
+    packaging?: { id: string; value: string },
     currency?: "NGN" | "USD" | "GBP"
   ) => void;
   addProofOfPayment: (parcel_index: number, value: string) => void;
@@ -37,6 +49,12 @@ type ShipmentApplicationState = {
   setRateID: (value: string) => void;
   drop_off_id?: string;
   setDropOffId: (value: string) => void;
+  carrier?: Carrier;
+  setCarrier: (value: Carrier) => void;
+  insurance?: Insurance;
+  location?: string;
+  setLocation: (value: string) => void;
+  setInsurance: (value: Insurance) => void;
 };
 
 export const useShipmentApplication = create<ShipmentApplicationState>(
@@ -110,7 +128,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
       }),
     updateParcel: (
       parcel_index: number,
-      packaging?: string,
+      packaging?: { id: string; value: string },
       currency?: "NGN" | "USD" | "GBP"
     ) =>
       set((state) => {
@@ -119,7 +137,8 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
 
         // Update the parcel's fields if the new value is provided
         if (packaging !== undefined) {
-          updatedParcel.packaging = packaging;
+          updatedParcel.packaging = packaging.id;
+          updatedParcel.packaging_value = packaging.value;
         }
         if (currency !== undefined) {
           updatedParcel.currency = currency;
@@ -185,7 +204,10 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
     shipmentID: undefined,
     setShipmentID: (value: string) => set({ shipmentID: value }),
     setRateID: (value: string) => set({ rate_id: value }),
-    setDropOffId: (value: string) => set({ rate_id: value }),
+    setDropOffId: (value: string) => set({ drop_off_id: value }),
+    setLocation: (value: string) => set({ location: value }),
+    setCarrier: (value: Carrier) => set({ carrier: value }),
+    setInsurance: (value: Insurance) => set({ insurance: value }),
     clearAll: () =>
       set({
         sender: undefined,
@@ -201,6 +223,11 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
         ],
         parcels_id: [],
         shipmentID: undefined,
+        rate_id: undefined,
+        drop_off_id: undefined,
+        location: undefined,
+        carrier: undefined,
+        insurance: undefined,
       }),
   })
 );

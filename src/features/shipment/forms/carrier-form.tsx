@@ -19,7 +19,8 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 export default function CarrierForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useDropOff();
-  const { clearAll, shipmentID, setRateID, rate_id } = useShipmentApplication();
+  const { clearAll, shipmentID, setRateID, rate_id, setCarrier } =
+    useShipmentApplication();
   const {
     data,
     isLoading: loading,
@@ -92,6 +93,11 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                       onChange={(e) => {
                         setSelectedCarrier(e.target.value);
                         setRateID(rate.id);
+                        setCarrier({
+                          name: rate.carrier_name,
+                          logo: rate.carrier_logo,
+                          rate: rate.amount,
+                        });
                       }}
                       id={rate.carrier_slug}
                     />

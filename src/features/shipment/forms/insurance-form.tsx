@@ -8,8 +8,16 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 
 export default function InsuranceForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  const { clearAll } = useShipmentApplication();
+  const { clearAll, setInsurance } = useShipmentApplication();
 
+  function continueToReview() {
+    setInsurance({
+      id: "chnage_later",
+      name: "Parcel Mart Insurance",
+      price: 500,
+    });
+    next();
+  }
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
@@ -83,7 +91,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
         </Button>
 
         <Button
-          onClick={() => next()}
+          onClick={continueToReview}
           size="lg"
           className="px-12 w-full md:w-fit"
         >
