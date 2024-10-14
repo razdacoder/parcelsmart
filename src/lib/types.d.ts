@@ -294,6 +294,7 @@ type Shipment = {
   origin_address: AddressBook;
   destination_address: AddressBook;
   return_address: AddressBook;
+  rate: ShipmentRate | null;
   parcel: {
     id: string;
     user_id: string;

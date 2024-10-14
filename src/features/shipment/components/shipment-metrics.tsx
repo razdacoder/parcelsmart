@@ -66,7 +66,7 @@ export default function ShipmentMetrics() {
             <div className="space-y-1">
               <h6 className="text-xs font-medium">Shipment in Transit</h6>
               <h3 className="text-lg font-bold">
-                {shipmentMetrics.data.confirmed_shipments}
+                {shipmentMetrics.data.in_transit_shipments}
               </h3>
             </div>
           </div>

@@ -1,9 +1,8 @@
-import sourceImg from "@/assets/t.svg";
 import { Badge } from "@/components/ui/badge";
 import { copyText, formatNaira } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpRight, Copy } from "lucide-react";
+import { ArrowUpRight, Copy, Minus } from "lucide-react";
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -35,12 +34,23 @@ export const columns: ColumnDef<Shipment>[] = [
     header: "Destination",
     cell: ({ row }) => {
       return (
-        <span className="inline-block w-36 truncate">
-          {row.original.destination_address.line_1}{" "}
-          {row.original.destination_address.city}{" "}
-          {row.original.destination_address.state},{" "}
-          {row.original.destination_address.country}
-        </span>
+        <>
+          {row.original.rate ? (
+            <span className="inline-block w-36 truncate">
+              {row.original.rate.destination_address.line_1}{" "}
+              {row.original.rate.destination_address.city}{" "}
+              {row.original.rate.destination_address.state},{" "}
+              {row.original.rate.destination_address.country}
+            </span>
+          ) : (
+            <span className="inline-block w-36 truncate">
+              {row.original.destination_address.line_1}{" "}
+              {row.original.destination_address.city}{" "}
+              {row.original.destination_address.state},{" "}
+              {row.original.destination_address.country}
+            </span>
+          )}
+        </>
       );
     },
   },
@@ -50,11 +60,13 @@ export const columns: ColumnDef<Shipment>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2 w-36">
-          <span className="truncate flex-1">{row.original.id}</span>
+          <span className="truncate flex-1">
+            {row.original.tracking_number || row.original.id}
+          </span>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              copyText(row.original.id);
+              copyText(row.original.tracking_number || row.original.id);
             }}
           >
             <Copy className="size-4 text-primary" />
@@ -66,10 +78,18 @@ export const columns: ColumnDef<Shipment>[] = [
   {
     accessorKey: "source",
     header: "Source",
-    cell: () => {
+    cell: ({ row }) => {
       return (
         <div className="w-36">
-          <img src={sourceImg} alt="Source Image" />
+          {row.original.rate ? (
+            <img
+              src={row.original.rate?.carrier_logo}
+              alt="Source Image"
+              className="size-6"
+            />
+          ) : (
+            <Minus className="size-6 text-primary" />
+          )}
         </div>
       );
     },
@@ -77,10 +97,14 @@ export const columns: ColumnDef<Shipment>[] = [
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({}) => {
+    cell: ({ row }) => {
       return (
         <span className="text-primary w-36 inline-block">
-          {formatNaira(4000)}
+          {row.original.rate ? (
+            formatNaira(row.original.rate.amount)
+          ) : (
+            <Minus className="size-6 text-primary" />
+          )}
         </span>
       );
     },

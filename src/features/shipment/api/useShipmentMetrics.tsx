@@ -11,6 +11,7 @@ type ResponseType = {
     confirmed_shipments: number;
     delivered_shipments: number;
     cancelled_shipments: number;
+    in_transit_shipments: number;
   };
 };
 
