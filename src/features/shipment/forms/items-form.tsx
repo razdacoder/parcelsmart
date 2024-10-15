@@ -8,7 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { client } from "@/lib/client";
 import { formatNaira } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import {
   Edit,
   Eye,
@@ -21,15 +24,22 @@ import {
   Upload,
   XCircle,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCreateParcel, { ParcelRequestType } from "../api/useCreateParcel";
 import useCreateShipment from "../api/useCreateShipment";
 import useGetPackaging from "../api/useGetPackaging";
+import useUpdateParcel from "../api/useUpdateParcel";
+import useUpdateShipment from "../api/useUpdateShipment";
 import { useEditItemModal } from "../hooks/use-edit-item-modal";
 import { useNewItemModal } from "../hooks/use-new-item-modal";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function ItemsForm({ next, prev }: StepsProps) {
+export default function ItemsForm({
+  next,
+  prev,
+  parcelsToEdit,
+}: StepsProps & { parcelsToEdit?: string[] }) {
   const navigate = useNavigate();
   const { onOpen } = useNewItemModal();
   const { onOpen: openEdit } = useEditItemModal();
@@ -42,12 +52,20 @@ export default function ItemsForm({ next, prev }: StepsProps) {
     deleteProofOfPayment,
     deleteProofOfWeight,
     setShipmentID,
+    addParcelId,
+    addItem,
+    deleteItem,
+    parcels_id,
+    shipmentID,
   } = useShipmentApplication();
 
   const { data, isLoading } = useGetPackaging();
   const { mutate: createParcel, isPending: creating } = useCreateParcel();
+  const { mutate: updateParcelFn, isPending: updating } = useUpdateParcel();
   const { mutate: createShipment, isPending: creatingShipment } =
     useCreateShipment();
+  const { mutate: updateShipment, isPending: updaingShipment } =
+    useUpdateShipment();
   const [AlertModal, confirm] = useAlertModal({
     type: "warning",
     title: "Upload Missing Documents.",
@@ -57,8 +75,62 @@ export default function ItemsForm({ next, prev }: StepsProps) {
     secondaryLabel: "Skip",
   });
 
-  const isPending = creating || creatingShipment;
-  const isCreating = creating || creatingShipment;
+  const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
+  const [packaging, setPackaging] = useState<string>();
+
+  const { data: resumeParcel, isLoading: resumeParcelLoading } = useQuery<
+    { status: boolean; message: string; data: Parcel },
+    AxiosError<ErrorResponseType>
+  >({
+    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(parcelsToEdit),
+    queryKey: ["parcel-for-resume", parcelsToEdit?.at(0)],
+    queryFn: async () => {
+      const response = await client.get(`/parcels/${parcelsToEdit?.at(0)}`);
+      return response.data;
+    },
+  });
+  const isPending =
+    creating ||
+    creatingShipment ||
+    resumeParcelLoading ||
+    updating ||
+    updaingShipment;
+  const isCreating =
+    creating || creatingShipment || updating || updaingShipment;
+
+  useEffect(() => {
+    if (resumeParcel) {
+      const newPackaging = {
+        id: resumeParcel.data.packaging_id,
+        value:
+          data?.data.packaging.find(
+            (p) => p.packaging_id === resumeParcel.data.packaging_id
+          )?.name || "",
+      };
+
+      updateParcel(0, newPackaging, "NGN");
+      setPackaging(`${newPackaging.id}_${newPackaging.value}`);
+
+      if (parcels[0].items.length === 0) {
+        resumeParcel.data.items.forEach((item) => {
+          addItem(0, {
+            itemType: "items",
+            weight: item.weight,
+            name: item.name,
+            hsCode: item.hs_code,
+            value: item.value,
+            category: "",
+            subCategory: "",
+            quantity: item.quantity,
+          });
+        });
+      }
+      if (parcels_id.length === 0) {
+        addParcelId(resumeParcel.data.id);
+      }
+    }
+  }, [resumeParcel]);
 
   async function createPrcelsandShipment() {
     const parcelIds: string[] = [];
@@ -84,6 +156,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
         createParcel(values, {
           onSuccess: (data) => {
             parcelIds.push(data.data.id);
+            addParcelId(data.data.id);
             resolve();
           },
         });
@@ -110,6 +183,60 @@ export default function ItemsForm({ next, prev }: StepsProps) {
     );
   }
 
+  async function updateParcelsandShipment() {
+    const parcelIds: string[] = [];
+    const parcelUpdateRequests = parcels.map((parcel, index) => {
+      const values: ParcelRequestType = {
+        description: `Parcel ${index + 1}`,
+        packaging_id: parcel.packaging,
+        weight_unit: "kg",
+        items: parcel.items.map((item) => ({
+          description: `${item.name} description`,
+          name: item.name,
+          quantity: item.quantity,
+          value: item.itemType === "items" ? item.value : 1000000, // Decide by Company
+          hs_code: item.itemType === "items" ? item.hsCode : "49011000", // Decide Later
+          weight: item.weight,
+          currency: parcel.currency,
+        })),
+      };
+
+      return new Promise<void>((resolve) => {
+        updateParcelFn(
+          { id: parcels_id[index], values },
+          {
+            onSuccess: (data) => {
+              parcelIds.push(data.data.id);
+              addParcelId(data.data.id);
+              resolve();
+            },
+          }
+        );
+      });
+    });
+
+    await Promise.all(parcelUpdateRequests);
+
+    // Now, create the shipment with all parcel IDs
+    updateShipment(
+      {
+        id: shipmentID!,
+        values: {
+          origin_address_id: sender?.id!,
+          destination_address_id: receiver?.id!,
+          parcel_id: parcelIds.at(0)!, // Should be populated at this point
+          purpose: "personal",
+        },
+      },
+
+      {
+        onSuccess: () => {
+          next?.();
+        },
+      }
+    );
+  }
+
   async function onSubmit() {
     if (
       parcels.some(
@@ -120,10 +247,10 @@ export default function ItemsForm({ next, prev }: StepsProps) {
     ) {
       const ok = await confirm();
       if (!ok) {
-        createPrcelsandShipment();
+        isResuming ? updateParcelsandShipment() : createPrcelsandShipment();
       }
     } else {
-      createPrcelsandShipment();
+      isResuming ? updateParcelsandShipment() : createPrcelsandShipment();
     }
   }
 
@@ -180,11 +307,12 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Packaging</Label>
                     <Select
-                      disabled={isLoading || isPending}
-                      defaultValue={parcels[index].packaging}
+                      disabled={isLoading || isPending || resumeParcelLoading}
+                      defaultValue={
+                        isResuming ? packaging : parcels[index].packaging
+                      }
                       onValueChange={(value) => {
                         const p = value.split("_");
-
                         updateParcel(
                           index,
                           { id: p[0], value: p[1] },
@@ -211,7 +339,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                     <Label htmlFor="packaging">Select Currency</Label>
                     <Select
                       defaultValue="NGN"
-                      disabled={isPending}
+                      disabled={isPending || resumeParcelLoading}
                       onValueChange={(value) =>
                         updateParcel(
                           index,
@@ -252,7 +380,7 @@ export default function ItemsForm({ next, prev }: StepsProps) {
                         <button onClick={() => openEdit(index, item_index)}>
                           <Edit className="size-4 text-primary" />
                         </button>
-                        <button>
+                        <button onClick={() => deleteItem(index, item_index)}>
                           <Trash2 className="size-4 text-destructive" />
                         </button>
                       </div>

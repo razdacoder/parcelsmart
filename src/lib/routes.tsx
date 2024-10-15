@@ -16,6 +16,7 @@ import Settings from "@/pages/dashbaord/Settings";
 import Shipment from "@/pages/dashbaord/Shipment";
 import TrackShipment from "@/pages/dashbaord/TrackShipment";
 import Wallet from "@/pages/dashbaord/Wallet";
+import Layout from "@/pages/layout";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -23,7 +24,10 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
-        <DashboardLayout />
+        <Layout>
+          <DashboardLayout />
+        </Layout>
+        {/* <ModalProvider /> */}
       </ProtectedRoute>
     ),
     children: [
@@ -61,7 +65,10 @@ export const router = createBrowserRouter([
     path: "/shipment/new",
     element: (
       <ProtectedRoute>
-        <BookShipment />
+        <Layout>
+          <BookShipment />
+        </Layout>
+        {/* <ModalProvider /> */}
       </ProtectedRoute>
     ),
   },

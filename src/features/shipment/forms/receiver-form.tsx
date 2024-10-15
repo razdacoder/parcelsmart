@@ -31,7 +31,12 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function RecieverForm({ next, prev }: StepsProps) {
+export default function RecieverForm({
+  next,
+  prev,
+  data,
+  prevLoading,
+}: StepsProps & { data?: AddressBook; prevLoading: boolean }) {
   const navigate = useNavigate();
   const { setReceiverValues, receiver, clearReceiverValues, clearAll } =
     useShipmentApplication();
@@ -51,7 +56,7 @@ export default function RecieverForm({ next, prev }: StepsProps) {
   );
 
   const { refetch, isLoading } = useAddress({ id: addressId });
-  const isPending = creating || editing || isLoading;
+  const isPending = creating || editing || isLoading || prevLoading;
 
   const { data: countryList, isLoading: countryListPending } = useCountries();
   const { data: stateList, isLoading: stateListPending } = useStateList({
@@ -101,6 +106,16 @@ export default function RecieverForm({ next, prev }: StepsProps) {
 
     fetchNewAddress();
   }, [addressId, refetch]);
+
+  useEffect(() => {
+    if (data) {
+      setReceiverValues(data);
+      form.reset(data);
+      setCountryCode(data.country);
+      const state = stateList?.data.find((state) => state.name === data.state);
+      setStateCode(state?.state_code || null);
+    }
+  }, [data]);
 
   const countryOptions = countryList?.data.map((country) => ({
     label: country.name,

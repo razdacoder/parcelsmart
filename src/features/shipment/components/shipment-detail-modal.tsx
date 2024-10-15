@@ -10,12 +10,14 @@ import {
 import { formatNaira } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { ArrowRight, DownloadIcon, File, Loader, XCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import useShipmentDetail from "../api/useShipmentDetail";
 import { useShipmentDetailModal } from "../hooks/use-shipment-detail-modal";
 
 export default function ShipmentDetailModal() {
   const { isOpen, onClose, id } = useShipmentDetailModal();
   const { data, isLoading } = useShipmentDetail({ id });
+  const navigate = useNavigate();
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
@@ -151,7 +153,13 @@ export default function ShipmentDetailModal() {
             </div>
             {data.data.status === "draft" && (
               <div className="flex justify-center items-center">
-                <Button className="gap-2">
+                <Button
+                  className="gap-2"
+                  onClick={() => {
+                    onClose();
+                    navigate(`/shipment/new?shpiment_id=${data.data.id}`);
+                  }}
+                >
                   Resume Shipment Booking <ArrowRight className="size-4" />
                 </Button>
               </div>

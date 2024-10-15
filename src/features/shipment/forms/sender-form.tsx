@@ -31,7 +31,11 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function SenderForm({ next }: StepsProps) {
+export default function SenderForm({
+  next,
+  data,
+  prevLoading,
+}: StepsProps & { data?: AddressBook; prevLoading: boolean }) {
   const navigate = useNavigate();
   const { setSenderValues, sender, clearSenderValues, clearAll } =
     useShipmentApplication();
@@ -39,6 +43,7 @@ export default function SenderForm({ next }: StepsProps) {
   const { mutate: updateAddress, isPending: editing } = useEditAddress({
     id: sender?.id,
   });
+
   const [addressId, setAddressId] = useState<string>();
   const [stateCode, setStateCode] = useState<string | null | undefined>();
   const [countryCode, setCountryCode] = useState<string | null | undefined>(
@@ -85,7 +90,17 @@ export default function SenderForm({ next }: StepsProps) {
     fetchNewAddress();
   }, [addressId, refetch]);
 
-  const isPending = creating || editing || isLoading;
+  useEffect(() => {
+    if (data) {
+      setSenderValues(data);
+      form.reset(data);
+      setCountryCode(data.country);
+      const state = stateList?.data.find((state) => state.name === data.state);
+      setStateCode(state?.state_code || null);
+    }
+  }, [data]);
+
+  const isPending = creating || editing || isLoading || prevLoading;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),

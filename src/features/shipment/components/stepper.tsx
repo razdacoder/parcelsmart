@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CarrierForm from "../forms/carrier-form";
 import InsuranceForm from "../forms/insurance-form";
 import ItemsForm from "../forms/items-form";
@@ -7,10 +7,23 @@ import ReceiverForm from "../forms/receiver-form";
 import Review from "../forms/review-form";
 import SenderForm from "../forms/sender-form";
 import { useReviewMode } from "../hooks/use-review-mode";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function Stepper() {
+type StepperProps = {
+  data?: Shipment;
+  prevloading: boolean;
+};
+
+export default function Stepper({ data, prevloading }: StepperProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const { setReviewMode, reviewMode } = useReviewMode();
+  const { setShipmentID } = useShipmentApplication();
+
+  useEffect(() => {
+    if (data) {
+      setShipmentID(data.id);
+    }
+  }, [data]);
 
   const steps = [
     "Sender",
@@ -77,12 +90,27 @@ export default function Stepper() {
 
       {/* Stepper Content */}
       <div className="">
-        {currentStep === 0 && <SenderForm next={() => nextStep()} />}
+        {currentStep === 0 && (
+          <SenderForm
+            next={() => nextStep()}
+            data={data?.origin_address}
+            prevLoading={prevloading}
+          />
+        )}
         {currentStep === 1 && (
-          <ReceiverForm next={() => nextStep()} prev={() => prevStep()} />
+          <ReceiverForm
+            next={() => nextStep()}
+            prev={() => prevStep()}
+            data={data?.destination_address}
+            prevLoading={prevloading}
+          />
         )}
         {currentStep === 2 && (
-          <ItemsForm next={() => nextStep()} prev={() => prevStep()} />
+          <ItemsForm
+            next={() => nextStep()}
+            prev={() => prevStep()}
+            parcelsToEdit={data && [data.parcel_id]}
+          />
         )}
         {currentStep === 3 && (
           <CarrierForm next={() => nextStep()} prev={() => prevStep()} />

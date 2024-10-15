@@ -1,10 +1,18 @@
+import useShipmentDetail from "@/features/shipment/api/useShipmentDetail";
 import ShipmentReview from "@/features/shipment/components/shipment-review";
 import Stepper from "@/features/shipment/components/stepper";
 import { useReviewMode } from "@/features/shipment/hooks/use-review-mode";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 
 export default function BookShipment() {
   const { reviewMode } = useReviewMode();
+  const [searchParams] = useSearchParams();
+  const shipmentID = searchParams.get("shpiment_id");
+  const { data: prevData, isLoading: prevLoading } = useShipmentDetail({
+    id: shipmentID as string | undefined,
+  });
+
   return (
     <main
       className={cn(
@@ -18,7 +26,7 @@ export default function BookShipment() {
           reviewMode && "w-full max-w-full grid lg:grid-cols-5 md:p-0 relative"
         )}
       >
-        <Stepper />
+        <Stepper data={prevData?.data} prevloading={prevLoading} />
         {reviewMode && (
           <div className="relative col-span-1 lg:col-span-2">
             <ShipmentReview />

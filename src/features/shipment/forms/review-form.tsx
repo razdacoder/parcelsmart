@@ -89,7 +89,10 @@ export default function Review({ prev, moveToStep }: StepsProps) {
             <div className="flex items-center justify-between">
               <h3 className="text-primary text-lg font-bold">Sender</h3>
               <button
-                onClick={() => moveToStep?.(0)}
+                onClick={() => {
+                  moveToStep?.(0);
+                  setReviewMode(false);
+                }}
                 className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
               >
                 <Edit className="text-primary size-4" />
@@ -116,7 +119,10 @@ export default function Review({ prev, moveToStep }: StepsProps) {
             <div className="flex items-center justify-between">
               <h3 className="text-primary text-lg font-bold">Receiver</h3>
               <button
-                onClick={() => moveToStep?.(1)}
+                onClick={() => {
+                  moveToStep?.(1);
+                  setReviewMode(false);
+                }}
                 className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
               >
                 <Edit className="text-primary size-4" />
@@ -145,7 +151,10 @@ export default function Review({ prev, moveToStep }: StepsProps) {
                 Parcel Information
               </h3>
               <button
-                onClick={() => moveToStep?.(2)}
+                onClick={() => {
+                  moveToStep?.(2);
+                  setReviewMode(false);
+                }}
                 className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
               >
                 <Edit className="text-primary size-4" />
@@ -186,7 +195,10 @@ export default function Review({ prev, moveToStep }: StepsProps) {
                 Carrier Information
               </h3>
               <button
-                onClick={() => moveToStep?.(3)}
+                onClick={() => {
+                  moveToStep?.(3);
+                  setReviewMode(false);
+                }}
                 className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
               >
                 <Edit className="text-primary size-4" />
