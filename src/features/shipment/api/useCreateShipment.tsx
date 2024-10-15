@@ -6,7 +6,7 @@ import { toast } from "sonner";
 type ShipmentRequestType = {
   origin_address_id: string;
   destination_address_id: string;
-  parcel_id: string;
+  parcel_ids: string[];
   purpose: string;
 };
 

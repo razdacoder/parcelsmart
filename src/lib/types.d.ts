@@ -269,7 +269,7 @@ type Shipment = {
   origin_address_id: string;
   destination_address_id: string;
   return_address_id: string;
-  parcel_id: string;
+  parcel_id: string | null;
   purpose: string;
   user_id: string;
   tracking_number: string | null;
@@ -308,5 +308,6 @@ type Shipment = {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date | null;
-  };
+  } | null;
+  parcels: Parcel[];
 };

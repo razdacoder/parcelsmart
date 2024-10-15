@@ -8,10 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { client } from "@/lib/client";
 import { formatNaira } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import {
   Edit,
   Eye,
@@ -39,7 +36,7 @@ export default function ItemsForm({
   next,
   prev,
   parcelsToEdit,
-}: StepsProps & { parcelsToEdit?: string[] }) {
+}: StepsProps & { parcelsToEdit?: Parcel[] }) {
   const navigate = useNavigate();
   const { onOpen } = useNewItemModal();
   const { onOpen: openEdit } = useEditItemModal();
@@ -53,18 +50,22 @@ export default function ItemsForm({
     deleteProofOfWeight,
     setShipmentID,
     addParcelId,
+    deleteParcelId,
     addItem,
     deleteItem,
     parcels_id,
     shipmentID,
+    newParcel,
+    deleteParcel,
   } = useShipmentApplication();
 
   const { data, isLoading } = useGetPackaging();
-  const { mutate: createParcel, isPending: creating } = useCreateParcel();
-  const { mutate: updateParcelFn, isPending: updating } = useUpdateParcel();
-  const { mutate: createShipment, isPending: creatingShipment } =
+  const { mutateAsync: createParcel, isPending: creating } = useCreateParcel();
+  const { mutateAsync: updateParcelFn, isPending: updating } =
+    useUpdateParcel();
+  const { mutateAsync: createShipment, isPending: creatingShipment } =
     useCreateShipment();
-  const { mutate: updateShipment, isPending: updaingShipment } =
+  const { mutateAsync: updateShipment, isPending: updaingShipment } =
     useUpdateShipment();
   const [AlertModal, confirm] = useAlertModal({
     type: "warning",
@@ -78,64 +79,47 @@ export default function ItemsForm({
   const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
   const [packaging, setPackaging] = useState<string>();
 
-  const { data: resumeParcel, isLoading: resumeParcelLoading } = useQuery<
-    { status: boolean; message: string; data: Parcel },
-    AxiosError<ErrorResponseType>
-  >({
-    staleTime: 5 * 60 * 1000,
-    enabled: Boolean(parcelsToEdit),
-    queryKey: ["parcel-for-resume", parcelsToEdit?.at(0)],
-    queryFn: async () => {
-      const response = await client.get(`/parcels/${parcelsToEdit?.at(0)}`);
-      return response.data;
-    },
-  });
-  const isPending =
-    creating ||
-    creatingShipment ||
-    resumeParcelLoading ||
-    updating ||
-    updaingShipment;
+  const isPending = creating || creatingShipment || updating || updaingShipment;
   const isCreating =
     creating || creatingShipment || updating || updaingShipment;
 
   useEffect(() => {
-    if (resumeParcel) {
-      const newPackaging = {
-        id: resumeParcel.data.packaging_id,
-        value:
-          data?.data.packaging.find(
-            (p) => p.packaging_id === resumeParcel.data.packaging_id
-          )?.name || "",
-      };
+    if (parcelsToEdit) {
+      parcelsToEdit.forEach((parcel, index) => {
+        const newPackaging = {
+          id: parcel.packaging_id,
+          value:
+            data?.data.packaging.find(
+              (p) => p.packaging_id === parcel.packaging_id
+            )?.name || "",
+        };
+        updateParcel(0, newPackaging, "NGN");
+        setPackaging(`${newPackaging.id}_${newPackaging.value}`);
 
-      updateParcel(0, newPackaging, "NGN");
-      setPackaging(`${newPackaging.id}_${newPackaging.value}`);
-
-      if (parcels[0].items.length === 0) {
-        resumeParcel.data.items.forEach((item) => {
-          addItem(0, {
-            itemType: "items",
-            weight: item.weight,
-            name: item.name,
-            hsCode: item.hs_code,
-            value: item.value,
-            category: "",
-            subCategory: "",
-            quantity: item.quantity,
+        if (parcels[index].items.length === 0) {
+          parcel.items.forEach((item) => {
+            addItem(0, {
+              itemType: "items",
+              weight: item.weight,
+              name: item.name,
+              hsCode: item.hs_code,
+              value: item.value,
+              category: "",
+              subCategory: "",
+              quantity: item.quantity,
+            });
           });
-        });
-      }
-      if (parcels_id.length === 0) {
-        addParcelId(resumeParcel.data.id);
-      }
+        }
+
+        if (parcels_id.length === 0) {
+          addParcelId(parcel.id);
+        }
+      });
     }
-  }, [resumeParcel]);
+  }, [parcelsToEdit]);
 
   async function createPrcelsandShipment() {
-    const parcelIds: string[] = [];
-
-    const parcelRequests = parcels.map((parcel, index) => {
+    const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
         description: `Parcel ${index + 1}`,
         packaging_id: parcel.packaging,
@@ -144,34 +128,33 @@ export default function ItemsForm({
           description: `${item.name} description`,
           name: item.name,
           quantity: item.quantity,
-          value: item.itemType === "items" ? item.value : 1000000, // Decide by Company
-          hs_code: item.itemType === "items" ? item.hsCode : "49011000", // Decide Later
+          value: item.itemType === "items" ? item.value : 1000000,
+          hs_code: item.itemType === "items" ? item.hsCode : "49011000",
           weight: item.weight,
           currency: parcel.currency,
         })),
       };
 
-      // Return a promise for each parcel creation request
-      return new Promise<void>((resolve) => {
-        createParcel(values, {
-          onSuccess: (data) => {
-            parcelIds.push(data.data.id);
-            addParcelId(data.data.id);
-            resolve();
-          },
-        });
-      });
+      return createParcel(values).then((data) => data.data.id);
     });
 
-    // Wait for all parcel creation promises to resolve
-    await Promise.all(parcelRequests);
+    const results = await Promise.allSettled(parcelCreationPromises);
 
-    // Now, create the shipment with all parcel IDs
+    const parcelIds = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+
+    parcelIds.forEach((id) => addParcelId(id));
+
+    if (parcelIds.length !== parcels.length) {
+      console.error("Failed to create some parcels:", results);
+    }
+
     createShipment(
       {
         origin_address_id: sender?.id!,
         destination_address_id: receiver?.id!,
-        parcel_id: parcelIds.at(0)!, // Should be populated at this point
+        parcel_ids: parcelIds,
         purpose: "personal",
       },
       {
@@ -184,8 +167,7 @@ export default function ItemsForm({
   }
 
   async function updateParcelsandShipment() {
-    const parcelIds: string[] = [];
-    const parcelUpdateRequests = parcels.map((parcel, index) => {
+    const parcelUpdatePromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
         description: `Parcel ${index + 1}`,
         packaging_id: parcel.packaging,
@@ -194,41 +176,41 @@ export default function ItemsForm({
           description: `${item.name} description`,
           name: item.name,
           quantity: item.quantity,
-          value: item.itemType === "items" ? item.value : 1000000, // Decide by Company
-          hs_code: item.itemType === "items" ? item.hsCode : "49011000", // Decide Later
+          value: item.itemType === "items" ? item.value : 1000000,
+          hs_code: item.itemType === "items" ? item.hsCode : "49011000",
           weight: item.weight,
           currency: parcel.currency,
         })),
       };
 
-      return new Promise<void>((resolve) => {
-        updateParcelFn(
-          { id: parcels_id[index], values },
-          {
-            onSuccess: (data) => {
-              parcelIds.push(data.data.id);
-              addParcelId(data.data.id);
-              resolve();
-            },
-          }
-        );
-      });
+      return updateParcelFn({ id: parcels_id[index], values }).then(
+        (data) => data.data.id
+      );
     });
 
-    await Promise.all(parcelUpdateRequests);
+    const results = await Promise.allSettled(parcelUpdatePromises);
 
-    // Now, create the shipment with all parcel IDs
+    const parcelIds = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+
+    parcels_id.forEach((id) => deleteParcelId(id));
+    parcelIds.forEach((id) => addParcelId(id));
+
+    if (parcelIds.length !== parcels.length) {
+      console.error("Failed to update some parcels:", results);
+    }
+
     updateShipment(
       {
         id: shipmentID!,
         values: {
           origin_address_id: sender?.id!,
           destination_address_id: receiver?.id!,
-          parcel_id: parcelIds.at(0)!, // Should be populated at this point
+          parcel_ids: parcelIds,
           purpose: "personal",
         },
       },
-
       {
         onSuccess: () => {
           next?.();
@@ -282,24 +264,39 @@ export default function ItemsForm({
           </button>
         </div>
         {parcels.map((parcel, index) => (
-          <div key={`percel-${index}`} className="flex flex-col bg-[#F4FDF8]">
+          <div key={`parcel-${index}`} className="flex flex-col bg-[#F4FDF8]">
             <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="bg-white p-2 rounded-lg ">
                   <Package className="size-6 md:size-8 text-primary " />
                 </div>
                 <h3 className="text-sm md:text-base text-white font-semibold">
-                  Parcel 1
+                  Parcel {index + 1}
                 </h3>
               </div>
-              <Button
-                onClick={() => onOpen(index)}
-                className="gap-2 text-primary text-sm"
-                variant="secondary"
-              >
-                <Plus className="size-3.5 md:size-5" />
-                Add Item
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => onOpen(index)}
+                  className="gap-2 text-primary text-sm"
+                  variant="secondary"
+                >
+                  <Plus className="size-3.5 md:size-5" />
+                  Add Item
+                </Button>
+                {parcels.length > 1 && (
+                  <Button
+                    onClick={() => {
+                      deleteParcel(index);
+                      deleteParcelId(parcels_id.find((_, i) => i === index)!);
+                    }}
+                    className="gap-2 text-sm"
+                    variant="destructive"
+                  >
+                    <XCircle className="size-3.5 md:size-5" />
+                    Remove Parcel
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="p-4">
               <div className="space-y-4">
@@ -307,7 +304,7 @@ export default function ItemsForm({
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Packaging</Label>
                     <Select
-                      disabled={isLoading || isPending || resumeParcelLoading}
+                      disabled={isLoading || isPending}
                       defaultValue={
                         isResuming ? packaging : parcels[index].packaging
                       }
@@ -339,7 +336,7 @@ export default function ItemsForm({
                     <Label htmlFor="packaging">Select Currency</Label>
                     <Select
                       defaultValue="NGN"
-                      disabled={isPending || resumeParcelLoading}
+                      disabled={isPending}
                       onValueChange={(value) =>
                         updateParcel(
                           index,
@@ -480,6 +477,7 @@ export default function ItemsForm({
           </div>
         ))}
         <Button
+          onClick={newParcel}
           disabled={isPending}
           className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
           size="lg"

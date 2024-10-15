@@ -109,7 +109,7 @@ export default function Stepper({ data, prevloading }: StepperProps) {
           <ItemsForm
             next={() => nextStep()}
             prev={() => prevStep()}
-            parcelsToEdit={data && [data.parcel_id]}
+            parcelsToEdit={data?.parcels}
           />
         )}
         {currentStep === 3 && (
