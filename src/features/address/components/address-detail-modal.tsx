@@ -8,8 +8,10 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useShipmentApplication } from "@/features/shipment/hooks/use-shipment-application-store";
 import { format } from "date-fns";
 import { ArrowRight, Edit, Loader2, Trash2, XCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import useAddress from "../api/useAddress";
 import useDeleteAddress from "../api/useDeleteAddress";
 import { useAddressDetailModal } from "../hooks/use-address-detail";
@@ -19,6 +21,8 @@ export default function AddressDetailModal() {
   const { isOpen, onClose, id } = useAddressDetailModal();
   const { data, isLoading, isError } = useAddress({ id });
   const { mutate: deleteAddress, isPending } = useDeleteAddress();
+  const { setSenderValues } = useShipmentApplication();
+  const navigate = useNavigate();
   const { onOpen } = useEditAddress();
   const [AlertModal, confirm] = useAlertModal({
     type: "warning",
@@ -120,7 +124,14 @@ export default function AddressDetailModal() {
               <div className="bg-[#F4FDF8] p-4 rounded-lg space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-primary text-lg font-bold">Location</h3>
-                  <Button className="gap-2 items-center">
+                  <Button
+                    onClick={() => {
+                      onClose();
+                      setSenderValues(data.data);
+                      navigate(`/shipment/new`);
+                    }}
+                    className="gap-2 items-center"
+                  >
                     Book Shipment <ArrowRight className="size-4" />
                   </Button>
                 </div>

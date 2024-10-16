@@ -13,13 +13,16 @@ type Response = {
 
 type UseAddressListProps = {
   page: number;
+  search: string;
 };
 
-export default function useAddressList({ page }: UseAddressListProps) {
+export default function useAddressList({ page, search }: UseAddressListProps) {
   return useQuery<Response, AxiosError>({
-    queryKey: ["address-list", page],
+    queryKey: ["address-list", page, search],
     queryFn: async () => {
-      const response = await client.get("/addresses", { params: { page } });
+      const response = await client.get("/addresses", {
+        params: { page, search: search === "" ? undefined : search },
+      });
       return response.data;
     },
   });

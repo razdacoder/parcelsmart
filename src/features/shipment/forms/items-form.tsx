@@ -167,9 +167,13 @@ export default function ItemsForm({
   }
 
   async function updateParcelsandShipment() {
-    const parcelUpdatePromises = parcels.map((parcel, index) => {
+    const existingParcelIds = parcels_id;
+    const newParcels = parcels.filter((_, index) => !existingParcelIds[index]);
+
+    // Create new parcels
+    const newParcelPromises = newParcels.map((parcel) => {
       const values: ParcelRequestType = {
-        description: `Parcel ${index + 1}`,
+        description: `Parcel ${parcels.indexOf(parcel) + 1}`,
         packaging_id: parcel.packaging,
         weight_unit: "kg",
         items: parcel.items.map((item) => ({
@@ -183,12 +187,39 @@ export default function ItemsForm({
         })),
       };
 
-      return updateParcelFn({ id: parcels_id[index], values }).then(
-        (data) => data.data.id
-      );
+      return createParcel(values).then((data) => {
+        addParcelId(data.data.id); // Update parcel IDs in state
+        return data.data.id;
+      });
     });
 
-    const results = await Promise.allSettled(parcelUpdatePromises);
+    const existingParcelPromises = parcels
+      .filter((_, index) => existingParcelIds[index])
+      .map((parcel, index) => {
+        const values: ParcelRequestType = {
+          description: `Parcel ${index + 1}`,
+          packaging_id: parcel.packaging,
+          weight_unit: "kg",
+          items: parcel.items.map((item) => ({
+            description: `${item.name} description`,
+            name: item.name,
+            quantity: item.quantity,
+            value: item.itemType === "items" ? item.value : 1000000,
+            hs_code: item.itemType === "items" ? item.hsCode : "49011000",
+            weight: item.weight,
+            currency: parcel.currency,
+          })),
+        };
+
+        return updateParcelFn({ id: existingParcelIds[index], values }).then(
+          (data) => data.data.id
+        );
+      });
+
+    const results = await Promise.allSettled([
+      ...newParcelPromises,
+      ...existingParcelPromises,
+    ]);
 
     const parcelIds = results
       .filter((result) => result.status === "fulfilled")
@@ -476,17 +507,19 @@ export default function ItemsForm({
             </div>
           </div>
         ))}
-        <Button
-          onClick={newParcel}
-          disabled={isPending}
-          className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
-          size="lg"
-        >
-          <div className="p-3 bg-white rounded-lg">
-            <PackagePlus className="stroke-primary size-6 stroke-2" />
-          </div>
-          Click to add new parcel
-        </Button>
+        {!isResuming && (
+          <Button
+            onClick={newParcel}
+            disabled={isPending}
+            className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
+            size="lg"
+          >
+            <div className="p-3 bg-white rounded-lg">
+              <PackagePlus className="stroke-primary size-6 stroke-2" />
+            </div>
+            Click to add new parcel
+          </Button>
+        )}
 
         <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
           <Button

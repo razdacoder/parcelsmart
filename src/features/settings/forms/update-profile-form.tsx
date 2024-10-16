@@ -7,6 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import useMe from "@/features/auth/api/useMe";
 import { updateProfileSchema, UpdateProfileValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, User } from "lucide-react";
@@ -15,13 +16,14 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
 export default function UpdateProfileForm() {
+  const { data } = useMe();
   const form = useForm<UpdateProfileValues>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      email: "",
+      firstName: data?.data.first_name,
+      lastName: data?.data.last_name,
+      phoneNumber: data?.data.phone_number,
+      email: data?.data.email,
     },
   });
   return (
