@@ -119,11 +119,17 @@ export default function ItemsForm({
         packaging_id: parcel.packaging,
         weight_unit: "kg",
         items: parcel.items.map((item) => ({
-          description: `${item.name} description`,
+          description: item.description,
           name: item.name,
           quantity: item.quantity,
-          value: item.itemType === "items" ? item.value : 1000000,
-          hs_code: item.itemType === "items" ? item.hsCode : "49011000",
+          value:
+            item.itemType === "items"
+              ? item.value
+              : Number(import.meta.env.VITE_DOCUMENT_VALUE),
+          hs_code:
+            item.itemType === "items"
+              ? item.hsCode
+              : import.meta.env.VITE_DOCUMENT_HSCODE,
           weight: item.weight,
           currency: parcel.currency,
         })),
@@ -182,7 +188,7 @@ export default function ItemsForm({
           value:
             item.itemType === "items"
               ? item.value
-              : import.meta.env.VITE_DOCUMENT_VALUE,
+              : Number(import.meta.env.VITE_DOCUMENT_VALUE),
           hs_code:
             item.itemType === "items"
               ? item.hsCode
@@ -208,7 +214,7 @@ export default function ItemsForm({
           value:
             item.itemType === "items"
               ? item.value
-              : import.meta.env.VITE_DOCUMENT_VALUE,
+              : Number(import.meta.env.VITE_DOCUMENT_VALUE),
           hs_code:
             item.itemType === "items"
               ? item.hsCode
