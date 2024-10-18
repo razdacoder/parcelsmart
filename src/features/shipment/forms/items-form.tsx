@@ -15,7 +15,7 @@ import {
   Upload,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCreateParcel, { ParcelRequestType } from "../api/useCreateParcel";
 import useCreateShipment from "../api/useCreateShipment";
@@ -72,7 +72,6 @@ export default function ItemsForm({
   });
 
   const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
-  const [packaging, setPackaging] = useState<string>();
 
   const isPending = creating || creatingShipment || updating || updaingShipment;
   const isCreating =
@@ -89,7 +88,6 @@ export default function ItemsForm({
             )?.name || "",
         };
         updateParcel(index, newPackaging, "NGN");
-        setPackaging(`${newPackaging.id}_${newPackaging.value}`);
 
         // Add items only if they don't exist
         if (parcels[index].items.length === 0) {
@@ -341,7 +339,7 @@ export default function ItemsForm({
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Packaging</Label>
                     <PSelect
-                      value={isResuming ? packaging : parcels[index].packaging}
+                      value={`${parcel.packaging}_${parcel.packaging_value}`}
                       isLoading={isLoading}
                       placeholder="Select Packaging"
                       options={packagingOptions}
@@ -361,7 +359,7 @@ export default function ItemsForm({
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Currency</Label>
                     <PSelect
-                      value={isResuming ? packaging : parcels[index].packaging}
+                      value={parcel.currency}
                       isLoading={isLoading}
                       placeholder="Select Cunrrency"
                       options={[{ value: "NGN", label: "Nigeria Naira (N)" }]}
