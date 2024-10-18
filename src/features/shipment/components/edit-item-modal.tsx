@@ -39,6 +39,7 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 export default function EditItemModal() {
   const { isOpen, onClose, parcel_id, item_id } = useEditItemModal();
   const { editItem, parcels } = useShipmentApplication();
+
   const item = parcels?.[parcel_id!]?.items?.[item_id!];
   const [itemType, setItemType] = useState<"items" | "documents">(
     item?.itemType || "items"
@@ -71,7 +72,7 @@ export default function EditItemModal() {
   const form = useForm<ItemValues>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
-      itemType: item?.itemType,
+      itemType: itemType,
       name: item?.itemType === "items" ? item?.name : undefined,
       value: item?.itemType === "items" ? item?.value : undefined,
       category: item?.itemType === "items" ? item?.category : undefined,
@@ -91,11 +92,11 @@ export default function EditItemModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="w-11/12 md:max-w-xl p-0">
+      <DialogContent className="w-11/12 md:max-w-xl p-0 rounded-xl">
         <DialogClose className="absolute -top-10 md:-top-12 z-50 right-0 size-8 md:size-10 rounded-full bg-white flex justify-center items-center">
           <X className="size-4 md:size-5 " />
         </DialogClose>
-        <DialogHeader className="relative justify-center items-center bg-[#F4FDF8] py-4 md:py-8 gap-2 md:gap-4">
+        <DialogHeader className="relative justify-center items-center bg-[#F4FDF8] py-4 md:py-8 gap-2 md:gap-4 rounded-xl">
           <DialogTitle className="text-2xl md:text-3xl font-medium text-text">
             Edit Item
           </DialogTitle>

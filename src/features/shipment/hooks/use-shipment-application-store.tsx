@@ -43,6 +43,7 @@ type ShipmentApplicationState = {
   parcels_id: string[];
   addParcelId: (value: string) => void;
   deleteParcelId: (value: string) => void;
+  setNewIDS: (values: string[]) => void;
   shipmentID?: string;
   setShipmentID: (value: string) => void;
   rate_id?: string;
@@ -201,6 +202,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
         const updatedParcelIds = parcelIds.filter((id) => id !== value);
         return { parcels_id: updatedParcelIds };
       }),
+    setNewIDS: (values: string[]) => set({ parcels_id: values }),
     shipmentID: undefined,
     setShipmentID: (value: string) => set({ shipmentID: value }),
     setRateID: (value: string) => set({ rate_id: value }),

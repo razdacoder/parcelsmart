@@ -21,7 +21,7 @@ import {
   Upload,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCreateParcel, { ParcelRequestType } from "../api/useCreateParcel";
 import useCreateShipment from "../api/useCreateShipment";
@@ -57,6 +57,7 @@ export default function ItemsForm({
     shipmentID,
     newParcel,
     deleteParcel,
+    setNewIDS,
   } = useShipmentApplication();
 
   const { data, isLoading } = useGetPackaging();
@@ -83,7 +84,7 @@ export default function ItemsForm({
   const isCreating =
     creating || creatingShipment || updating || updaingShipment;
 
-  useEffect(() => {
+  useMemo(() => {
     if (parcelsToEdit) {
       parcelsToEdit.forEach((parcel, index) => {
         const newPackaging = {
@@ -93,12 +94,13 @@ export default function ItemsForm({
               (p) => p.packaging_id === parcel.packaging_id
             )?.name || "",
         };
-        updateParcel(0, newPackaging, "NGN");
+        updateParcel(index, newPackaging, "NGN");
         setPackaging(`${newPackaging.id}_${newPackaging.value}`);
 
+        // Add items only if they don't exist
         if (parcels[index].items.length === 0) {
           parcel.items.forEach((item) => {
-            addItem(0, {
+            addItem(index, {
               itemType: "items",
               weight: item.weight,
               name: item.name,
@@ -111,13 +113,12 @@ export default function ItemsForm({
           });
         }
 
-        if (parcels_id.length === 0) {
+        if (!parcels_id.includes(parcel.id)) {
           addParcelId(parcel.id);
         }
       });
     }
-  }, [parcelsToEdit]);
-
+  }, [parcelsToEdit, data]);
   async function createPrcelsandShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
@@ -144,7 +145,7 @@ export default function ItemsForm({
       .filter((result) => result.status === "fulfilled")
       .map((result) => result.value);
 
-    parcelIds.forEach((id) => addParcelId(id));
+    setNewIDS(parcelIds);
 
     if (parcelIds.length !== parcels.length) {
       console.error("Failed to create some parcels:", results);
@@ -168,12 +169,17 @@ export default function ItemsForm({
 
   async function updateParcelsandShipment() {
     const existingParcelIds = parcels_id;
+
+    // Identify new parcels (no ID yet) and existing parcels (with ID)
     const newParcels = parcels.filter((_, index) => !existingParcelIds[index]);
+    const existingParcels = parcels.filter(
+      (_, index) => existingParcelIds[index]
+    );
 
     // Create new parcels
-    const newParcelPromises = newParcels.map((parcel) => {
+    const newParcelPromises = newParcels.map((parcel, index) => {
       const values: ParcelRequestType = {
-        description: `Parcel ${parcels.indexOf(parcel) + 1}`,
+        description: `Parcel ${index + 1}`,
         packaging_id: parcel.packaging,
         weight_unit: "kg",
         items: parcel.items.map((item) => ({
@@ -187,51 +193,51 @@ export default function ItemsForm({
         })),
       };
 
-      return createParcel(values).then((data) => {
-        addParcelId(data.data.id); // Update parcel IDs in state
-        return data.data.id;
-      });
+      return createParcel(values).then((data) => data.data.id);
     });
 
-    const existingParcelPromises = parcels
-      .filter((_, index) => existingParcelIds[index])
-      .map((parcel, index) => {
-        const values: ParcelRequestType = {
-          description: `Parcel ${index + 1}`,
-          packaging_id: parcel.packaging,
-          weight_unit: "kg",
-          items: parcel.items.map((item) => ({
-            description: `${item.name} description`,
-            name: item.name,
-            quantity: item.quantity,
-            value: item.itemType === "items" ? item.value : 1000000,
-            hs_code: item.itemType === "items" ? item.hsCode : "49011000",
-            weight: item.weight,
-            currency: parcel.currency,
-          })),
-        };
+    // Update existing parcels
+    const existingParcelPromises = existingParcels.map((parcel, index) => {
+      const values: ParcelRequestType = {
+        description: `Parcel ${index + 1}`,
+        packaging_id: parcel.packaging,
+        weight_unit: "kg",
+        items: parcel.items.map((item) => ({
+          description: `${item.name} description`,
+          name: item.name,
+          quantity: item.quantity,
+          value: item.itemType === "items" ? item.value : 1000000,
+          hs_code: item.itemType === "items" ? item.hsCode : "49011000",
+          weight: item.weight,
+          currency: parcel.currency,
+        })),
+      };
 
-        return updateParcelFn({ id: existingParcelIds[index], values }).then(
-          (data) => data.data.id
-        );
-      });
+      // Use the existing parcel ID
+      return updateParcelFn({ id: existingParcelIds[index], values }).then(
+        (data) => data.data.id
+      );
+    });
 
+    // Wait for all create/update operations to complete
     const results = await Promise.allSettled([
       ...newParcelPromises,
       ...existingParcelPromises,
     ]);
 
+    // Collect all successfully updated/created parcel IDs
     const parcelIds = results
       .filter((result) => result.status === "fulfilled")
-      .map((result) => result.value);
+      .map((result) => (result as PromiseFulfilledResult<string>).value);
 
-    parcels_id.forEach((id) => deleteParcelId(id));
-    parcelIds.forEach((id) => addParcelId(id));
+    setNewIDS(parcelIds);
 
+    // Ensure to update only parcels that were successfully created/updated
     if (parcelIds.length !== parcels.length) {
       console.error("Failed to update some parcels:", results);
     }
 
+    // Update the shipment with the new parcel IDs
     updateShipment(
       {
         id: shipmentID!,
@@ -507,19 +513,18 @@ export default function ItemsForm({
             </div>
           </div>
         ))}
-        {!isResuming && (
-          <Button
-            onClick={newParcel}
-            disabled={isPending}
-            className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
-            size="lg"
-          >
-            <div className="p-3 bg-white rounded-lg">
-              <PackagePlus className="stroke-primary size-6 stroke-2" />
-            </div>
-            Click to add new parcel
-          </Button>
-        )}
+
+        <Button
+          onClick={newParcel}
+          disabled={isPending}
+          className="bg-[#5F9EA0] w-full h-20 justify-start items-center gap-4 font-semibold rounded-xl text-sm md:text-base"
+          size="lg"
+        >
+          <div className="p-3 bg-white rounded-lg">
+            <PackagePlus className="stroke-primary size-6 stroke-2" />
+          </div>
+          Click to add new parcel
+        </Button>
 
         <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
           <Button

@@ -39,7 +39,7 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2 w-36">
-          <span>{row.original.reference}</span>
+          <span className="truncate">{row.original.reference}</span>
           <button
             onClick={() => {
               window.navigator.clipboard.writeText(row.original.reference);
