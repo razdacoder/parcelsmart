@@ -24,6 +24,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
   const {
     data,
     isLoading: loading,
+    error,
     refetch,
     isRefetching,
   } = useGetRates({ shipment_id: shipmentID });
@@ -73,6 +74,12 @@ export default function CarrierForm({ next, prev }: StepsProps) {
         {isLoading && (
           <div className="flex justify-center items-center">
             <Loader className="size-5 animate-spin text-primary" />
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="flex justify-center items-center text-destructive py-24">
+            <p>{error.response?.data.message}</p>
           </div>
         )}
         {data && !isLoading && (
