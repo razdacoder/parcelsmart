@@ -1,13 +1,7 @@
 import { useAlertModal } from "@/components/alert-modal";
+import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatNaira } from "@/lib/utils";
 import {
   Edit,
@@ -104,6 +98,7 @@ export default function ItemsForm({
               itemType: "items",
               weight: item.weight,
               name: item.name,
+              description: item.description,
               hsCode: item.hs_code,
               value: item.value,
               category: "",
@@ -277,6 +272,11 @@ export default function ItemsForm({
     (parcel) => !!parcel.packaging && parcel.items.length > 0
   );
 
+  const packagingOptions = data?.data.packaging.map((p) => ({
+    label: p.name,
+    value: `${p.packaging_id}_${p.name}`,
+  }));
+
   return (
     <>
       <AlertModal />
@@ -340,56 +340,41 @@ export default function ItemsForm({
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Packaging</Label>
-                    <Select
-                      disabled={isLoading || isPending}
-                      defaultValue={
-                        isResuming ? packaging : parcels[index].packaging
-                      }
-                      onValueChange={(value) => {
-                        const p = value.split("_");
-                        updateParcel(
-                          index,
-                          { id: p[0], value: p[1] },
-                          undefined
-                        );
+                    <PSelect
+                      value={isResuming ? packaging : parcels[index].packaging}
+                      isLoading={isLoading}
+                      placeholder="Select Packaging"
+                      options={packagingOptions}
+                      onChange={(value) => {
+                        if (value) {
+                          const p = value.split("_");
+                          updateParcel(
+                            index,
+                            { id: p[0], value: p[1] },
+                            undefined
+                          );
+                        }
                       }}
-                    >
-                      <SelectTrigger id="packaging" className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data?.data.packaging.map((packaging) => (
-                          <SelectItem
-                            value={`${packaging.packaging_id}_${packaging.name}`}
-                          >
-                            {packaging.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                   </div>
 
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Currency</Label>
-                    <Select
-                      defaultValue="NGN"
-                      disabled={isPending}
-                      onValueChange={(value) =>
-                        updateParcel(
-                          index,
-                          undefined,
-                          value as "NGN" | "USD" | "GBP"
-                        )
-                      }
-                    >
-                      <SelectTrigger id="packaging" className="h-10">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="NGN">Nigeria Naira (N)</SelectItem>
-                        <SelectItem value="USD">US Dollar ($)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <PSelect
+                      value={isResuming ? packaging : parcels[index].packaging}
+                      isLoading={isLoading}
+                      placeholder="Select Cunrrency"
+                      options={[{ value: "NGN", label: "Nigeria Naira (N)" }]}
+                      onChange={(value) => {
+                        if (value) {
+                          updateParcel(
+                            index,
+                            undefined,
+                            value as "NGN" | "USD" | "GBP"
+                          );
+                        }
+                      }}
+                    />
                   </div>
                 </div>
                 {parcel.items.map((item, item_index) => (
@@ -443,7 +428,10 @@ export default function ItemsForm({
             </div>
             <div className="p-4 space-y-2">
               {parcel.proofOfPayment.map((proof, proof_index) => (
-                <div className="p-4 bg-white rounded-lg flex items-center justify-between">
+                <div
+                  key={`proof-of-payment-${proof_index}`}
+                  className="p-4 bg-white rounded-lg flex items-center justify-between"
+                >
                   <div className="flex items-center gap-4">
                     <File className="text-blue-500" />
                     <div className="flex flex-col text-xs ">
@@ -487,7 +475,10 @@ export default function ItemsForm({
             </div>
             <div className="p-4 space-y-2">
               {parcel.proofOfWeight.map((proof, proof_index) => (
-                <div className="p-4 bg-white rounded-lg flex items-center justify-between">
+                <div
+                  key={`proof-of-weigth-${proof_index}`}
+                  className="p-4 bg-white rounded-lg flex items-center justify-between"
+                >
                   <div className="flex items-center gap-4">
                     <File className="text-blue-500" />
                     <div className="flex flex-col text-xs ">

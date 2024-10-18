@@ -121,6 +121,7 @@ export const itemTypeSchema = z.object({
     .string({ message: "This field is required" })
     .trim()
     .min(1, { message: "This field is required" }),
+  description: z.string({ message: "This field is required" }).trim(),
   category: z.string().trim(),
   subCategory: z.string().trim(),
   hsCode: z.string().trim(),

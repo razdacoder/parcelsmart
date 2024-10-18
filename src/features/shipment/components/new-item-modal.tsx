@@ -1,3 +1,4 @@
+import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,13 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { itemSchema, ItemValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TriangleAlert, X } from "lucide-react";
@@ -58,16 +52,19 @@ export default function NewItemModal() {
       value: 0,
       weight: 1,
       quantity: 1,
+      category: itemType === "items" ? "" : undefined,
+      subCategory: itemType === "items" ? "" : undefined,
+      description: "",
     },
   });
 
-  function onSubmit(values: ItemValues) {
-    addItem(parcel_id!, values);
+  function reset() {
     form.reset({
       itemType: "items",
       value: 0,
       weight: 1,
       quantity: 1,
+      description: "",
       name: "",
       category: "",
       hsCode: "",
@@ -75,11 +72,37 @@ export default function NewItemModal() {
     });
     setChapterId(undefined);
     setCategoryId(undefined);
+  }
+
+  function onSubmit(values: ItemValues) {
+    addItem(parcel_id!, values);
+    reset();
     onClose();
   }
 
+  const chapterOptions = chapterCodes?.data.map((chapter) => ({
+    label: chapter.name,
+    value: chapter.id,
+  }));
+
+  const categoryOptions = subCategories?.data.map((category) => ({
+    label: category.category,
+    value: category.id,
+  }));
+
+  const hsCodeOptions = hs_codes?.data.hs_codes.map((code) => ({
+    label: code.sub_category,
+    value: code.hs_code,
+  }));
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        reset();
+        onClose();
+      }}
+    >
       <DialogOverlay className="bg-black/80" />
       <DialogContent className="w-11/12 md:max-w-xl p-0">
         <DialogClose className="absolute -top-10 md:-top-12 z-50 right-0 size-8 md:size-10 rounded-full bg-white flex justify-center items-center">
@@ -152,6 +175,19 @@ export default function NewItemModal() {
                   </FormItem>
                 )}
               />
+              <FormField
+                name="description"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Item Description</FormLabel>
+                    <FormControl>
+                      <Input className="h-10" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               {itemType === "items" ? (
                 <>
                   <FormField
@@ -160,27 +196,21 @@ export default function NewItemModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Item Category</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            setChapterId(value);
-                          }}
-                          defaultValue={field.value}
-                          disabled={chapterLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="h-10">
-                              <SelectValue placeholder="Search" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {chapterCodes?.data.map((chapter) => (
-                              <SelectItem value={chapter.id}>
-                                {chapter.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                        <FormControl>
+                          <PSelect
+                            value={field.value}
+                            disabled={chapterLoading}
+                            isLoading={chapterLoading}
+                            options={chapterOptions}
+                            onChange={(value) => {
+                              if (value) {
+                                field.onChange(value);
+                                setChapterId(value);
+                              }
+                            }}
+                          />
+                        </FormControl>
 
                         <FormMessage />
                       </FormItem>
@@ -192,27 +222,21 @@ export default function NewItemModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Item Sub-Category</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            setCategoryId(value);
-                          }}
-                          defaultValue={field.value}
-                          disabled={categoryLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="h-10">
-                              <SelectValue placeholder="Search" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {subCategories?.data.map((sub) => (
-                              <SelectItem value={sub.id}>
-                                {sub.category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                        <FormControl>
+                          <PSelect
+                            value={field.value}
+                            disabled={categoryLoading}
+                            isLoading={categoryLoading}
+                            options={categoryOptions}
+                            onChange={(value) => {
+                              if (value) {
+                                field.onChange(value);
+                                setCategoryId(value);
+                              }
+                            }}
+                          />
+                        </FormControl>
 
                         <FormMessage />
                       </FormItem>
@@ -224,24 +248,20 @@ export default function NewItemModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Select HS Code</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={codesLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="h-10">
-                              <SelectValue placeholder="Search" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {hs_codes?.data.hs_codes.map((code) => (
-                              <SelectItem value={code.hs_code}>
-                                {code.sub_category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                        <FormControl>
+                          <PSelect
+                            value={field.value}
+                            disabled={codesLoading}
+                            isLoading={codesLoading}
+                            options={hsCodeOptions}
+                            onChange={(value) => {
+                              if (value) {
+                                field.onChange(value);
+                              }
+                            }}
+                          />
+                        </FormControl>
 
                         <FormMessage />
                       </FormItem>
@@ -296,19 +316,6 @@ export default function NewItemModal() {
                 </>
               ) : (
                 <>
-                  <FormField
-                    name="description"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Item Description</FormLabel>
-                        <FormControl>
-                          <Input className="h-10" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       name="weight"

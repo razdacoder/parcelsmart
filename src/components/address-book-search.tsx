@@ -37,7 +37,7 @@ export const AddressBookSearch = ({ value, onChange }: Props) => {
     onChange(option?.value);
   };
 
-  const { data, isLoading } = useAddressList({ page: 1 });
+  const { data, isLoading } = useAddressList({ page: 1, search: "" });
 
   const addressOptions = data?.data.addresses.map((address) => ({
     label: address.first_name,

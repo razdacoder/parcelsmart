@@ -350,6 +350,7 @@ export default function SenderForm({
                     <PSelect
                       placeholder="Select"
                       disabled={countryListPending}
+                      isLoading={countryListPending}
                       value={field.value}
                       onChange={(value) => {
                         field.onChange(value);
@@ -373,6 +374,7 @@ export default function SenderForm({
                   <FormControl>
                     <PSelect
                       placeholder="Select"
+                      isLoading={stateListPending}
                       disabled={stateListPending}
                       value={sender ? getStateValue() : field.value}
                       onChange={(value) => {
@@ -396,6 +398,7 @@ export default function SenderForm({
                   <FormLabel>City</FormLabel>
                   <FormControl>
                     <PSelect
+                      isLoading={cityListPending}
                       placeholder="Select"
                       disabled={cityListPending}
                       value={field.value}

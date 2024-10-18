@@ -344,6 +344,7 @@ export default function RecieverForm({
                   <FormControl>
                     <PSelect
                       disabled={countryListPending}
+                      isLoading={countryListPending}
                       placeholder="Select"
                       value={field.value}
                       onChange={(value) => {
@@ -368,6 +369,7 @@ export default function RecieverForm({
                   <FormControl>
                     <PSelect
                       disabled={stateListPending}
+                      isLoading={stateListPending}
                       placeholder="Select"
                       value={receiver ? getStateValue() : field.value}
                       onChange={(value) => {
@@ -392,6 +394,7 @@ export default function RecieverForm({
                   <FormControl>
                     <PSelect
                       disabled={cityListPending}
+                      isLoading={cityListPending}
                       placeholder="Select"
                       value={field.value}
                       onChange={field.onChange}
