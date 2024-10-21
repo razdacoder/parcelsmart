@@ -1,3 +1,4 @@
+import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,16 +10,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import useCity from "@/features/address/api/useCity";
+import useCountries from "@/features/address/api/useCountries";
+import useStateList from "@/features/address/api/useState";
 import { qouteSchema, QouteValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getCountryDataList } from "countries-list";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function QouteForm() {
@@ -34,6 +31,67 @@ export default function QouteForm() {
       estimated_weight: 0,
     },
   });
+
+  // State for "from" fields
+  const [fromStateCode, setFromStateCode] = useState<
+    string | null | undefined
+  >();
+  const [fromCountryCode, setFromCountryCode] = useState<
+    string | null | undefined
+  >();
+
+  // State for "to" fields
+  const [toStateCode, setToStateCode] = useState<string | null | undefined>();
+  const [toCountryCode, setToCountryCode] = useState<
+    string | null | undefined
+  >();
+
+  // Fetch data for "from" location
+  const { data: countryList, isLoading: countryListPending } = useCountries();
+  const { data: fromStateList, isLoading: fromStateListPending } = useStateList(
+    {
+      country_code: fromCountryCode,
+    }
+  );
+  const { data: fromCityList, isLoading: fromCityListPending } = useCity({
+    country_code: fromCountryCode,
+    state_code: fromStateCode,
+  });
+
+  // Fetch data for "to" location
+  const { data: toStateList, isLoading: toStateListPending } = useStateList({
+    country_code: toCountryCode,
+  });
+  const { data: toCityList, isLoading: toCityListPending } = useCity({
+    country_code: toCountryCode,
+    state_code: toStateCode,
+  });
+
+  const countryOptions = countryList?.data.map((country) => ({
+    label: country.name,
+    value: country.country_code,
+  }));
+
+  const fromCityOptions = fromCityList?.data.map((city) => ({
+    label: city.name,
+    value: city.name,
+  }));
+
+  const fromStateOptions = fromStateList?.data.map((state) => ({
+    label: state.name,
+    value: `${state.name}-${state.state_code}`,
+  }));
+
+  const toCityOptions = toCityList?.data.map((city) => ({
+    label: city.name,
+    value: city.name,
+  }));
+
+  const toStateOptions = toStateList?.data.map((state) => ({
+    label: state.name,
+    value: `${state.name}-${state.state_code}`,
+  }));
+
   return (
     <Form {...form}>
       <form className="space-y-8">
@@ -45,23 +103,21 @@ export default function QouteForm() {
               name="from_country"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Country" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Country"
+                      value={field.value}
+                      onChange={(value) => {
+                        if (value) {
+                          field.onChange(value);
+                          setFromCountryCode(value);
+                        }
+                      }}
+                      options={countryOptions}
+                      isLoading={countryListPending}
+                      disabled={countryListPending}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -72,23 +128,19 @@ export default function QouteForm() {
               name="from_state"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="State" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="State"
+                      isLoading={fromStateListPending}
+                      disabled={fromStateListPending}
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value?.split("-")[0]);
+                        setFromStateCode(value?.split("-")[1]);
+                      }}
+                      options={fromStateOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -99,23 +151,16 @@ export default function QouteForm() {
               name="from_city"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="City" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      isLoading={fromCityListPending}
+                      placeholder="City"
+                      disabled={fromCityListPending}
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={fromCityOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -131,23 +176,21 @@ export default function QouteForm() {
               name="to_country"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Country" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="Country"
+                      value={field.value}
+                      onChange={(value) => {
+                        if (value) {
+                          field.onChange(value);
+                          setToCountryCode(value);
+                        }
+                      }}
+                      options={countryOptions}
+                      isLoading={countryListPending}
+                      disabled={countryListPending}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -158,23 +201,19 @@ export default function QouteForm() {
               name="to_state"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="State" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      placeholder="State"
+                      isLoading={toStateListPending}
+                      disabled={toStateListPending}
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value?.split("-")[0]);
+                        setToStateCode(value?.split("-")[1]);
+                      }}
+                      options={toStateOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>
@@ -185,23 +224,16 @@ export default function QouteForm() {
               name="to_city"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="City" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {getCountryDataList().map((country) => (
-                        <SelectItem value={country.name}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <PSelect
+                      isLoading={toCityListPending}
+                      placeholder="City"
+                      disabled={toCityListPending}
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={toCityOptions}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>

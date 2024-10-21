@@ -44,6 +44,22 @@ export default function SenderForm({
     id: sender?.id,
   });
 
+  const form = useForm<AddressValues>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      first_name: sender ? sender.first_name : "",
+      last_name: sender ? sender.last_name : "",
+      email: sender ? sender.email : "",
+      phone_number: sender ? sender.phone_number : "",
+      line_1: sender ? sender.line_1 : "",
+      line_2: sender ? sender.line_2 : "",
+      country: sender ? sender.country : "",
+      state: sender ? sender.state : "",
+      city: sender ? sender.city : "",
+      zip_code: sender ? sender.zip_code : "",
+    },
+  });
+
   const [addressId, setAddressId] = useState<string>();
   const [stateCode, setStateCode] = useState<string | null | undefined>();
   const [countryCode, setCountryCode] = useState<string | null | undefined>(
@@ -88,7 +104,7 @@ export default function SenderForm({
     };
 
     fetchNewAddress();
-  }, [addressId, refetch]);
+  }, [addressId, form, refetch, setSenderValues, stateList?.data]);
 
   useEffect(() => {
     if (data) {
@@ -98,25 +114,9 @@ export default function SenderForm({
       const state = stateList?.data.find((state) => state.name === data.state);
       setStateCode(state?.state_code || null);
     }
-  }, [data]);
+  }, [data, form, setSenderValues, stateList?.data]);
 
   const isPending = creating || editing || isLoading || prevLoading;
-
-  const form = useForm<AddressValues>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: {
-      first_name: sender ? sender.first_name : "",
-      last_name: sender ? sender.last_name : "",
-      email: sender ? sender.email : "",
-      phone_number: sender ? sender.phone_number : "",
-      line_1: sender ? sender.line_1 : "",
-      line_2: sender ? sender.line_2 : "",
-      country: sender ? sender.country : "",
-      state: sender ? sender.state : "",
-      city: sender ? sender.city : "",
-      zip_code: sender ? sender.zip_code : "",
-    },
-  });
 
   const countryOptions = countryList?.data.map((country) => ({
     label: country.name,
@@ -140,19 +140,21 @@ export default function SenderForm({
   }
 
   function onSubmit(values: AddressValues) {
-    sender
-      ? updateAddress(values, {
-          onSuccess: (data) => {
-            setSenderValues(data.data);
-            next?.();
-          },
-        })
-      : createAddress(values, {
-          onSuccess: (data) => {
-            setSenderValues(data.data);
-            next?.();
-          },
-        });
+    if (sender) {
+      updateAddress(values, {
+        onSuccess: (data) => {
+          setSenderValues(data.data);
+          next?.();
+        },
+      });
+    } else {
+      createAddress(values, {
+        onSuccess: (data) => {
+          setSenderValues(data.data);
+          next?.();
+        },
+      });
+    }
   }
 
   function clearValues() {
