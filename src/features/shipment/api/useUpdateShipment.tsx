@@ -13,7 +13,7 @@ type ShipmentRequestType = {
 type ResponseType = {
   status: boolean;
   message: string;
-  data: any;
+  data: unknown;
 };
 
 export default function useUpdateShipment() {

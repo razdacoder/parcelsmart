@@ -23,7 +23,7 @@ export default function Stepper({ data, prevloading }: StepperProps) {
     if (data) {
       setShipmentID(data.id);
     }
-  }, [data]);
+  }, [data, setShipmentID]);
 
   const steps = [
     "Sender",

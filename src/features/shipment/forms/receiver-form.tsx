@@ -105,7 +105,7 @@ export default function RecieverForm({
     };
 
     fetchNewAddress();
-  }, [addressId, refetch]);
+  }, [addressId, form, refetch, setReceiverValues, stateList?.data]);
 
   useEffect(() => {
     if (data) {
@@ -115,7 +115,7 @@ export default function RecieverForm({
       const state = stateList?.data.find((state) => state.name === data.state);
       setStateCode(state?.state_code || null);
     }
-  }, [data]);
+  }, [data, form, setReceiverValues, stateList?.data]);
 
   const countryOptions = countryList?.data.map((country) => ({
     label: country.name,
@@ -141,19 +141,21 @@ export default function RecieverForm({
   }
 
   function onSubmit(values: AddressValues) {
-    receiver
-      ? updateAddress(values, {
-          onSuccess: (data) => {
-            setReceiverValues(data.data);
-            next?.();
-          },
-        })
-      : createAddress(values, {
-          onSuccess: (data) => {
-            setReceiverValues(data.data);
-            next?.();
-          },
-        });
+    if (receiver) {
+      updateAddress(values, {
+        onSuccess: (data) => {
+          setReceiverValues(data.data);
+          next?.();
+        },
+      });
+    } else {
+      createAddress(values, {
+        onSuccess: (data) => {
+          setReceiverValues(data.data);
+          next?.();
+        },
+      });
+    }
   }
 
   function clearValues() {

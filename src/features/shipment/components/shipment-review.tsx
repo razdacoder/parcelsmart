@@ -113,12 +113,12 @@ export default function ShipmentReview() {
                 )}
                 {data && !walletLoading && (
                   <h1 className="text-xl lg:text-[28px] leading-9 font-bold text-white">
-                    {formatNaira(parseFloat(data?.data[0].balance!))}
+                    {formatNaira(parseFloat(data?.data[0].balance))}
                   </h1>
                 )}
               </div>
               <Button
-                onClick={() => onOpen(data?.data[0].id!)}
+                onClick={() => data && onOpen(data.data[0].id)}
                 className="gap-2 items-center"
               >
                 Top Up <ArrowRight className="size-4" />

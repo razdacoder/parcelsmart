@@ -122,13 +122,15 @@ export default function AddressForm({ address }: AddressFormProps) {
   };
 
   function onSubmit(values: AddressValues) {
-    isEditMode
-      ? editAddress(values)
-      : createAddress(values, {
-          onSuccess: () => {
-            onClose();
-          },
-        });
+    if (isEditMode) {
+      editAddress(values);
+    } else {
+      createAddress(values, {
+        onSuccess: () => {
+          onClose();
+        },
+      });
+    }
   }
   return (
     <div className="space-y-6 mt-6">

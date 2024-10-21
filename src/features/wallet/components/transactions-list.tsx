@@ -51,7 +51,7 @@ export default function TransactionList() {
     search: debouncedValue,
   });
 
-  const [] = useDebounce(
+  useDebounce(
     () => {
       setDebouncedValue(searchInput);
       if (searchInput) {

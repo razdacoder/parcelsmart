@@ -35,12 +35,12 @@ export default function Home() {
               )}
               {data && (
                 <h1 className="text-xl lg:text-[28px] leading-9 font-bold">
-                  {formatNaira(parseFloat(data?.data[0].balance!))}
+                  {formatNaira(parseFloat(data?.data[0].balance))}
                 </h1>
               )}
             </div>
             <Button
-              onClick={() => onOpen(data?.data[0].id!)}
+              onClick={() => data && onOpen(data.data[0].id)}
               className="items-center gap-2 rounded-lg"
             >
               Top up <ArrowRight className="size-4" />

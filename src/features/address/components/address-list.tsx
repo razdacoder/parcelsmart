@@ -19,7 +19,7 @@ export default function AddressList() {
   const [searchInput, setSearchInput] = useState(search || "");
   const [debouncedValue, setDebouncedValue] = useState(search || "");
 
-  const [] = useDebounce(
+  useDebounce(
     () => {
       setDebouncedValue(searchInput);
       if (searchInput) {

@@ -12,7 +12,7 @@ type ResquestType = {
 type ResponseType = {
   status: boolean;
   message: string;
-  data: any;
+  data: unknown;
 };
 export default function useArrangeShipment() {
   return useMutation<ResponseType, AxiosError<ErrorResponseType>, ResquestType>(

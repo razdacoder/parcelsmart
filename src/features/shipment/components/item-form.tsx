@@ -103,7 +103,7 @@ export default function ItemForm({ item }: ItemFormProps) {
   }
 
   function onSubmit(values: ItemValues) {
-    if (!!item) {
+    if (item) {
       if (editingParcelID !== undefined && item_id !== undefined) {
         console.log("");
         editItem(editingParcelID, item_id, values);

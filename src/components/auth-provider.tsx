@@ -49,6 +49,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const token = JSON.parse(tokenString) as TokenType;
         return !isTokenExpired(token) ? token : null;
       } catch (error) {
+        console.log(error);
         return null;
       }
     }
@@ -79,7 +80,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
       });
     }
-  }, [authToken]);
+  }, [authToken, refreshToken]);
 
   useLayoutEffect(() => {
     const authInterceptor = client.interceptors.request.use(
@@ -124,7 +125,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       client.interceptors.response.eject(refreshInterceptor);
     };
-  }, [authToken]);
+  }, [authToken, refreshToken]);
 
   const login = (token: TokenType) => {
     setAuthToken(token);
@@ -144,6 +145,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 // Custom hook to use auth context with type safety
+ 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

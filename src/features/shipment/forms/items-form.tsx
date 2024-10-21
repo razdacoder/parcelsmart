@@ -111,7 +111,15 @@ export default function ItemsForm({
         }
       });
     }
-  }, [parcelsToEdit, data]);
+  }, [
+    parcelsToEdit,
+    data?.data.packaging,
+    updateParcel,
+    parcels,
+    parcels_id,
+    addItem,
+    addParcelId,
+  ]);
   async function createPrcelsandShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
@@ -150,20 +158,22 @@ export default function ItemsForm({
       console.error("Failed to create some parcels:", results);
     }
 
-    createShipment(
-      {
-        origin_address_id: sender?.id!,
-        destination_address_id: receiver?.id!,
-        parcel_ids: parcelIds,
-        purpose: "personal",
-      },
-      {
-        onSuccess: (data) => {
-          setShipmentID(data.data.id);
-          next?.();
+    if (sender && receiver) {
+      createShipment(
+        {
+          origin_address_id: sender.id,
+          destination_address_id: receiver.id,
+          parcel_ids: parcelIds,
+          purpose: "personal",
         },
-      }
-    );
+        {
+          onSuccess: (data) => {
+            setShipmentID(data.data.id);
+            next?.();
+          },
+        }
+      );
+    }
   }
 
   async function updateParcelsandShipment() {
@@ -249,22 +259,24 @@ export default function ItemsForm({
     }
 
     // Update the shipment with the new parcel IDs
-    updateShipment(
-      {
-        id: shipmentID!,
-        values: {
-          origin_address_id: sender?.id!,
-          destination_address_id: receiver?.id!,
-          parcel_ids: parcelIds,
-          purpose: "personal",
+    if (sender && receiver && shipmentID) {
+      updateShipment(
+        {
+          id: shipmentID,
+          values: {
+            origin_address_id: sender.id,
+            destination_address_id: receiver.id,
+            parcel_ids: parcelIds,
+            purpose: "personal",
+          },
         },
-      },
-      {
-        onSuccess: () => {
-          next?.();
-        },
-      }
-    );
+        {
+          onSuccess: () => {
+            next?.();
+          },
+        }
+      );
+    }
   }
 
   async function onSubmit() {
@@ -277,10 +289,18 @@ export default function ItemsForm({
     ) {
       const ok = await confirm();
       if (!ok) {
-        isResuming ? updateParcelsandShipment() : createPrcelsandShipment();
+        if (isResuming) {
+          updateParcelsandShipment();
+        } else {
+          createPrcelsandShipment();
+        }
       }
     } else {
-      isResuming ? updateParcelsandShipment() : createPrcelsandShipment();
+      if (isResuming) {
+        updateParcelsandShipment();
+      } else {
+        createPrcelsandShipment();
+      }
     }
   }
 
