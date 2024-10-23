@@ -1,15 +1,12 @@
-import { useAlertModal } from "@/components/alert-modal";
 import { Button } from "@/components/ui/button";
 import { formatNaira } from "@/lib/utils";
 import { Edit, Loader } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import useArrangeShipment from "../api/useArrangeShipment";
 import { useReviewMode } from "../hooks/use-review-mode";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function Review({ prev, moveToStep }: StepsProps) {
   const { setReviewMode } = useReviewMode();
-  const navigate = useNavigate();
   const {
     sender,
     receiver,
@@ -21,17 +18,8 @@ export default function Review({ prev, moveToStep }: StepsProps) {
     rate_id,
     drop_off_id,
     useInsurance,
-    clearAll,
   } = useShipmentApplication();
   const { mutate: arrangeShipmentFn, isPending } = useArrangeShipment();
-
-  const [AlertModal, confirm] = useAlertModal({
-    title: "Success!!",
-    message: "Congratulations! Your shipment has been arranged successfully",
-    primaryLabel: "Continue",
-    secondaryLabel: "Close",
-    type: "success",
-  });
 
   const calculateTotalWeight = (): number => {
     return parcels.reduce((totalWeight, parcel) => {
@@ -55,28 +43,15 @@ export default function Review({ prev, moveToStep }: StepsProps) {
 
   function arrangeShipment() {
     if (shipmentID && rate_id)
-      arrangeShipmentFn(
-        {
-          shipment_id: shipmentID,
-          rate_id,
-          dropoff_id: drop_off_id,
-          purchase_insurance: useInsurance,
-        },
-        {
-          onSuccess: async () => {
-            const ok = await confirm();
-            if (ok) {
-              clearAll();
-              setReviewMode(false);
-              navigate("/");
-            }
-          },
-        }
-      );
+      arrangeShipmentFn({
+        shipment_id: shipmentID,
+        rate_id,
+        dropoff_id: drop_off_id,
+        purchase_insurance: useInsurance,
+      });
   }
   return (
     <>
-      <AlertModal />
       <div className="space-y-6">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-2">

@@ -47,6 +47,7 @@
     "react-google-autocomplete": "^2.7.3",
     "react-google-places-autocomplete": "^4.1.0",
     "react-hook-form": "^7.53.0",
+    "react-paystack": "^6.0.0",
     "react-phone-number-input": "^3.4.8",
     "react-router-dom": "^6.26.2",
     "react-select": "^5.8.1",

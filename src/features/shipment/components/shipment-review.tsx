@@ -70,8 +70,8 @@ export default function ShipmentReview() {
             <X className="size-5" />
           </button>
         </div>
-        <div className="flex-1 flex justify-between items-center px-32">
-          <div className=" bg-white p-12 rounded-lg w-full flex flex-col gap-8 items-center">
+        <div className="flex-1 flex justify-center items-center">
+          <div className=" bg-white p-12 rounded-lg w-5/6 lg:w-4/6 flex flex-col gap-8 items-center">
             <div className="space-y-2">
               <h3 className="text-2xl text-center">Make Payment</h3>
               <h2 className="text-primary bg-[#F4FDF8] px-4 py-2 rounded-lg text-3xl font-bold text-center inline-block">

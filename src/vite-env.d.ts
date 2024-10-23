@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_GOOGLE_PLACES_API_KEY: string;
   readonly VITE_DOCUMENT_VALUE: number;
   readonly VITE_DOCUMENT_HSCODE: string;
+  readonly VITE_PAYSTACK_PUBLIC_KEY: string;
   // more env variables...
 }
 

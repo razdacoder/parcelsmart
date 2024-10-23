@@ -1,6 +1,8 @@
+import useMe from "@/features/auth/api/useMe";
 import { client } from "@/lib/client";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { usePaystackPayment } from "react-paystack";
 import { toast } from "sonner";
 
 type ResquestType = {
@@ -32,6 +34,27 @@ type ResponseType = {
   };
 };
 export default function useArrangeShipment() {
+  const { data: user } = useMe();
+
+  const config = {
+    reference: "",
+    email: "",
+    amount: 0, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+  };
+
+  const initializePayment = usePaystackPayment(config);
+  const onSuccess = (reference: string) => {
+    // Call your payment verification API
+    console.log(reference);
+  };
+
+  // you can call this function anything
+  const onClose = () => {
+    // implementation for  whatever you want to do when the Paystack dialog closed.
+    console.log("closed");
+  };
+
   return useMutation<ResponseType, AxiosError<ErrorResponseType>, ResquestType>(
     {
       mutationFn: async (data) => {
@@ -43,7 +66,10 @@ export default function useArrangeShipment() {
         toast.error(error.response?.data.message);
       },
       onSuccess: (data) => {
-        toast.success(data.message);
+        config.amount = data.data.amount * 100;
+        config.email = (user && user?.data.email) || "";
+        config.reference = data.data.reference;
+        initializePayment({ onSuccess, onClose, config });
       },
     }
   );
