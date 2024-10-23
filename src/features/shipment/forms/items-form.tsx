@@ -77,49 +77,53 @@ export default function ItemsForm({
   const isCreating =
     creating || creatingShipment || updating || updaingShipment;
 
-  useMemo(() => {
-    if (parcelsToEdit) {
-      parcelsToEdit.forEach((parcel, index) => {
-        const newPackaging = {
-          id: parcel.packaging_id,
-          value:
-            data?.data.packaging.find(
-              (p) => p.packaging_id === parcel.packaging_id
-            )?.name || "",
-        };
-        updateParcel(index, newPackaging, "NGN");
+  useMemo(
+    () => {
+      if (parcelsToEdit) {
+        parcelsToEdit.forEach((parcel, index) => {
+          const newPackaging = {
+            id: parcel.packaging_id,
+            value:
+              data?.data.packaging.find(
+                (p) => p.packaging_id === parcel.packaging_id
+              )?.name || "",
+          };
+          updateParcel(index, newPackaging, "NGN");
 
-        // Add items only if they don't exist
-        if (parcels[index].items.length === 0) {
-          parcel.items.forEach((item) => {
-            addItem(index, {
-              itemType: "items",
-              weight: item.weight,
-              name: item.name,
-              description: item.description,
-              hsCode: item.hs_code,
-              value: item.value,
-              category: "",
-              subCategory: "",
-              quantity: item.quantity,
+          // Add items only if they don't exist
+          if (parcels[index].items.length === 0) {
+            parcel.items.forEach((item) => {
+              addItem(index, {
+                itemType: "items",
+                weight: item.weight,
+                name: item.name,
+                description: item.description,
+                hsCode: item.hs_code,
+                value: item.value,
+                category: "",
+                subCategory: "",
+                quantity: item.quantity,
+              });
             });
-          });
-        }
+          }
 
-        if (!parcels_id.includes(parcel.id)) {
-          addParcelId(parcel.id);
-        }
-      });
-    }
-  }, [
-    parcelsToEdit,
-    data?.data.packaging,
-    updateParcel,
-    parcels,
-    parcels_id,
-    addItem,
-    addParcelId,
-  ]);
+          if (!parcels_id.includes(parcel.id)) {
+            addParcelId(parcel.id);
+          }
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      parcelsToEdit,
+      // data?.data.packaging,
+      // updateParcel,
+      // parcels,
+      // parcels_id,
+      // addItem,
+      // addParcelId,
+    ]
+  );
   async function createPrcelsandShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {

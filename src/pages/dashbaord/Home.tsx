@@ -1,20 +1,15 @@
 import bannerImage from "@/assets/banner.png";
 import AppNavBar from "@/components/app-navbar";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import useMe from "@/features/auth/api/useMe";
 import RecentShipment from "@/features/shipment/components/recent-shipment";
 import ShipmentMetrics from "@/features/shipment/components/shipment-metrics";
-import useWallet from "@/features/wallet/api/useWallet";
-import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
-import { formatNaira } from "@/lib/utils";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
   const { data: user } = useMe();
-  const { data, isLoading: walletLoading } = useWallet();
-  const { onOpen } = useTopUpModal();
+  // const { data, isLoading: walletLoading } = useWallet();
+  // const { onOpen } = useTopUpModal();
 
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
@@ -25,7 +20,7 @@ export default function Home() {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12">
-          <div className="w-full md:col-span-6 lg:col-span-5 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
+          {/* <div className="w-full md:col-span-6 lg:col-span-5 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
               {walletLoading && (
@@ -45,12 +40,12 @@ export default function Home() {
             >
               Top up <ArrowRight className="size-4" />
             </Button>
-          </div>
-          <div className="md:col-span-6 lg:col-span-7 rounded-lg">
+          </div> */}
+          <div className="col-span-12 rounded-lg">
             <img
               src={bannerImage}
               alt="Referal Banner"
-              className="w-full rounded-lg h-full object-cover"
+              className="w-full rounded-lg h-[140px] object-cover"
             />
           </div>
         </div>

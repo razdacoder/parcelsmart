@@ -131,7 +131,10 @@ export default function ShipmentDetailModal() {
                       {parcel.description}
                     </h4>
                     {parcel.items.map((item) => (
-                      <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                      <div
+                        key={item.id}
+                        className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text"
+                      >
                         <div className="flex items-center gap-2">
                           <span className="font-medium">Item:</span>
                           <span className="font-bold">{item.name}</span>
@@ -150,7 +153,10 @@ export default function ShipmentDetailModal() {
                       </h4>
                       <div className="flex  flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
                         {parcel.proof_of_payments.map((proof, index) => (
-                          <div className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg">
+                          <div
+                            key={`proof-of-payment-${index}`}
+                            className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg"
+                          >
                             <div className="flex items-center gap-2">
                               <File className="size-4" />
                               <div className="flex flex-col gap-0.5">

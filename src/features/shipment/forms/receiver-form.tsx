@@ -86,7 +86,6 @@ export default function RecieverForm({
   useEffect(() => {
     const fetchNewAddress = async () => {
       if (addressId) {
-        console.log(addressId);
         const newQueryData = await refetch();
         const newAddressData = newQueryData.data?.data;
 

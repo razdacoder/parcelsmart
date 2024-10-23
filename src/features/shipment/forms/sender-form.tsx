@@ -85,7 +85,6 @@ export default function SenderForm({
   useEffect(() => {
     const fetchNewAddress = async () => {
       if (addressId) {
-        console.log(addressId);
         const newQueryData = await refetch();
         const newAddressData = newQueryData.data?.data;
 
@@ -239,6 +238,7 @@ export default function SenderForm({
             placeholder="Search your address on Google (optional)"
             options={{
               types: ["address"],
+              loading: "async",
             }}
           />
         </div>

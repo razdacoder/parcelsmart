@@ -1,10 +1,7 @@
 import { useAlertModal } from "@/components/alert-modal";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import useWallet from "@/features/wallet/api/useWallet";
-import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
-import { cn, formatNaira } from "@/lib/utils";
-import { ArrowRight, Loader, RefreshCw, X } from "lucide-react";
+import { formatNaira } from "@/lib/utils";
+import { Loader, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useArrangeShipment from "../api/useArrangeShipment";
 import { useReviewMode } from "../hooks/use-review-mode";
@@ -12,10 +9,17 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 
 export default function ShipmentReview() {
   const navigate = useNavigate();
-  const { carrier, insurance, clearAll, shipmentID, rate_id, drop_off_id } =
-    useShipmentApplication();
-  const { data, isLoading, isRefetching, refetch } = useWallet();
-  const { onOpen } = useTopUpModal();
+  const {
+    carrier,
+    insurance,
+    clearAll,
+    shipmentID,
+    rate_id,
+    drop_off_id,
+    useInsurance,
+  } = useShipmentApplication();
+  // const { data, isLoading, isRefetching, refetch } = useWallet();
+  // const { onOpen } = useTopUpModal();
   const { setReviewMode } = useReviewMode();
   const { mutate: arrangeShipmentFn, isPending } = useArrangeShipment();
 
@@ -25,9 +29,10 @@ export default function ShipmentReview() {
     primaryLabel: "Continue",
     secondaryLabel: "Close",
     type: "success",
-  });
+  }); // const { data, isLoading, isRefetching, refetch } = useWallet();
+  // const { onOpen } = useTopUpModal();
 
-  const walletLoading = isLoading;
+  // const walletLoading = isLoading;
 
   function arrangeShipment() {
     if (shipmentID && rate_id)
@@ -36,6 +41,7 @@ export default function ShipmentReview() {
           shipment_id: shipmentID,
           rate_id,
           dropoff_id: drop_off_id,
+          purchase_insurance: useInsurance,
         },
         {
           onSuccess: async () => {
@@ -93,7 +99,7 @@ export default function ShipmentReview() {
                 </span>
               </div>
             </div>
-            <div className="bg-[#0B2230] p-8 rounded-xl w-full flex justify-between gap-8 items-center">
+            {/* <div className="bg-[#0B2230] p-8 rounded-xl w-full flex justify-between gap-8 items-center">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <h6 className="text-sm text-white">Wallet Balance</h6>
@@ -123,12 +129,12 @@ export default function ShipmentReview() {
               >
                 Top Up <ArrowRight className="size-4" />
               </Button>
-            </div>
+            </div> */}
             <Button onClick={arrangeShipment} className="w-full" size="lg">
               {isPending ? (
                 <Loader className="size-5 animate-spin" />
               ) : (
-                "Arrange Shipment"
+                "Make Payment"
               )}
             </Button>
           </div>

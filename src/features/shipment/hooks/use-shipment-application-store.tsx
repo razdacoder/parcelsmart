@@ -55,7 +55,9 @@ type ShipmentApplicationState = {
   insurance?: Insurance;
   location?: string;
   setLocation: (value: string) => void;
-  setInsurance: (value: Insurance) => void;
+  setInsurance: (value?: Insurance) => void;
+  useInsurance: boolean;
+  setUseInsurace: (value: boolean) => void;
 };
 
 export const useShipmentApplication = create<ShipmentApplicationState>(
@@ -209,7 +211,9 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
     setDropOffId: (value: string) => set({ drop_off_id: value }),
     setLocation: (value: string) => set({ location: value }),
     setCarrier: (value: Carrier) => set({ carrier: value }),
-    setInsurance: (value: Insurance) => set({ insurance: value }),
+    setInsurance: (value?: Insurance) => set({ insurance: value }),
+    useInsurance: false,
+    setUseInsurace: (value: boolean) => set({ useInsurance: value }),
     clearAll: () =>
       set({
         sender: undefined,

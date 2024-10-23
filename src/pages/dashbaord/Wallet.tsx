@@ -1,25 +1,21 @@
 import AppNavBar from "@/components/app-navbar";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useTransactionMetrics from "@/features/wallet/api/useTransactionMetrics";
-import useWallet from "@/features/wallet/api/useWallet";
 import TransactionList from "@/features/wallet/components/transactions-list";
-import { useTopUpModal } from "@/features/wallet/hooks/use-top-up-modal";
 import { formatNaira } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
 
 export default function Wallet() {
-  const { data, isLoading: walletLoading } = useWallet();
+  // const { data, isLoading: walletLoading } = useWallet();
 
   const { data: metrics, isLoading: metricsLoading } = useTransactionMetrics();
-  const { onOpen } = useTopUpModal();
+  // const { onOpen } = useTopUpModal();
 
   return (
     <div className="flex flex-col gap-6 w-full overflow-hidden">
-      <AppNavBar title="Wallet" />
+      <AppNavBar title="Transactions" />
       <main className="px-4 md:px-8 space-y-6">
         <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="w-full lg:w-1/3 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
+          {/* <div className="w-full lg:w-1/3 p-4 bg-[#0B2230] rounded-xl text-white flex items-center justify-between">
             <div className="space-y-1.5">
               <h6 className="text-sm">Wallet Balance</h6>
               {walletLoading && (
@@ -39,7 +35,7 @@ export default function Wallet() {
             >
               Top up <ArrowRight className="size-4" />
             </Button>
-          </div>
+          </div> */}
           <div className="w-full lg:w-2/3 grid grid-cols-2 gap-8">
             <div className="bg-white p-4 flex items-center gap-4 text-text rounded-xl">
               <svg

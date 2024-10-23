@@ -2,20 +2,28 @@ import logoImage from "@/assets/parcels icon.png";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { formatNaira } from "@/lib/utils";
-import { XCircle } from "lucide-react";
+import { Loader, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useGetInsurance from "../api/useGetInsurance";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 export default function InsuranceForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  const { clearAll, setInsurance } = useShipmentApplication();
+  const { clearAll, setInsurance, shipmentID, setUseInsurace, useInsurance } =
+    useShipmentApplication();
+  const { data, isLoading } = useGetInsurance({ shipment_id: shipmentID });
 
   function continueToReview() {
-    setInsurance({
-      id: "chnage_later",
-      name: "Parcel Mart Insurance",
-      price: 500,
-    });
+    if (useInsurance) {
+      setInsurance({
+        id: "chnage_later",
+        name: "Parcel Mart Insurance",
+        price: data ? data.data.converted_premium : 0,
+      });
+    } else {
+      setInsurance();
+    }
+
     next?.();
   }
   return (
@@ -41,44 +49,50 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
       </div>
 
       <div>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
-            <div className="flex items-center justify-between w-full px-2">
-              <div className="flex items-center gap-4">
-                <img
-                  src={logoImage}
-                  alt="DHL Image"
-                  className="md:size-8 size-12"
-                />
-                <div className="flex flex-col gap-1">
-                  <h4 className="text-xs md:text-sm font-medium">
-                    Parcels Mart
-                  </h4>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    DOMESTIC
-                  </p>
+        {isLoading && (
+          <div className="py-12">
+            <Loader className="size-6 animate-spin text-primary" />
+          </div>
+        )}
+        {data && (
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
+              <div className="flex items-center justify-between w-full px-2">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={logoImage}
+                    alt="DHL Image"
+                    className="md:size-8 size-12"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <h4 className="text-xs md:text-sm font-medium">
+                      Parcels Mart
+                    </h4>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="radio"
-                  name="insurace"
-                  className="hidden peer"
-                  id="in1"
-                />
-                <h2 className="text-base md:text-xl font-bold justify-self-end">
-                  {formatNaira(5000)}
-                </h2>
-                <Label
-                  htmlFor="in1"
-                  className="px-6 py-3 rounded-xl border-2 cursor-pointer peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Select
-                </Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    name="insurace"
+                    checked={useInsurance}
+                    className="hidden peer"
+                    onChange={(e) => setUseInsurace(e.target.checked)}
+                    id="in1"
+                  />
+                  <h2 className="text-base md:text-xl font-bold justify-self-end">
+                    {formatNaira(data.data.converted_premium)}
+                  </h2>
+                  <Label
+                    htmlFor="in1"
+                    className="px-6 py-3 rounded-xl border-2 cursor-pointer peer-checked:bg-primary peer-checked:text-white"
+                  >
+                    {useInsurance ? "Selceted" : "Select"}
+                  </Label>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="flex flex-col md:flex-row items-center gap-6 mt-6">
         <Button

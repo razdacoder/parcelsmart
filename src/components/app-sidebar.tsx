@@ -39,8 +39,8 @@ const data = {
       icon: TruckIcon,
     },
     {
-      title: "Wallet",
-      url: "/wallet",
+      title: "Transactions",
+      url: "/transactions",
       icon: WalletCards,
     },
     // {

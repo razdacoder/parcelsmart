@@ -20,6 +20,7 @@ export default function Review({ prev, moveToStep }: StepsProps) {
     shipmentID,
     rate_id,
     drop_off_id,
+    useInsurance,
     clearAll,
   } = useShipmentApplication();
   const { mutate: arrangeShipmentFn, isPending } = useArrangeShipment();
@@ -59,6 +60,7 @@ export default function Review({ prev, moveToStep }: StepsProps) {
           shipment_id: shipmentID,
           rate_id,
           dropoff_id: drop_off_id,
+          purchase_insurance: useInsurance,
         },
         {
           onSuccess: async () => {
@@ -225,14 +227,16 @@ export default function Review({ prev, moveToStep }: StepsProps) {
                   </div>
                 )}
 
-                <div className="space-y-1">
-                  <h6 className="text-sm font-semibold text-primary">
-                    Insurance
-                  </h6>
-                  <span className="text-sm text-balance text-text">
-                    {insurance?.name} - {formatNaira(insurance?.price || 0)}
-                  </span>
-                </div>
+                {useInsurance && (
+                  <div className="space-y-1">
+                    <h6 className="text-sm font-semibold text-primary">
+                      Insurance
+                    </h6>
+                    <span className="text-sm text-balance text-text">
+                      {insurance?.name} - {formatNaira(insurance?.price || 0)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -260,7 +264,7 @@ export default function Review({ prev, moveToStep }: StepsProps) {
             {isPending ? (
               <Loader className="size-5 animate-spin" />
             ) : (
-              "Arrange Shipment"
+              "Make Payment"
             )}
           </Button>
         </div>
