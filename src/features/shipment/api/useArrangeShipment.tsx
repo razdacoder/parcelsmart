@@ -1,9 +1,13 @@
 import useMe from "@/features/auth/api/useMe";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { client } from "@/lib/client";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { usePaystackPayment } from "react-paystack";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useReviewMode } from "../hooks/use-review-mode";
+import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
 type ResquestType = {
   shipment_id: string;
@@ -35,6 +39,10 @@ type ResponseType = {
 };
 export default function useArrangeShipment() {
   const { data: user } = useMe();
+  const { onOpen, onClose: alertClose } = useAlertModal();
+  const navigate = useNavigate();
+  const { clearAll } = useShipmentApplication();
+  const { setReviewMode } = useReviewMode();
 
   const config = {
     reference: "",
@@ -45,8 +53,26 @@ export default function useArrangeShipment() {
 
   const initializePayment = usePaystackPayment(config);
   const onSuccess = (reference: string) => {
-    // Call your payment verification API
     console.log(reference);
+    onOpen({
+      type: "success",
+      title: "Success",
+      message: "Congratulations! Your shipemnt has been arranged successfully",
+      primaryLabel: "Track Shipment",
+      secondaryLabel: "Back to Home",
+      primaryFn: () => {
+        clearAll();
+        navigate("/track");
+        setReviewMode(false);
+        alertClose();
+      },
+      secondaryFn: () => {
+        clearAll();
+        navigate("/");
+        setReviewMode(false);
+        alertClose();
+      },
+    });
   };
 
   // you can call this function anything
@@ -64,6 +90,19 @@ export default function useArrangeShipment() {
       onError: (error) => {
         console.log(error);
         toast.error(error.response?.data.message);
+        onOpen({
+          type: "error",
+          title: "Error",
+          message: error.response?.data.message || "",
+          primaryLabel: "Retry",
+          secondaryLabel: "Cancel",
+          primaryFn: () => {
+            alertClose();
+          },
+          secondaryFn: () => {
+            alertClose();
+          },
+        });
       },
       onSuccess: (data) => {
         config.amount = data.data.amount * 100;

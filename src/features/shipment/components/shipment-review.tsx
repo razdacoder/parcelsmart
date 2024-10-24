@@ -1,9 +1,10 @@
-import { useAlertModal } from "@/components/alert-modal";
 import { Button } from "@/components/ui/button";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { formatNaira } from "@/lib/utils";
 import { Loader, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useArrangeShipment from "../api/useArrangeShipment";
+import useDeleteShipment from "../api/useDeleteShipment";
 import { useReviewMode } from "../hooks/use-review-mode";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
@@ -23,47 +24,57 @@ export default function ShipmentReview() {
   const { setReviewMode } = useReviewMode();
   const { mutate: arrangeShipmentFn, isPending } = useArrangeShipment();
 
-  const [AlertModal, confirm] = useAlertModal({
-    title: "Success!!",
-    message: "Congratulations! Your shipment has been arranged successfully",
-    primaryLabel: "Continue",
-    secondaryLabel: "Close",
-    type: "success",
-  }); // const { data, isLoading, isRefetching, refetch } = useWallet();
+  // const { data, isLoading, isRefetching, refetch } = useWallet();
   // const { onOpen } = useTopUpModal();
 
   // const walletLoading = isLoading;
+  const { onOpen, onClose } = useAlertModal();
+  const { mutate } = useDeleteShipment();
 
   function arrangeShipment() {
     if (shipmentID && rate_id)
-      arrangeShipmentFn(
-        {
-          shipment_id: shipmentID,
-          rate_id,
-          dropoff_id: drop_off_id,
-          purchase_insurance: useInsurance,
-        },
-        {
-          onSuccess: async () => {
-            const ok = await confirm();
-            if (ok) {
-              clearAll();
-              setReviewMode(false);
-              navigate("/");
-            }
-          },
-        }
-      );
+      arrangeShipmentFn({
+        shipment_id: shipmentID,
+        rate_id,
+        dropoff_id: drop_off_id,
+        purchase_insurance: useInsurance,
+      });
   }
   return (
     <>
-      <AlertModal />
       <div className="bg-primary sticky h-screen top-0 right-0 w-full flex flex-col ">
         <div className="flex justify-end p-8">
           <button
             onClick={() => {
-              clearAll();
-              navigate(-1);
+              onOpen({
+                type: "warning",
+                title: "Sure you want to cancel?",
+                message:
+                  "Your shipment will be discarded. Save as draft to keep your shipment information.",
+                primaryLabel: "Cancel",
+                secondaryLabel: "Save as draft",
+                primaryFn: () => {
+                  if (shipmentID) {
+                    onClose();
+                    mutate(
+                      { id: shipmentID },
+                      {
+                        onSuccess: () => {
+                          clearAll();
+                          setReviewMode(false);
+                          navigate(-1);
+                        },
+                      }
+                    );
+                  }
+                },
+                secondaryFn: () => {
+                  clearAll();
+                  setReviewMode(false);
+                  navigate(-1);
+                  onClose();
+                },
+              });
             }}
             className="bg-white size-10 rounded-full flex justify-center items-center cursor-pointer"
           >

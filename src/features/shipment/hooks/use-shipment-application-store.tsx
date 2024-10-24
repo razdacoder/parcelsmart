@@ -234,6 +234,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
         location: undefined,
         carrier: undefined,
         insurance: undefined,
+        useInsurance: false,
       }),
   })
 );

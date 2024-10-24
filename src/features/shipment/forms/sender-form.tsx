@@ -116,6 +116,8 @@ export default function SenderForm({
   }, [data, form, setSenderValues, stateList?.data]);
 
   const isPending = creating || editing || isLoading || prevLoading;
+  const addressPending =
+    countryListPending || stateListPending || cityListPending;
 
   const countryOptions = countryList?.data.map((country) => ({
     label: country.name,
@@ -442,6 +444,7 @@ export default function SenderForm({
 
             <SubmitButton
               className="w-fit px-12"
+              disabled={isPending || !form.formState.isValid || addressPending}
               isPending={creating || editing}
             >
               Continue

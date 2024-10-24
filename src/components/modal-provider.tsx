@@ -10,6 +10,7 @@ import ShipmentDetailModal from "@/features/shipment/components/shipment-detail-
 import TopUpModal from "@/features/wallet/components/top-up-modal";
 import TransactionDetailModal from "@/features/wallet/components/transaction-detail-modal";
 import { useMountedState } from "react-use";
+import AlertPopUp from "./alert-modal-new";
 export default function ModalProvider() {
   const isMounted = useMountedState();
 
@@ -27,6 +28,7 @@ export default function ModalProvider() {
       <EditAddressModal />
       <EditItemModal />
       <TopUpModal />
+      <AlertPopUp />
     </>
   );
 }

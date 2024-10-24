@@ -56,7 +56,6 @@ export default function RecieverForm({
   );
 
   const { refetch, isLoading } = useAddress({ id: addressId });
-  const isPending = creating || editing || isLoading || prevLoading;
 
   const { data: countryList, isLoading: countryListPending } = useCountries();
   const { data: stateList, isLoading: stateListPending } = useStateList({
@@ -66,6 +65,9 @@ export default function RecieverForm({
     country_code: countryCode,
     state_code: stateCode,
   });
+  const isPending = creating || editing || isLoading || prevLoading;
+  const addressPending =
+    countryListPending || stateListPending || cityListPending;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -446,6 +448,7 @@ export default function RecieverForm({
 
             <SubmitButton
               className="w-fit px-12"
+              disabled={isPending || !form.formState.isValid || addressPending}
               isPending={creating || editing}
             >
               Continue
