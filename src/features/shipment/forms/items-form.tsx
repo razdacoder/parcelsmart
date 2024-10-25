@@ -2,6 +2,7 @@ import { useAlertModal } from "@/components/alert-modal";
 import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ItemValues, ParcelValues } from "@/lib/schemas";
 import { formatNaira } from "@/lib/utils";
 import {
   Edit,
@@ -15,7 +16,7 @@ import {
   Upload,
   XCircle,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCreateParcel, { ParcelRequestType } from "../api/useCreateParcel";
 import useCreateShipment from "../api/useCreateShipment";
@@ -43,15 +44,15 @@ export default function ItemsForm({
     deleteProofOfPayment,
     deleteProofOfWeight,
     setShipmentID,
-    addParcelId,
     deleteParcelId,
-    addItem,
     deleteItem,
     parcels_id,
     shipmentID,
     newParcel,
     deleteParcel,
     setNewIDS,
+    // setItems
+    setParcels,
   } = useShipmentApplication();
 
   const { data, isLoading } = useGetPackaging();
@@ -60,7 +61,7 @@ export default function ItemsForm({
     useUpdateParcel();
   const { mutateAsync: createShipment, isPending: creatingShipment } =
     useCreateShipment();
-  const { mutateAsync: updateShipment, isPending: updaingShipment } =
+  const { mutateAsync: updateShipment, isPending: updatingShipment } =
     useUpdateShipment();
   const [AlertModal, confirm] = useAlertModal({
     type: "warning",
@@ -73,57 +74,121 @@ export default function ItemsForm({
 
   const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
 
-  const isPending = creating || creatingShipment || updating || updaingShipment;
+  const isPending =
+    creating || creatingShipment || updating || updatingShipment;
   const isCreating =
-    creating || creatingShipment || updating || updaingShipment;
+    creating || creatingShipment || updating || updatingShipment;
 
-  useMemo(
-    () => {
-      if (parcelsToEdit) {
-        parcelsToEdit.forEach((parcel, index) => {
-          const newPackaging = {
-            id: parcel.packaging_id,
-            value:
-              data?.data.packaging.find(
-                (p) => p.packaging_id === parcel.packaging_id
-              )?.name || "",
-          };
-          updateParcel(index, newPackaging, "NGN");
+  useEffect(() => {
+    if (parcelsToEdit) {
+      const editingParcels: ParcelValues[] = parcelsToEdit.map((parcel) => {
+        const newPackaging = {
+          id: parcel.packaging_id,
+          value:
+            data?.data.packaging.find(
+              (p) => p.packaging_id === parcel.packaging_id
+            )?.name || "",
+        };
 
-          // Add items only if they don't exist
-          if (parcels[index].items.length === 0) {
-            parcel.items.forEach((item) => {
-              addItem(index, {
-                itemType: "items",
-                weight: item.weight,
-                name: item.name,
-                description: item.description,
-                hsCode: item.hs_code,
-                value: item.value,
-                category: "",
-                subCategory: "",
-                quantity: item.quantity,
-              });
-            });
-          }
+        const items: ItemValues[] = parcel.items.map((item) => {
+          const itemValue: ItemValues =
+            item.hs_code === import.meta.env.VITE_DOCUMENT_HSCODE
+              ? {
+                  itemType: "documents",
+                  name: item.name,
+                  quantity: item.quantity,
+                  description: item.description,
+                  weight: item.weight,
+                }
+              : {
+                  itemType: "items",
+                  weight: item.weight,
+                  name: item.name,
+                  description: item.description,
+                  hsCode: item.hs_code,
+                  value: item.value,
+                  category: "",
+                  subCategory: "",
+                  quantity: item.quantity,
+                };
 
-          if (!parcels_id.includes(parcel.id)) {
-            addParcelId(parcel.id);
-          }
+          return itemValue;
         });
-      }
-    },
+        return {
+          packaging: newPackaging.id,
+          packaging_value: newPackaging.value,
+          proofOfPayment: parcel.proof_of_payments,
+          proofOfWeight: [], // TODO: Change to proof of weight
+          currency: "NGN",
+          items,
+        };
+      });
+      setParcels(editingParcels);
+      setNewIDS(parcelsToEdit.map((parcel) => parcel.id));
+    } else {
+      setParcels([
+        {
+          packaging: "",
+          packaging_value: "",
+          items: [],
+          proofOfPayment: [],
+          proofOfWeight: [],
+          currency: "NGN",
+        },
+      ]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      parcelsToEdit,
-      // data?.data.packaging,
-      // updateParcel,
-      // parcels,
-      // parcels_id,
-      // addItem,
-      // addParcelId,
-    ]
-  );
+  }, [parcelsToEdit]);
+
+  // useMemo(
+  //   () => {
+  //     if (parcelsToEdit) {
+  //       parcelsToEdit.forEach((parcel, index) => {
+  //         const newPackaging = {
+  //           id: parcel.packaging_id,
+  //           value:
+  //             data?.data.packaging.find(
+  //               (p) => p.packaging_id === parcel.packaging_id
+  //             )?.name || "",
+  //         };
+  //         updateParcel(index, newPackaging, "NGN");
+
+  //         // Add items only if they don't exist
+  //         if (parcels[index].items.length === 0) {
+  //           parcel.items.forEach((item) => {
+  //             addItem(index, {
+  //               itemType: "items",
+  //               weight: item.weight,
+  //               name: item.name,
+  //               description: item.description,
+  //               hsCode: item.hs_code,
+  //               value: item.value,
+  //               category: "",
+  //               subCategory: "",
+  //               quantity: item.quantity,
+  //             });
+  //           });
+  //         }
+
+  //         // setItems(index)
+
+  //         if (!parcels_id.includes(parcel.id)) {
+  //           addParcelId(parcel.id);
+  //         }
+  //       });
+  //     }
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [
+  //     parcelsToEdit,
+  //     // data?.data.packaging,
+  //     // updateParcel,
+  //     // parcels,
+  //     // parcels_id,
+  //     // addItem,
+  //     // addParcelId,
+  //   ]
+  // );
   async function createPrcelsandShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {

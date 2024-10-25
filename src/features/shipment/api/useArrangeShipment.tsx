@@ -108,6 +108,7 @@ export default function useArrangeShipment() {
         config.amount = data.data.amount * 100;
         config.email = (user && user?.data.email) || "";
         config.reference = data.data.reference;
+        console.log(config);
         initializePayment({ onSuccess, onClose, config });
       },
     }

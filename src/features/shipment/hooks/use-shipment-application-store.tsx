@@ -30,12 +30,14 @@ type ShipmentApplicationState = {
     values: ItemValues
   ) => void;
   deleteItem: (parcel_index: number, item_index: number) => void;
+  setItems: (parcel_index: number, values: ItemValues[]) => void;
   deleteParcel: (parcel_index: number) => void;
   updateParcel: (
     parcel_index: number,
     packaging?: { id: string; value: string },
     currency?: "NGN" | "USD" | "GBP"
   ) => void;
+  setParcels: (data: ParcelValues[]) => void;
   addProofOfPayment: (parcel_index: number, value: string) => void;
   deleteProofOfPayment: (parcel_index: number, item_index: number) => void;
   addProofOfWeight: (parcel_index: number, value: string) => void;
@@ -93,6 +95,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
           },
         ],
       })),
+    setParcels: (data: ParcelValues[]) => set({ parcels: data }),
     addItem: (parcel_index: number, values: ItemValues) =>
       set((state) => {
         const updatedParcels = [...state.parcels];
@@ -122,6 +125,14 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
         updatedParcels[parcel_index] = updatedParcel;
         return { parcels: updatedParcels };
       }),
+    setItems: (parcel_index: number, values: ItemValues[]) =>
+      set((state) => {
+        const updatedParcels = [...state.parcels];
+        const updatedParcel = { ...updatedParcels[parcel_index] };
+        updatedParcel.items = values;
+        updatedParcels[parcel_index] = updatedParcel;
+        return { parcels: updatedParcels };
+      }),
     deleteParcel: (parcel_index: number) =>
       set((state) => {
         const updatedParcels = state.parcels.filter(
@@ -129,6 +140,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
         );
         return { parcels: updatedParcels };
       }),
+
     updateParcel: (
       parcel_index: number,
       packaging?: { id: string; value: string },

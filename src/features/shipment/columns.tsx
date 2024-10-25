@@ -139,7 +139,7 @@ export const columns: ColumnDef<Shipment>[] = [
       if (row.original.status === "confirmed") {
         return (
           <Badge className="bg-[#EFF6FF] py-2 px-3 text-[#2563EB] w-36 flex justify-center hover:bg-[#EFF6FF] hover:text-[#2563EB]">
-            Completed
+            Confirmed
           </Badge>
         );
       }
