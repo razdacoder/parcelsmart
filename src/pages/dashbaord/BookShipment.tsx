@@ -2,16 +2,42 @@ import useShipmentDetail from "@/features/shipment/api/useShipmentDetail";
 import ShipmentReview from "@/features/shipment/components/shipment-review";
 import Stepper from "@/features/shipment/components/stepper";
 import { useReviewMode } from "@/features/shipment/hooks/use-review-mode";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { cn } from "@/lib/utils";
-import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function BookShipment() {
   const { reviewMode } = useReviewMode();
   const [searchParams] = useSearchParams();
   const shipmentID = searchParams.get("shpiment_id");
+  const navigate = useNavigate();
   const { data: prevData, isLoading: prevLoading } = useShipmentDetail({
     id: shipmentID as string | undefined,
   });
+  const { onOpen, onClose } = useAlertModal();
+
+  useEffect(() => {
+    if (prevData) {
+      if (prevData?.data.status !== "draft") {
+        onOpen({
+          type: "warning",
+          title: "Info",
+          message: "This shipment has already be arranged",
+          primaryLabel: "Book new Shipment",
+          secondaryLabel: "Back to shipments",
+          primaryFn: () => {
+            navigate("/shipment/new");
+            onClose();
+          },
+          secondaryFn: () => {
+            onClose();
+            navigate("/shipment");
+          },
+        });
+      }
+    }
+  }, [navigate, onClose, onOpen, prevData, shipmentID]);
 
   return (
     <main
