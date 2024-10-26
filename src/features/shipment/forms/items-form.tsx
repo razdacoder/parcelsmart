@@ -140,56 +140,8 @@ export default function ItemsForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parcelsToEdit]);
 
-  // useMemo(
-  //   () => {
-  //     if (parcelsToEdit) {
-  //       parcelsToEdit.forEach((parcel, index) => {
-  //         const newPackaging = {
-  //           id: parcel.packaging_id,
-  //           value:
-  //             data?.data.packaging.find(
-  //               (p) => p.packaging_id === parcel.packaging_id
-  //             )?.name || "",
-  //         };
-  //         updateParcel(index, newPackaging, "NGN");
 
-  //         // Add items only if they don't exist
-  //         if (parcels[index].items.length === 0) {
-  //           parcel.items.forEach((item) => {
-  //             addItem(index, {
-  //               itemType: "items",
-  //               weight: item.weight,
-  //               name: item.name,
-  //               description: item.description,
-  //               hsCode: item.hs_code,
-  //               value: item.value,
-  //               category: "",
-  //               subCategory: "",
-  //               quantity: item.quantity,
-  //             });
-  //           });
-  //         }
-
-  //         // setItems(index)
-
-  //         if (!parcels_id.includes(parcel.id)) {
-  //           addParcelId(parcel.id);
-  //         }
-  //       });
-  //     }
-  //   },
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [
-  //     parcelsToEdit,
-  //     // data?.data.packaging,
-  //     // updateParcel,
-  //     // parcels,
-  //     // parcels_id,
-  //     // addItem,
-  //     // addParcelId,
-  //   ]
-  // );
-  async function createPrcelsandShipment() {
+  async function createParcelsAndShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
         description: `Parcel ${index + 1}`,
@@ -228,24 +180,24 @@ export default function ItemsForm({
     }
 
     if (sender && receiver) {
-      createShipment(
-        {
-          origin_address_id: sender.id,
-          destination_address_id: receiver.id,
-          parcel_ids: parcelIds,
-          purpose: "personal",
-        },
-        {
-          onSuccess: (data) => {
-            setShipmentID(data.data.id);
-            next?.();
+      await createShipment(
+          {
+            origin_address_id: sender.id,
+            destination_address_id: receiver.id,
+            parcel_ids: parcelIds,
+            purpose: "personal",
           },
-        }
+          {
+            onSuccess: (data) => {
+              setShipmentID(data.data.id);
+              next?.();
+            },
+          }
       );
     }
   }
 
-  async function updateParcelsandShipment() {
+  async function updateParcelsAndShipment() {
     const existingParcelIds = parcels_id;
 
     // Identify new parcels (no ID yet) and existing parcels (with ID)
@@ -359,16 +311,16 @@ export default function ItemsForm({
       const ok = await confirm();
       if (!ok) {
         if (isResuming) {
-          updateParcelsandShipment();
+          await updateParcelsAndShipment();
         } else {
-          createPrcelsandShipment();
+          await createParcelsAndShipment();
         }
       }
     } else {
       if (isResuming) {
-        updateParcelsandShipment();
+        await updateParcelsAndShipment();
       } else {
-        createPrcelsandShipment();
+        await createParcelsAndShipment();
       }
     }
   }
@@ -581,7 +533,7 @@ export default function ItemsForm({
             <div className="p-4 space-y-2">
               {parcel.proofOfWeight.map((proof, proof_index) => (
                 <div
-                  key={`proof-of-weigth-${proof_index}`}
+                  key={`proof-of-weight-${proof_index}`}
                   className="p-4 bg-white rounded-lg flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">

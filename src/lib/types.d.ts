@@ -273,7 +273,7 @@ type Shipment = {
   purpose: string;
   user_id: string;
   tracking_number: string | null;
-  status: "draft" | "confirmed" | "in_transit" | "delivered" | "cancelled";
+  status: "draft" | "confirmed" | "in_transit" | "delivered" | "cancelled" | "pending";
   platform: string;
   platform_id: string;
   platform_tracking_number: string | null;

@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function TrackShipment() {
   const [shipmentId, setShipmentId] = useState<string>("");
-  const { mutate: trackShipment, isPending } = useTrackShipment();
+  const { mutate: trackShipment, isPending, error } = useTrackShipment();
   const [data, setData] = useState<TrackShipmentResponseType>();
 
   const isValid = shipmentId === "";
@@ -62,6 +62,9 @@ export default function TrackShipment() {
             </div>
           )}
           {data && <TrackResult data={data} />}
+            {error && <div className="flex justify-center items-center py-6">
+                <p className="text-destructive text-sm font-medium">{error?.response?.data.message}</p>
+            </div>}
         </div>
       </main>
     </div>

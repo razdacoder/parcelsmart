@@ -23,7 +23,7 @@ export default function AlertPopUp() {
   } = useAlertModal();
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="flex flex-col items-center gap-6">
+      <AlertDialogContent className="flex flex-col items-center gap-6 w-11/12 md:max-w-xl rounded-lg">
         {/* <button onClick={onClose} className="flex justify-center items-center size-10 absolute bg-white -top-12 right-0 rounded-full">
           <X className="size-5" />
         </button> */}

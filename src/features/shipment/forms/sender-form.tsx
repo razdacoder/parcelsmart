@@ -443,7 +443,7 @@ export default function SenderForm({
             </Button>
 
             <SubmitButton
-              className="w-fit px-12"
+              className="w-full md:w-fit px-12"
               disabled={isPending || !form.formState.isValid || addressPending}
               isPending={creating || editing}
             >

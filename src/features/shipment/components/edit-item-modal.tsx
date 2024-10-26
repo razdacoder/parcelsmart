@@ -23,7 +23,7 @@ export default function EditItemModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="w-11/12 md:max-w-xl p-0 rounded-xl">
+      <DialogContent className="w-11/12 md:max-w-xl p-0 rounded-lg">
         <DialogClose className="absolute -top-10 md:-top-12 z-50 right-0 size-8 md:size-10 rounded-full bg-white flex justify-center items-center">
           <X className="size-4 md:size-5 " />
         </DialogClose>

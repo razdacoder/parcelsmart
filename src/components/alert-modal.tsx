@@ -48,7 +48,7 @@ export const useAlertModal = ({
 
   const AlertModal = () => (
     <AlertDialog open={promise !== null}>
-      <AlertDialogContent className="flex flex-col items-center gap-6">
+      <AlertDialogContent className="flex flex-col items-center gap-6 w-11/12 md:max-w-xl rounded-lg">
         <button className="flex justify-center items-center size-10 absolute bg-white -top-12 right-0 rounded-full">
           <X className="size-5" />
         </button>

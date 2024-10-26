@@ -143,6 +143,14 @@ export const columns: ColumnDef<Shipment>[] = [
           </Badge>
         );
       }
+
+      if (row.original.status === "pending") {
+        return (
+            <Badge  className="bg-yellow-500 py-2 px-3 w-36 flex justify-center hover:bg-yellow-600 hover:text-white">
+              Pending
+            </Badge>
+        );
+      }
     },
   },
 ];

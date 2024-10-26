@@ -108,7 +108,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                       }}
                       id={rate.carrier_slug}
                     />
-                    <div className="col-span-3 flex items-center gap-4">
+                    <div className="col-span-6 md:col-span-3  flex items-center gap-4">
                       <img
                         src={rate.carrier_logo}
                         alt="DHL Image"
@@ -118,12 +118,12 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                         <h4 className="text-xs md:text-sm font-medium">
                           {rate.carrier_name}
                         </h4>
-                        <p className="text-xs md:text-sm text-muted-foreground">
-                          DOMESTIC
-                        </p>
+                        {/*<p className="text-xs md:text-sm text-muted-foreground">*/}
+                        {/*  DOMESTIC*/}
+                        {/*</p>*/}
                       </div>
                     </div>
-                    <div className="col-span-3 flex items-center">
+                    <div className="hidden col-span-3 md:flex items-center">
                       <div className="hidden md:flex flex-col gap-1">
                         <h4 className="text-sm font-medium">
                           Pickup: {rate.estimated_pickup_time}
@@ -133,7 +133,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                         </p>
                       </div>
                     </div>
-                    <div className="col-span-4 flex items-center justify-center gap-2">
+                    <div className="hidden col-span-4 md:flex items-center justify-center gap-2">
                       {(rate.dropoff_available ||
                         rate.dropoff_required ||
                         rate.dropoff_only) && (
@@ -148,7 +148,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                         </Badge>
                       )}
                     </div>
-                    <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-3 md:col-span-1 flex items-center justify-center">
                       <h2 className="text-center text-base md:text-lg font-bold">
                         {formatNaira(rate.amount)}
                       </h2>
@@ -161,7 +161,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                         }
                       }}
                       htmlFor={rate.carrier_slug}
-                      className="col-span-1 w-full flex items-center justify-center rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary"
+                      className="col-span-3 md:col-span-1 w-full flex items-center justify-center rounded-xl border-2 cursor-pointer text-center peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary"
                     >
                       {selectedCarrier === rate.carrier_slug
                         ? "Selected"

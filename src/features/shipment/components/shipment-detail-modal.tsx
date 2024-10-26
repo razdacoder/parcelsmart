@@ -42,7 +42,7 @@ export default function ShipmentDetailModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="sm:max-w-xs md:max-w-2xl lg:max-w-4xl">
+      <DialogContent className="w-11/12 md:max-w-xl p-4 rounded-xl">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="flex flex-row items-center gap-4 p-0">
             Shipment Details
@@ -90,7 +90,7 @@ export default function ShipmentDetailModal() {
                     {data.data.destination_address.last_name}
                   </span>
                   <span>{data.data.destination_address.email}</span>
-                  <span>{data.data.destination_address.email}</span>
+                  <span>{data.data.destination_address.phone_number}</span>
                   <span className="text-balance">
                     {data.data.destination_address.line_1},{" "}
                     {data.data.destination_address.city},{" "}

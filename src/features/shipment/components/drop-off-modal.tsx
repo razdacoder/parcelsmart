@@ -41,7 +41,7 @@ export default function DropOffModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className=" sm:max-w-xl p-0 rounded-lg">
+      <DialogContent className=" w-11/12 md:max-w-xl p-0 rounded-lg">
         <DialogClose className="absolute -top-12 z-50 right-0 size-10 rounded-full bg-white flex justify-center items-center">
           <X className="size-5 " />
         </DialogClose>
@@ -50,7 +50,7 @@ export default function DropOffModal() {
             Drop off your package
           </DialogTitle>
         </DialogHeader>
-        <div className="p-8 space-y-3">
+        <div className="p-6 space-y-3">
           {!required && (
             <div className="space-y-2">
               <h4 className="font-bold">
