@@ -62,9 +62,10 @@ export default function TrackShipment() {
             </div>
           )}
           {data && <TrackResult data={data} />}
-            {error && <div className="flex justify-center items-center py-6">
+
+            {error && (<div className="flex justify-center items-center py-6">
                 <p className="text-destructive text-sm font-medium">{error?.response?.data.message}</p>
-            </div>}
+            </div>)}
         </div>
       </main>
     </div>
