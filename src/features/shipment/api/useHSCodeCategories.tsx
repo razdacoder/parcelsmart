@@ -17,10 +17,10 @@ export default function useHSCodeCategories({
     enabled: !!chapter_id,
     queryKey: ["hs-codes-categories", chapter_id],
     queryFn: async () => {
-      const resposne = await client.get("/hs-codes/categories", {
+      const response = await client.get("/hs-codes/categories", {
         params: { chapter: chapter_id },
       });
-      return resposne.data;
+      return response.data;
     },
   });
 }

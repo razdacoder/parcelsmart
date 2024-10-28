@@ -175,7 +175,7 @@ export default function ShipmentList() {
                   "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
               )}
             >
-              Canceled
+              Cancelled
             </Button>
             <Button
               onClick={() => handleFilterClick("delivered")}
