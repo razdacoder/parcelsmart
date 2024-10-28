@@ -1,9 +1,10 @@
-import { ItemValues, ParcelValues } from "@/lib/schemas";
-import { create } from "zustand";
+import {ItemValues, ParcelValues} from "@/lib/schemas";
+import {create} from "zustand";
 
 type Carrier = {
   name: string;
   logo: string;
+  slug: string
   rate: number;
 };
 
@@ -59,14 +60,14 @@ type ShipmentApplicationState = {
   setLocation: (value: string) => void;
   setInsurance: (value?: Insurance) => void;
   useInsurance: boolean;
-  setUseInsurace: (value: boolean) => void;
+  setUseInsurance: (value: boolean) => void;
 };
 
 export const useShipmentApplication = create<ShipmentApplicationState>(
   (set) => ({
     // Address
     sender: undefined,
-    reciever: undefined,
+    receiver: undefined,
     setSenderValues: (values: AddressBook) => set({ sender: values }),
     setReceiverValues: (values: AddressBook) => set({ receiver: values }),
     clearSenderValues: () => set({ sender: undefined }),
@@ -118,10 +119,9 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
       set((state) => {
         const updatedParcels = [...state.parcels];
         const updatedParcel = { ...updatedParcels[parcel_index] };
-        const updatedItems = updatedParcel.items.filter(
-          (_, index) => index !== item_index
+          updatedParcel.items = updatedParcel.items.filter(
+            (_, index) => index !== item_index
         );
-        updatedParcel.items = updatedItems;
         updatedParcels[parcel_index] = updatedParcel;
         return { parcels: updatedParcels };
       }),
@@ -185,10 +185,9 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
       set((state) => {
         const updatedParcels = [...state.parcels];
         const updatedParcel = { ...updatedParcels[parcel_index] };
-        const updatedItems = updatedParcel.proofOfPayment.filter(
-          (_, index) => index !== item_index
+          updatedParcel.proofOfPayment = updatedParcel.proofOfPayment.filter(
+            (_, index) => index !== item_index
         );
-        updatedParcel.proofOfPayment = updatedItems;
         updatedParcels[parcel_index] = updatedParcel;
         return { parcels: updatedParcels };
       }),
@@ -196,10 +195,9 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
       set((state) => {
         const updatedParcels = [...state.parcels];
         const updatedParcel = { ...updatedParcels[parcel_index] };
-        const updatedItems = updatedParcel.proofOfWeight.filter(
-          (_, index) => index !== item_index
+          updatedParcel.proofOfWeight = updatedParcel.proofOfWeight.filter(
+            (_, index) => index !== item_index
         );
-        updatedParcel.proofOfWeight = updatedItems;
         updatedParcels[parcel_index] = updatedParcel;
         return { parcels: updatedParcels };
       }),
@@ -225,7 +223,7 @@ export const useShipmentApplication = create<ShipmentApplicationState>(
     setCarrier: (value: Carrier) => set({ carrier: value }),
     setInsurance: (value?: Insurance) => set({ insurance: value }),
     useInsurance: false,
-    setUseInsurace: (value: boolean) => set({ useInsurance: value }),
+    setUseInsurance: (value: boolean) => set({ useInsurance: value }),
     clearAll: () =>
       set({
         sender: undefined,

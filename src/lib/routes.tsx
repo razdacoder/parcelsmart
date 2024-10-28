@@ -10,7 +10,6 @@ import VerifyEmail from "@/pages/auth/VerifyEmail";
 import AddressBook from "@/pages/dashbaord/AddressBook";
 import BookShipment from "@/pages/dashbaord/BookShipment";
 import DashboardLayout from "@/pages/dashbaord/DashboardLayout";
-import GetQoute from "@/pages/dashbaord/GetQoute";
 import Home from "@/pages/dashbaord/Home";
 import Settings from "@/pages/dashbaord/Settings";
 import Shipment from "@/pages/dashbaord/Shipment";
@@ -18,6 +17,7 @@ import TrackShipment from "@/pages/dashbaord/TrackShipment";
 import Wallet from "@/pages/dashbaord/Wallet";
 import Layout from "@/pages/layout";
 import { createBrowserRouter } from "react-router-dom";
+import GetQuote from "@/pages/dashbaord/GetQoute";
 
 export const router = createBrowserRouter([
   {
@@ -48,8 +48,8 @@ export const router = createBrowserRouter([
         element: <AddressBook />,
       },
       {
-        path: "get-qoute/",
-        element: <GetQoute />,
+        path: "get-quote/",
+        element: <GetQuote />,
       },
       {
         path: "track/",

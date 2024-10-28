@@ -13,14 +13,14 @@ import { Label } from "@/components/ui/label";
 import useCity from "@/features/address/api/useCity";
 import useCountries from "@/features/address/api/useCountries";
 import useStateList from "@/features/address/api/useState";
-import { qouteSchema, QouteValues } from "@/lib/schemas";
+import { quoteSchema, QuoteValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function QouteForm() {
-  const form = useForm<QouteValues>({
-    resolver: zodResolver(qouteSchema),
+export default function QuoteForm() {
+  const form = useForm<QuoteValues>({
+    resolver: zodResolver(quoteSchema),
     defaultValues: {
       from_country: "",
       from_city: "",

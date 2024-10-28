@@ -165,7 +165,7 @@ export type ParcelListValues = z.infer<typeof parcelListSchema>;
 
 export type ParcelValues = z.infer<typeof parcelSchema>;
 
-export const qouteSchema = z.object({
+export const quoteSchema = z.object({
   from_country: z.string({ message: "This field is required" }).trim(),
   from_state: z.string({ message: "This field is required" }).trim(),
   from_city: z.string({ message: "This field is required" }).trim(),
@@ -175,4 +175,4 @@ export const qouteSchema = z.object({
   estimated_weight: z.coerce.number({ message: "This field is required" }),
 });
 
-export type QouteValues = z.infer<typeof qouteSchema>;
+export type QuoteValues = z.infer<typeof quoteSchema>;

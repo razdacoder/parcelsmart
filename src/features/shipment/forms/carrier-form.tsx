@@ -19,7 +19,7 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 export default function CarrierForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
   const { onOpen } = useDropOff();
-  const { clearAll, shipmentID, setRateID, rate_id, setCarrier } =
+  const { clearAll, shipmentID, setRateID, rate_id, setCarrier, carrier } =
     useShipmentApplication();
   const {
     data,
@@ -28,12 +28,18 @@ export default function CarrierForm({ next, prev }: StepsProps) {
     refetch,
     isRefetching,
   } = useGetRates({ shipment_id: shipmentID });
-  const [selectedCarrier, setSelectedCarrier] = useState<string | null>();
+  const [selectedCarrier, setSelectedCarrier] = useState<string | null>(() => {
+    if (carrier) {
+      return carrier.slug
+    }
+    return null
+  });
   const isLoading = loading || isRefetching;
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-2">
+          {selectedCarrier}
           <h3 className="text-xl md:text-2xl font-bold text-text">
             Select Carrier
           </h3>
@@ -103,6 +109,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
                         setCarrier({
                           name: rate.carrier_name,
                           logo: rate.carrier_logo,
+                          slug: rate.carrier_slug,
                           rate: rate.amount,
                         });
                       }}

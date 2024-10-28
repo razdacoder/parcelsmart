@@ -2,16 +2,16 @@ import redStarImage from "@/assets/redstar.png";
 import AppNavBar from "@/components/app-navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import QouteForm from "@/features/qoute/forms/qoute-form";
 import { formatNaira } from "@/lib/utils";
+import QuoteForm from "@/features/quote/forms/quote-form.tsx";
 
-export default function GetQoute() {
+export default function GetQuote() {
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Get Quote" />
       <main className="px-4 md:px-8 space-y-6">
         <div className="bg-white py-12 px-8 space-y-8">
-          <QouteForm />
+          <QuoteForm />
           <div className="space-y-4">
             <h3 className="text-lg font-bold">Available Rates</h3>
             <div className="flex flex-col gap-2">

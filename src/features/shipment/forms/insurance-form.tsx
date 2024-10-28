@@ -9,7 +9,7 @@ import { useShipmentApplication } from "../hooks/use-shipment-application-store"
 
 export default function InsuranceForm({ next, prev }: StepsProps) {
   const navigate = useNavigate();
-  const { clearAll, setInsurance, shipmentID, setUseInsurace, useInsurance } =
+  const { clearAll, setInsurance, shipmentID, setUseInsurance, useInsurance } =
     useShipmentApplication();
   const { data, isLoading } = useGetInsurance({ shipment_id: shipmentID });
 
@@ -76,7 +76,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
                     name="insurace"
                     checked={useInsurance}
                     className="hidden peer"
-                    onChange={(e) => setUseInsurace(e.target.checked)}
+                    onChange={(e) => setUseInsurance(e.target.checked)}
                     id="in1"
                   />
                   <h2 className="text-base md:text-xl font-bold justify-self-end">
