@@ -160,6 +160,7 @@ export default function SenderForm({
 
   function clearValues() {
     clearSenderValues();
+    setAddressId(undefined)
     form.reset({
       first_name: "",
       last_name: "",
@@ -224,6 +225,7 @@ export default function SenderForm({
       </div>
 
       <AddressBookSearch
+          value={addressId}
         onChange={(value) => {
           setAddressId(value);
         }}

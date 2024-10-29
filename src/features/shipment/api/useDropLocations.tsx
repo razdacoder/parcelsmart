@@ -17,18 +17,18 @@ type ResponseType = {
   }[];
 };
 
-export default function useDrofLocations({
+export default function useDropLocations({
   load,
   country_code,
   carrier,
   state_name,
-  city_name,
+  address_id
 }: {
   load: boolean;
   country_code?: string;
   carrier?: string;
   state_name?: string;
-  city_name?: string;
+  address_id?: string
 }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
     enabled: load,
@@ -37,7 +37,7 @@ export default function useDrofLocations({
       country_code,
       carrier,
       state_name,
-      city_name,
+      address_id
     ],
     queryFn: async () => {
       const response = await client.get("/dropoff-locations", {
@@ -45,7 +45,7 @@ export default function useDrofLocations({
           country_code,
           carrier,
           state: state_name,
-          city: city_name,
+          address_id
         },
       });
       return response.data;

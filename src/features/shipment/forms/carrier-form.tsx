@@ -39,7 +39,6 @@ export default function CarrierForm({ next, prev }: StepsProps) {
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-2">
-          {selectedCarrier}
           <h3 className="text-xl md:text-2xl font-bold text-text">
             Select Carrier
           </h3>

@@ -11,21 +11,23 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader, MapPin, X } from "lucide-react";
 import { useState } from "react";
-import useDrofLocations from "../api/useDrofLocations";
+
 import { useDropOff } from "../hooks/use-drop-off";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
+import useDropLocations from "@/features/shipment/api/useDropLocations.tsx";
+import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 export default function DropOffModal() {
   const { isOpen, onClose, required, carrier } = useDropOff();
   const [dropOff, setDropOff] = useState<"yes" | "no">("no");
   const { sender, setDropOffId } = useShipmentApplication();
   const [dropLocation, setDropLocation] = useState<string>();
-  const { data, isLoading, isError } = useDrofLocations({
+  const { data, isLoading, isError } = useDropLocations({
     load: dropOff === "yes",
     country_code: sender?.country,
     carrier,
     state_name: sender?.state,
-    city_name: sender?.city,
+    // address_id: sender?.id
   });
 
   function saveAndContinue() {
@@ -34,12 +36,16 @@ export default function DropOffModal() {
     } else {
       if (dropLocation) {
         setDropOffId(dropLocation);
+        onClose()
       }
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => {
+      setDropOff("no")
+      onClose()
+    }}>
       <DialogOverlay className="bg-black/80" />
       <DialogContent className=" w-11/12 md:max-w-xl p-0 rounded-lg">
         <DialogClose className="absolute -top-12 z-50 right-0 size-10 rounded-full bg-white flex justify-center items-center">
@@ -61,13 +67,13 @@ export default function DropOffModal() {
                 onValueChange={(value) => setDropOff(value as "yes" | "no")}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="r1" />
+                  <RadioGroupItem value="no" id="dr1" />
                   <Label htmlFor="dr1">
                     No, I want my shipment picked up from my address.
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="r2" />
+                  <RadioGroupItem value="yes" id="dr2" />
                   <Label htmlFor="dr2">
                     Yes. I would like to drop-off at a nearby location.
                   </Label>
@@ -99,10 +105,10 @@ export default function DropOffModal() {
                   </p>
                 </div>
               )}
-              <div className="space-y-2">
+              <ScrollArea className="space-y-2 p-4 h-[300px]">
                 {data &&
                   data.data.map((location) => (
-                    <div className="flex items-center space-x-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
+                    <div className="flex items-center space-x-2 mb-2 w-full border-2 px-2 py-4 rounded-lg has-[:checked]:border-primary">
                       <div className="flex items-center justify-between w-full px-2">
                         <input
                           type="radio"
@@ -129,12 +135,12 @@ export default function DropOffModal() {
                           htmlFor={location.id}
                           className="px-6 py-3 rounded-xl border-2 cursor-pointer peer-checked:bg-primary peer-checked:text-white"
                         >
-                          {dropLocation === location.id ? "Selcetd" : "Select"}
+                          {dropLocation === location.id ? "Selected" : "Select"}
                         </Label>
                       </div>
                     </div>
                   ))}
-              </div>
+              </ScrollArea>
             </>
           )}
 

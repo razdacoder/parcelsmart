@@ -31,7 +31,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-export default function RecieverForm({
+export default function ReceiverForm({
   next,
   prev,
   data,
@@ -161,6 +161,7 @@ export default function RecieverForm({
 
   function clearValues() {
     clearReceiverValues();
+    setAddressId(undefined)
     form.reset({
       first_name: "",
       last_name: "",
@@ -225,6 +226,7 @@ export default function RecieverForm({
       </div>
 
       <AddressBookSearch
+          value={addressId}
         onChange={(value) => {
           setAddressId(value);
         }}
