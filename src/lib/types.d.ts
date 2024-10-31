@@ -273,7 +273,13 @@ type Shipment = {
   purpose: string;
   user_id: string;
   tracking_number: string | null;
-  status: "draft" | "confirmed" | "in_transit" | "delivered" | "cancelled" | "pending";
+  status:
+    | "draft"
+    | "confirmed"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "pending";
   platform: string;
   platform_id: string;
   platform_tracking_number: string | null;
@@ -310,4 +316,54 @@ type Shipment = {
     deleted_at: Date | null;
   } | null;
   parcels: Parcel[];
+};
+
+type Quote = {
+  platform_id: string | null;
+  platform: string;
+  amount: number;
+  platform_amount: number;
+  currency: string;
+  carrier_name: string;
+  carrier_logo: string;
+  carrier_slug: string;
+  carrier_reference: string;
+  estimated_delivery_date: Date;
+  estimated_delivery_eta: string;
+  estimated_delivery_time: string;
+  estimated_pickup_eta: string;
+  estimated_pickup_time: string;
+  dropoff_available: boolean;
+  dropoff_only: boolean;
+  dropoff_required: boolean;
+  origin_address: {
+    country: string;
+    state: string;
+    city: string;
+  };
+  destination_address: {
+    country: string;
+    state: string;
+    city: string;
+  };
+  return_address: {
+    country: string;
+    state: string;
+    city: string;
+  };
+  parcels: QuoteParcel[];
+  user_id: string;
+};
+
+type QuoteParcel = {
+  description: string;
+  weight_unit: string;
+  items: {
+    name: string;
+    description: string;
+    currency: string;
+    quantity: number;
+    value: number;
+    weight: number;
+  }[];
 };

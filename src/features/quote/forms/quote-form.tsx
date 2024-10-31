@@ -15,10 +15,18 @@ import useCountries from "@/features/address/api/useCountries";
 import useStateList from "@/features/address/api/useState";
 import { quoteSchema, QuoteValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Loader } from "lucide-react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import useGetQuotes from "../api/use-get-qoutes";
 
-export default function QuoteForm() {
+type QuoteFormProps = {
+  setQoutes: React.Dispatch<React.SetStateAction<Quote[] | undefined>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function QuoteForm({ setQoutes, setIsLoading }: QuoteFormProps) {
   const form = useForm<QuoteValues>({
     resolver: zodResolver(quoteSchema),
     defaultValues: {
@@ -92,9 +100,28 @@ export default function QuoteForm() {
     value: `${state.name}-${state.state_code}`,
   }));
 
+  const { mutate, isPending } = useGetQuotes();
+
+  function onSubmit(values: QuoteValues) {
+    setIsLoading(true);
+    mutate(values, {
+      onSuccess: (data) => {
+        setQoutes(data.data);
+        setIsLoading(isPending);
+      },
+      onError: (error) => {
+        toast.error(error.response?.data.message);
+        setIsLoading(isPending);
+      },
+      onSettled: () => {
+        setIsLoading(isPending);
+      },
+    });
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-8">
+      <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-3">
           <Label className="font-bold">Shipping From?</Label>
           <div className="grid md:grid-cols-3 gap-4">
@@ -115,7 +142,7 @@ export default function QuoteForm() {
                       }}
                       options={countryOptions}
                       isLoading={countryListPending}
-                      disabled={countryListPending}
+                      disabled={countryListPending || isPending}
                     />
                   </FormControl>
 
@@ -132,7 +159,7 @@ export default function QuoteForm() {
                     <PSelect
                       placeholder="State"
                       isLoading={fromStateListPending}
-                      disabled={fromStateListPending}
+                      disabled={fromStateListPending || isPending}
                       value={field.value}
                       onChange={(value) => {
                         field.onChange(value?.split("-")[0]);
@@ -155,7 +182,7 @@ export default function QuoteForm() {
                     <PSelect
                       isLoading={fromCityListPending}
                       placeholder="City"
-                      disabled={fromCityListPending}
+                      disabled={fromCityListPending || isPending}
                       value={field.value}
                       onChange={field.onChange}
                       options={fromCityOptions}
@@ -188,7 +215,7 @@ export default function QuoteForm() {
                       }}
                       options={countryOptions}
                       isLoading={countryListPending}
-                      disabled={countryListPending}
+                      disabled={countryListPending || isPending}
                     />
                   </FormControl>
 
@@ -205,7 +232,7 @@ export default function QuoteForm() {
                     <PSelect
                       placeholder="State"
                       isLoading={toStateListPending}
-                      disabled={toStateListPending}
+                      disabled={toStateListPending || isPending}
                       value={field.value}
                       onChange={(value) => {
                         field.onChange(value?.split("-")[0]);
@@ -228,7 +255,7 @@ export default function QuoteForm() {
                     <PSelect
                       isLoading={toCityListPending}
                       placeholder="City"
-                      disabled={toCityListPending}
+                      disabled={toCityListPending || isPending}
                       value={field.value}
                       onChange={field.onChange}
                       options={toCityOptions}
@@ -248,14 +275,20 @@ export default function QuoteForm() {
             <FormItem>
               <FormLabel>Estimated Weight (kg)</FormLabel>
               <FormControl>
-                <Input {...field} className="h-10" />
+                <Input disabled={isPending} {...field} className="h-10" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex justify-center">
-          <Button size="lg">Get Quote</Button>
+          <Button disabled={isPending} size="lg">
+            {isPending ? (
+              <Loader className="size-4 animate-spin" />
+            ) : (
+              "Get Quote"
+            )}
+          </Button>
         </div>
       </form>
     </Form>

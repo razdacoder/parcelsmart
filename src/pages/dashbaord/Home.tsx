@@ -89,7 +89,7 @@ export default function Home() {
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
             <Link
-              to="/get-qoute"
+              to="/get-quote"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
             >
               <div className="space-y-8">
