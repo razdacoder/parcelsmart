@@ -1,6 +1,7 @@
 import AddressDetailModal from "@/features/address/components/address-detail-modal";
 import EditAddressModal from "@/features/address/components/edit-address-modal";
 import NewAddressModal from "@/features/address/components/new-address-modal";
+import EditPackageModal from "@/features/settings/components/edit-package-modal";
 import NewPackageModal from "@/features/settings/components/new-package-modal";
 import UpdatePasswordModal from "@/features/settings/components/update-password-modal";
 import UpdateProfileModal from "@/features/settings/components/update-profile-modal";
@@ -31,6 +32,7 @@ export default function ModalProvider() {
       <TopUpModal />
       <AlertPopUp />
       <NewPackageModal />
+      <EditPackageModal />
     </>
   );
 }

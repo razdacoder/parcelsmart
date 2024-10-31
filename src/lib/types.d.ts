@@ -136,12 +136,17 @@ type Packaging = {
   height: number;
   length: number;
   name: string;
-  size_unit: string;
-  type: string;
+  size_unit: "cm";
+  type: "box" | "envelope" | "soft-packaging";
   weight: number;
-  weight_unit: string;
+  weight_unit: "kg";
   width: number;
-  packaging_id: string;
+  id: string;
+  platform_id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  user_id: string;
 };
 
 type Item = {

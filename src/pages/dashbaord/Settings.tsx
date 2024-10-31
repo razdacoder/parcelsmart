@@ -27,11 +27,14 @@ export default function Settings() {
     <div className="flex flex-col gap-4 w-full overflow-hidden">
       <AppNavBar title="Settings" />
       <main className="px-4 md:px-8 space-y-6">
-        <div className="bg-white rounded-lg py-12 px-4 md:px-8">
+        <div className="bg-white rounded-lg py-4 lg:py-12 px-4 md:px-8">
           <div className="flex justify-between">
-            <Tabs defaultValue={currentTab} className="w-full">
-              <TabsList className="bg-transparent px-0 mb-16 lg:mb-8 flex flex-col gap-2 lg:flex-row justify-between lg:justify-start items-center">
-                <div className="flex items-center justify-between lg:justify-start w-full">
+            <Tabs
+              defaultValue={currentTab}
+              className="w-full h-full flex flex-col gap-4 "
+            >
+              <TabsList className="bg-transparent px-0 h-full lg:mb-8 flex flex-col gap-2 lg:flex-row justify-between lg:justify-start items-center">
+                <div className="flex items-center justify-between lg:justify-start w-full flex-wrap">
                   <TabsTrigger
                     onClick={() => setCurrentTab("profile")}
                     className="px-2 md:px-6 py-2"
@@ -61,15 +64,16 @@ export default function Settings() {
                     Notifications
                   </TabsTrigger>
                 </div>
-
-                <Button
-                  onClick={callAction}
-                  className="w-full md:w-fit gap-2 items-center justify-self-end"
-                >
-                  {currentTab === "profile" && "Complete KYC Verification"}
-                  {currentTab === "packaging" && "Add Packaging"}
-                  <ArrowRight className="size-4" />
-                </Button>
+                {(currentTab === "profile" || currentTab === "packaging") && (
+                  <Button
+                    onClick={callAction}
+                    className="w-full md:w-fit gap-2 items-center justify-self-end"
+                  >
+                    {currentTab === "profile" && "Complete KYC Verification"}
+                    {currentTab === "packaging" && "Add Packaging"}
+                    <ArrowRight className="size-4" />
+                  </Button>
+                )}
               </TabsList>
               <TabsContent value="profile" className="w-full bg">
                 <ProfileView />

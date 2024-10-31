@@ -18,7 +18,7 @@ export default function PackagingView() {
       {data && (
         <div className="flex flex-col gap-2">
           {data.data.packaging.map((p) => (
-            <Package key={p.packaging_id} packaging={p} />
+            <Package key={p.id} packaging={p} />
           ))}
         </div>
       )}

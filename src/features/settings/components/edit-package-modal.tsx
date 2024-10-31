@@ -9,12 +9,12 @@ import {
 import { Loader, X } from "lucide-react";
 
 import useGetPackaging from "../api/use-get-packaging";
-import PackageForm from "../forms/package-from";
+import PackageForm from "../forms/package-form";
 import { useEditPackage } from "../hooks/use-edit-package";
 
-export default function NewPackageModal() {
+export default function EditPackageModal() {
   const { isOpen, onClose, id } = useEditPackage();
-  const { data, isLoading } = useGetPackaging({ id });
+  const { data, isLoading } = useGetPackaging({ id: id });
 
   return (
     <Dialog
@@ -35,8 +35,8 @@ export default function NewPackageModal() {
         </DialogHeader>
         <div className="p-4 md:p-8 space-y-4">
           {isLoading && (
-            <div className="py-12">
-              <Loader className="text-primary size-6" />
+            <div className="py-12 flex items-center justify-center">
+              <Loader className="text-primary size-6 animate-spin" />
             </div>
           )}
 

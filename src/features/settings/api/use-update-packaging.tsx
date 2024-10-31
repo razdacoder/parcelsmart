@@ -38,9 +38,10 @@ export default function useUpdatePackaging() {
       console.log(error);
       toast.error(error.response?.data.message);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["packaging-list"] });
       queryClient.invalidateQueries({ queryKey: ["packaging", variables.id] });
+      toast.success(data.message);
     },
   });
 }

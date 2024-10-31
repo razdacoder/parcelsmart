@@ -38,8 +38,9 @@ export default function useCreatePackaging() {
       console.log(error);
       toast.error(error.response?.data.message);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["packaging-list"] });
+      toast.success(data.message);
     },
   });
 }

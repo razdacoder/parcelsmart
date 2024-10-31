@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
-import PackageForm from "../forms/package-from";
+import PackageForm from "../forms/package-form";
 import { useNewPackage } from "../hooks/use-new-package";
 
 export default function NewPackageModal() {

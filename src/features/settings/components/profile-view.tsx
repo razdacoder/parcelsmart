@@ -39,12 +39,12 @@ export default function ProfileView() {
             </>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-2">
           <Button
             onClick={onOpen}
             variant="outline"
             size="sm"
-            className="gap-2 items-center h-8 text-sm text-primary border-primary"
+            className="gap-2 items-center h-8 text-sm text-primary border-primary w-full"
           >
             <Edit className="size-4" /> Edit Profile
           </Button>
@@ -52,7 +52,7 @@ export default function ProfileView() {
             onClick={openPasswordModal}
             variant="outline"
             size="sm"
-            className="gap-2 items-center h-8 text-sm text-primary border-primary"
+            className="gap-2 items-center h-8 text-sm text-primary border-primary w-full"
           >
             <Edit className="size-4" /> Change Password
           </Button>
@@ -60,7 +60,7 @@ export default function ProfileView() {
       </div>
       <div className="flex flex-col md:flex-row gap-2 justify-between items-center border-2 rounded-xl p-3">
         <div className="flex items-center gap-4">
-          <MapPin className="size-16 text-primary" />
+          <MapPin className="size-12 lg:size-16 text-primary" />
           <div className="flex flex-col gap-1.5">
             <h4 className="font-bold">Default Address</h4>
             <p className="text-xs">Click to add a default pickup address</p>
