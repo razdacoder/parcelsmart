@@ -22,11 +22,11 @@ import { toast } from "sonner";
 import useGetQuotes from "../api/use-get-qoutes";
 
 type QuoteFormProps = {
-  setQoutes: React.Dispatch<React.SetStateAction<Quote[] | undefined>>;
+  setQuotes: React.Dispatch<React.SetStateAction<Quote[] | undefined>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function QuoteForm({ setQoutes, setIsLoading }: QuoteFormProps) {
+export default function QuoteForm({ setQuotes, setIsLoading }: QuoteFormProps) {
   const form = useForm<QuoteValues>({
     resolver: zodResolver(quoteSchema),
     defaultValues: {
@@ -106,7 +106,7 @@ export default function QuoteForm({ setQoutes, setIsLoading }: QuoteFormProps) {
     setIsLoading(true);
     mutate(values, {
       onSuccess: (data) => {
-        setQoutes(data.data);
+        setQuotes(data.data);
         setIsLoading(isPending);
       },
       onError: (error) => {

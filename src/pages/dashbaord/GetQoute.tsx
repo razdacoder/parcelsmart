@@ -16,7 +16,7 @@ export default function GetQuote() {
       <AppNavBar title="Get Quote" />
       <main className="px-4 md:px-8 space-y-6">
         <div className="bg-white py-12 px-8 space-y-8">
-          <QuoteForm setIsLoading={setIsLoading} setQoutes={setQuotes} />
+          <QuoteForm setIsLoading={setIsLoading} setQuotes={setQuotes} />
           {isLoading && !quotes && (
             <div className="flex items-center justify-center py-12">
               <Loader className="text-primary size-6 animate-spin" />
