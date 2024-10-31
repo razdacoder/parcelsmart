@@ -176,3 +176,16 @@ export const quoteSchema = z.object({
 });
 
 export type QuoteValues = z.infer<typeof quoteSchema>;
+
+export const packagingSchema = z.object({
+  type: z.string(),
+  name: z.string(),
+  length: z.coerce.number(),
+  width: z.coerce.number(),
+  height: z.coerce.number(),
+  size_unit: z.string(),
+  weight: z.coerce.number(),
+  weight_unit: z.string(),
+});
+
+export type PackagingValues = z.infer<typeof packagingSchema>;

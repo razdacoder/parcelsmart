@@ -5,17 +5,15 @@ import { AxiosError } from "axios";
 type ResponseType = {
   status: boolean;
   message: string;
-  data: {
-    packaging: Packaging[];
-    pagination: Pagination;
-  };
+  data: Packaging;
 };
 
-export default function useGetPackaging() {
+export default function useGetPackaging({ id }: { id?: string }) {
   return useQuery<ResponseType, AxiosError<ErrorResponseType>>({
-    queryKey: ["packaging-list"],
+    enabled: !!id,
+    queryKey: ["packaging", id],
     queryFn: async () => {
-      const response = await client.get("/packaging");
+      const response = await client.get(`/packaging/${id}`);
       return response.data;
     },
   });

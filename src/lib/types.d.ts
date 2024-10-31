@@ -133,14 +133,14 @@ type Optiontype = {
 };
 
 type Packaging = {
-  height: string;
-  length: string;
+  height: number;
+  length: number;
   name: string;
   size_unit: string;
   type: string;
-  weight: string;
+  weight: number;
   weight_unit: string;
-  width: string;
+  width: number;
   packaging_id: string;
 };
 
