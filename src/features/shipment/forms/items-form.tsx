@@ -2,6 +2,7 @@ import { useAlertModal } from "@/components/alert-modal";
 import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useNewPackage } from "@/features/settings/hooks/use-new-package";
 import { ItemValues, ParcelValues } from "@/lib/schemas";
 import { formatNaira } from "@/lib/utils";
 import {
@@ -71,6 +72,13 @@ export default function ItemsForm({
     primaryLabel: "Upload",
     secondaryLabel: "Skip",
   });
+  const { onOpen: openNewPackage } = useNewPackage();
+
+  useEffect(() => {
+    if (data && data.data.packaging.length === 0) {
+      openNewPackage();
+    }
+  }, [data, openNewPackage]);
 
   const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
 
@@ -85,9 +93,8 @@ export default function ItemsForm({
         const newPackaging = {
           id: parcel.packaging_id,
           value:
-            data?.data.packaging.find(
-              (p) => p.packaging_id === parcel.packaging_id
-            )?.name || "",
+            data?.data.packaging.find((p) => p.id === parcel.packaging_id)
+              ?.name || "",
         };
 
         const items: ItemValues[] = parcel.items.map((item) => {
@@ -140,7 +147,6 @@ export default function ItemsForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parcelsToEdit]);
 
-
   async function createParcelsAndShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
       const values: ParcelRequestType = {
@@ -181,18 +187,18 @@ export default function ItemsForm({
 
     if (sender && receiver) {
       await createShipment(
-          {
-            origin_address_id: sender.id,
-            destination_address_id: receiver.id,
-            parcel_ids: parcelIds,
-            purpose: "personal",
+        {
+          origin_address_id: sender.id,
+          destination_address_id: receiver.id,
+          parcel_ids: parcelIds,
+          purpose: "personal",
+        },
+        {
+          onSuccess: (data) => {
+            setShipmentID(data.data.id);
+            next?.();
           },
-          {
-            onSuccess: (data) => {
-              setShipmentID(data.data.id);
-              next?.();
-            },
-          }
+        }
       );
     }
   }
@@ -331,7 +337,7 @@ export default function ItemsForm({
 
   const packagingOptions = data?.data.packaging.map((p) => ({
     label: p.name,
-    value: `${p.packaging_id}_${p.name}`,
+    value: `${p.id}_${p.name}`,
   }));
 
   return (

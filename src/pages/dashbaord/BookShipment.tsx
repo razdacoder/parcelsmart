@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export default function BookShipment() {
   const { reviewMode } = useReviewMode();
   const [searchParams] = useSearchParams();
-  const shipmentID = searchParams.get("shpiment_id");
+  const shipmentID = searchParams.get("shipment_id");
   const navigate = useNavigate();
   const { data: prevData, isLoading: prevLoading } = useShipmentDetail({
     id: shipmentID as string | undefined,
