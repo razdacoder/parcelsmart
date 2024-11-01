@@ -407,15 +407,22 @@ export default function ItemsForm({
                       value={`${parcel.packaging}_${parcel.packaging_value}`}
                       isLoading={isLoading}
                       placeholder="Select Packaging"
-                      options={packagingOptions}
+                      options={[
+                        { label: "Create New Packaging", value: "create" },
+                        ...packagingOptions!,
+                      ]}
                       onChange={(value) => {
                         if (value) {
-                          const p = value.split("_");
-                          updateParcel(
-                            index,
-                            { id: p[0], value: p[1] },
-                            undefined
-                          );
+                          if (value === "create") {
+                            openNewPackage();
+                          } else {
+                            const p = value.split("_");
+                            updateParcel(
+                              index,
+                              { id: p[0], value: p[1] },
+                              undefined
+                            );
+                          }
                         }
                       }}
                     />
