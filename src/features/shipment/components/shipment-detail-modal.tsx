@@ -73,10 +73,10 @@ export default function ShipmentDetailModal() {
           <div className="space-y-2 md:space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F4FDF8] p-2 md:p-4 space-y-2 md:space-y-4">
-                <h4 className="text-primary text-xs md:text-lg font-bold">
+                <h4 className="text-primary text-xs md:text-base font-bold">
                   Sender
                 </h4>
-                <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                <div className="flex flex-col gap-0.5 text-xs md:text-base font-medium text-text">
                   <span>
                     {data.data.origin_address.first_name}{" "}
                     {data.data.origin_address.last_name}
@@ -92,10 +92,10 @@ export default function ShipmentDetailModal() {
                 </div>
               </div>
               <div className="bg-[#F4FDF8] p-2 md:p-4 space-y-2 md:space-y-4">
-                <h4 className="text-primary text-xs md:text-lg font-bold">
+                <h4 className="text-primary text-xs md:text-base font-bold">
                   Receiver
                 </h4>
-                <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                <div className="flex flex-col gap-0.5 text-xs md:text-base font-medium text-text">
                   <span>
                     {data.data.destination_address.first_name}{" "}
                     {data.data.destination_address.last_name}
@@ -114,25 +114,25 @@ export default function ShipmentDetailModal() {
             <div className="bg-[#F4FDF8] p-2 md:p-4 space-y-2 md:space-y-4">
               <div className="grid grid-cols-2 gap-8">
                 <div className="">
-                  <h4 className="text-primary text-xs md:text-lg font-bold">
+                  <h4 className="text-primary text-xs md:text-base font-bold">
                     Parcel Information
                   </h4>
-                  <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                  <div className="flex flex-col gap-0.5 text-sm md:text-base font-medium text-text">
                     <div className="flex flex-col md:flex-row gap-2">
-                      <span className="inline-block font-medium text-sm">
+                      <span className="inline-block font-medium text-sm md:text-base">
                         Shipment ID:
                       </span>
-                      <span className="font-semibold text-sm truncate">
+                      <span className="font-semibold text-sm md:text-base truncate">
                         #{data.data.tracking_number || data.data.id}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-sm md:text-base">
                       <span className="font-medium">Total Weight:</span>
                       <span className="font-bold">
                         {calculateTotalWeight(data.data.parcels)}kg
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-sm md:text-base">
                       <span className="font-medium">Total Value:</span>
                       <span className="font-bold">
                         {formatNaira(calculateTotalValue(data.data.parcels))}
@@ -142,19 +142,19 @@ export default function ShipmentDetailModal() {
                   {data.data.parcels.map((parcel) => (
                     <div key={parcel.id} className="mt-4">
                       <div>
-                        <h4 className="text-primary text-xs md:text-sm font-bold">
+                        <h4 className="text-primary text-sm md:text-base font-bold">
                           {parcel.description}
                         </h4>
                         {parcel.items.map((item) => (
                           <div
                             key={item.id}
-                            className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text"
+                            className="flex flex-col gap-0.5 text-sm md:text-base font-medium text-text"
                           >
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-sm md:text-base">
                               <span className="font-medium">Item:</span>
                               <span className="font-bold">{item.name}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-sm md:text-base">
                               <span className="font-medium">Qty:</span>
                               <span className="font-bold">{item.quantity}</span>
                             </div>
@@ -185,10 +185,10 @@ export default function ShipmentDetailModal() {
                   ))}
                 </div>
                 <div>
-                  <h4 className="text-primary text-xs md:text-lg font-bold">
+                  <h4 className="text-primary text-sm md:text-base font-bold">
                     Carrier Information
                   </h4>
-                  <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                  <div className="flex flex-col gap-0.5 text-sm md:text-base font-medium text-text">
                     <div className="flex flex-col md:flex-row gap-2">
                       <span className="inline-block font-medium text-sm">
                         Carrier Tracking ID:
@@ -204,12 +204,12 @@ export default function ShipmentDetailModal() {
                         </button>
                       </span>
                     </div>
-                    <div className="flex flex-col md:flex-row gap-2">
-                      <span className="inline-block font-medium text-sm">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <span className=" block font-medium text-sm">
                         Carrier URL:
                       </span>
-                      <span className="font-semibold text-sm  flex items-center gap-1.5">
-                        <span className="truncate">
+                      <span className=" font-semibold text-sm  flex items-center gap-1.5">
+                        <span className="truncate underline text-primary">
                           https://www.dhl.com/ng-en/home/tracking.html
                         </span>
                         <button
