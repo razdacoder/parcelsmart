@@ -7,9 +7,16 @@ import {
   DialogOverlay,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatNaira } from "@/lib/utils";
+import { copyText, formatNaira } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { ArrowRight, DownloadIcon, File, Loader, XCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Copy,
+  DownloadIcon,
+  File,
+  Loader,
+  XCircle,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import useShipmentDetail from "../api/useShipmentDetail";
 import { useShipmentDetailModal } from "../hooks/use-shipment-detail-modal";
@@ -39,10 +46,14 @@ export default function ShipmentDetailModal() {
       return totalValue + parcelValue;
     }, 0);
   };
+
+  const extractedProofsOfPayments = data?.data.parcels.flatMap(
+    (parcel) => parcel.proof_of_payments
+  );
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="w-11/12 md:max-w-3xl p-4 rounded-xl">
+      <DialogContent className="w-11/12 md:max-w-4xl p-4 rounded-xl">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="flex flex-row items-center gap-4 p-0">
             Shipment Details
@@ -107,7 +118,7 @@ export default function ShipmentDetailModal() {
                     Parcel Information
                   </h4>
                   <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                       <span className="inline-block font-medium text-sm">
                         Shipment ID:
                       </span>
@@ -115,13 +126,13 @@ export default function ShipmentDetailModal() {
                         #{data.data.tracking_number || data.data.id}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm">
                       <span className="font-medium">Total Weight:</span>
                       <span className="font-bold">
                         {calculateTotalWeight(data.data.parcels)}kg
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm">
                       <span className="font-medium">Total Value:</span>
                       <span className="font-bold">
                         {formatNaira(calculateTotalValue(data.data.parcels))}
@@ -129,9 +140,9 @@ export default function ShipmentDetailModal() {
                     </div>
                   </div>
                   {data.data.parcels.map((parcel) => (
-                    <div key={parcel.id}>
+                    <div key={parcel.id} className="mt-4">
                       <div>
-                        <h4 className="text-primary text-xs md:text-lg font-bold">
+                        <h4 className="text-primary text-xs md:text-sm font-bold">
                           {parcel.description}
                         </h4>
                         {parcel.items.map((item) => (
@@ -139,45 +150,18 @@ export default function ShipmentDetailModal() {
                             key={item.id}
                             className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 text-sm">
                               <span className="font-medium">Item:</span>
                               <span className="font-bold">{item.name}</span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 text-sm">
                               <span className="font-medium">Qty:</span>
                               <span className="font-bold">{item.quantity}</span>
                             </div>
                           </div>
                         ))}
                       </div>
-                      {parcel.proof_of_payments.length > 0 && (
-                        <div className="space-y-1">
-                          <h4 className="text-primary text-xs md:text-lg font-bold">
-                            Proof of Purchase
-                          </h4>
-                          <div className="flex  flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
-                            {parcel.proof_of_payments.map((proof, index) => (
-                              <div
-                                key={`proof-of-payment-${index}`}
-                                className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <File className="size-4" />
-                                  <div className="flex flex-col gap-0.5">
-                                    <span className="font-semibold text-xs">
-                                      Proof of Payment {index + 1}
-                                    </span>
-                                    {/* <span className="text-xs">50kb</span> */}
-                                  </div>
-                                </div>
-                                <Link to={proof}>
-                                  <DownloadIcon className="size-4" />
-                                </Link>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+
                       {/* <div className="space-y-1">
                     <h4 className="text-primary text-xs md:text-lg font-bold">
                       Proof of Weight
@@ -199,6 +183,76 @@ export default function ShipmentDetailModal() {
                   </div> */}
                     </div>
                   ))}
+                </div>
+                <div>
+                  <h4 className="text-primary text-xs md:text-lg font-bold">
+                    Carrier Information
+                  </h4>
+                  <div className="flex flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                    <div className="flex flex-col md:flex-row gap-2">
+                      <span className="inline-block font-medium text-sm">
+                        Carrier Tracking ID:
+                      </span>
+                      <span className="font-semibold text-sm  flex items-center gap-1.5">
+                        <span className="truncate">
+                          Km8Gdl1h0TNBbGRvBLQ2YtjBS
+                        </span>
+                        <button
+                          onClick={() => copyText("Km8Gdl1h0TNBbGRvBLQ2YtjBS")}
+                        >
+                          <Copy className="size-3.5 text-primary" />
+                        </button>
+                      </span>
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-2">
+                      <span className="inline-block font-medium text-sm">
+                        Carrier URL:
+                      </span>
+                      <span className="font-semibold text-sm  flex items-center gap-1.5">
+                        <span className="truncate">
+                          https://www.dhl.com/ng-en/home/tracking.html
+                        </span>
+                        <button
+                          onClick={() =>
+                            copyText(
+                              "https://www.dhl.com/ng-en/home/tracking.html"
+                            )
+                          }
+                        >
+                          <Copy className="size-3.5 text-primary" />
+                        </button>
+                      </span>
+                    </div>
+                    {extractedProofsOfPayments &&
+                      extractedProofsOfPayments.length > 0 && (
+                        <div className="space-y-1">
+                          <h4 className="text-primary text-xs md:text-lg font-bold">
+                            Proof of Purchase
+                          </h4>
+                          <div className="flex  flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                            {extractedProofsOfPayments.map((proof, index) => (
+                              <div
+                                key={`proof-of-payment-${index}`}
+                                className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <File className="size-4" />
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="font-semibold text-xs">
+                                      Proof of Payment {index + 1}
+                                    </span>
+                                    {/* <span className="text-xs">50kb</span> */}
+                                  </div>
+                                </div>
+                                <Link to={proof}>
+                                  <DownloadIcon className="size-4" />
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
             </div>
