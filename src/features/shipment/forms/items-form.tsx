@@ -407,10 +407,17 @@ export default function ItemsForm({
                       value={`${parcel.packaging}_${parcel.packaging_value}`}
                       isLoading={isLoading}
                       placeholder="Select Packaging"
-                      options={[
-                        { label: "Create New Packaging", value: "create" },
-                        ...packagingOptions!,
-                      ]}
+                      options={
+                        packagingOptions
+                          ? [
+                              {
+                                label: "Create New Packaging",
+                                value: "create",
+                              },
+                              ...packagingOptions,
+                            ]
+                          : [{ label: "Create New Packaging", value: "create" }]
+                      }
                       onChange={(value) => {
                         if (value) {
                           if (value === "create") {
