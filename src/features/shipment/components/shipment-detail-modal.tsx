@@ -184,76 +184,82 @@ export default function ShipmentDetailModal() {
                     </div>
                   ))}
                 </div>
-                <div>
-                  <h4 className="text-primary text-sm md:text-base font-bold">
-                    Carrier Information
-                  </h4>
-                  <div className="flex flex-col gap-0.5 text-sm md:text-base font-medium text-text">
-                    <div className="flex flex-col md:flex-row gap-2">
-                      <span className="inline-block font-medium text-sm">
-                        Carrier Tracking ID:
-                      </span>
-                      <span className="font-semibold text-sm  flex items-center gap-1.5">
-                        <span className="truncate">
-                          Km8Gdl1h0TNBbGRvBLQ2YtjBS
+                {data.data.platform_tracking_number && (
+                  <div>
+                    <h4 className="text-primary text-sm md:text-base font-bold">
+                      Carrier Information
+                    </h4>
+
+                    <div className="flex flex-col gap-0.5 text-sm md:text-base font-medium text-text">
+                      <div className="flex flex-col md:flex-row gap-2">
+                        <span className="inline-block font-medium text-sm">
+                          Carrier Tracking ID:
                         </span>
-                        <button
-                          onClick={() => copyText("Km8Gdl1h0TNBbGRvBLQ2YtjBS")}
-                        >
-                          <Copy className="size-3.5 text-primary" />
-                        </button>
-                      </span>
-                    </div>
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <span className=" block font-medium text-sm">
-                        Carrier URL:
-                      </span>
-                      <span className=" font-semibold text-sm  flex items-center gap-1.5">
-                        <span className="truncate underline text-primary">
-                          https://www.dhl.com/ng-en/home/tracking.html
+                        <span className="font-semibold text-sm  flex items-center gap-1.5">
+                          <span className="truncate">
+                            {data.data.platform_tracking_number}
+                          </span>
+                          <button
+                            onClick={() =>
+                              copyText(data.data.platform_tracking_number)
+                            }
+                          >
+                            <Copy className="size-3.5 text-primary" />
+                          </button>
                         </span>
-                        <button
-                          onClick={() =>
-                            copyText(
-                              "https://www.dhl.com/ng-en/home/tracking.html"
-                            )
-                          }
-                        >
-                          <Copy className="size-3.5 text-primary" />
-                        </button>
-                      </span>
-                    </div>
-                    {extractedProofsOfPayments &&
-                      extractedProofsOfPayments.length > 0 && (
-                        <div className="space-y-1">
-                          <h4 className="text-primary text-xs md:text-lg font-bold">
-                            Proof of Purchase
-                          </h4>
-                          <div className="flex  flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
-                            {extractedProofsOfPayments.map((proof, index) => (
-                              <div
-                                key={`proof-of-payment-${index}`}
-                                className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <File className="size-4" />
-                                  <div className="flex flex-col gap-0.5">
-                                    <span className="font-semibold text-xs">
-                                      Proof of Payment {index + 1}
-                                    </span>
-                                    {/* <span className="text-xs">50kb</span> */}
-                                  </div>
-                                </div>
-                                <Link to={proof}>
-                                  <DownloadIcon className="size-4" />
-                                </Link>
-                              </div>
-                            ))}
-                          </div>
+                      </div>
+                      {data.data.carrier_tracking_url && (
+                        <div className="flex flex-col md:flex-row gap-4">
+                          <span className=" block font-medium text-sm">
+                            Carrier URL:
+                          </span>
+                          <span className=" font-semibold text-sm  flex items-center gap-1.5">
+                            <span className="truncate underline text-primary">
+                              {data.data.carrier_tracking_url}
+                            </span>
+                            <button
+                              onClick={() =>
+                                copyText(data.data.carrier_tracking_url)
+                              }
+                            >
+                              <Copy className="size-3.5 text-primary" />
+                            </button>
+                          </span>
                         </div>
                       )}
+
+                      {extractedProofsOfPayments &&
+                        extractedProofsOfPayments.length > 0 && (
+                          <div className="space-y-1">
+                            <h4 className="text-primary text-xs md:text-lg font-bold">
+                              Proof of Purchase
+                            </h4>
+                            <div className="flex  flex-col gap-0.5 text-xs md:text-lg font-medium text-text">
+                              {extractedProofsOfPayments.map((proof, index) => (
+                                <div
+                                  key={`proof-of-payment-${index}`}
+                                  className="inline-flex w-2/3 md:w-3/12 justify-between bg-white items-center gap-2 py-2 px-6 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <File className="size-4" />
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="font-semibold text-xs">
+                                        Proof of Payment {index + 1}
+                                      </span>
+                                      {/* <span className="text-xs">50kb</span> */}
+                                    </div>
+                                  </div>
+                                  <Link to={proof}>
+                                    <DownloadIcon className="size-4" />
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             {data.data.status === "draft" && (

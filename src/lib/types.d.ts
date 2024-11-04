@@ -321,6 +321,7 @@ type Shipment = {
     deleted_at: Date | null;
   } | null;
   parcels: Parcel[];
+  carrier_tracking_url: string | null;
 };
 
 type Quote = {

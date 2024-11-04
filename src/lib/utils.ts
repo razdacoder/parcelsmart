@@ -15,9 +15,11 @@ export const formatNaira = (amount: number): string => {
   }).format(amount);
 };
 
-export const copyText = (text: string) => {
-  window.navigator.clipboard.writeText(text);
-  toast.success("Copied to clipboard");
+export const copyText = (text: string | null) => {
+  if (text) {
+    window.navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  }
 };
 
 export const getInitials = (
