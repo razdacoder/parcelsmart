@@ -44,7 +44,7 @@ export default function Home() {
           <div className="col-span-12 rounded-lg">
             <img
               src={bannerImage}
-              alt="Referal Banner"
+              alt="Referral Banner"
               className="w-full rounded-lg h-[140px] object-cover"
             />
           </div>
@@ -82,16 +82,13 @@ export default function Home() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span className="inlibe-block text-lg font-semibold text-[#64748B]">
+                <span className="inline-block text-lg font-semibold text-[#64748B]">
                   Book Shipment
                 </span>
               </div>
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
-            <Link
-              to="/get-quote"
-              className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
-            >
+            <div className="bg-white rounded-xl text-text p-4 flex items-start justify-between">
               <div className="space-y-8">
                 <svg
                   width="81"
@@ -106,12 +103,12 @@ export default function Home() {
                   />
                 </svg>
 
-                <span className="inlibe-block text-lg font-semibold text-[#64748B]">
+                <span className="inline-block text-lg font-semibold text-[#64748B]">
                   Get Quote
                 </span>
               </div>
               <ArrowUpRight className="size-5 text-primary" />
-            </Link>
+            </div>
             <Link
               to="/track"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
@@ -140,7 +137,7 @@ export default function Home() {
                   />
                 </svg>
 
-                <span className="inlibe-block text-lg font-semibold text-[#64748B]">
+                <span className="inline-block text-lg font-semibold text-[#64748B]">
                   Track Shipment
                 </span>
               </div>
@@ -164,7 +161,7 @@ export default function Home() {
                   />
                 </svg>
 
-                <span className="inlibe-block text-lg font-semibold text-[#64748B]">
+                <span className="inline-block text-lg font-semibold text-[#64748B]">
                   Get Support
                 </span>
               </div>
