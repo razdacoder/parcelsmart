@@ -3,6 +3,7 @@ import { PSelect } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useNewPackage } from "@/features/settings/hooks/use-new-package";
+import { useAlertModal as useAlertModal2 } from "@/hooks/use-alert-modal";
 import { ItemValues, ParcelValues } from "@/lib/schemas";
 import { formatNaira } from "@/lib/utils";
 import {
@@ -340,6 +341,8 @@ export default function ItemsForm({
     value: `${p.id}_${p.name}`,
   }));
 
+  const { onOpen: alertOpen, onClose: alertClose } = useAlertModal2();
+
   return (
     <>
       <AlertModal />
@@ -355,8 +358,21 @@ export default function ItemsForm({
           </div>
           <button
             onClick={() => {
-              clearAll();
-              navigate(-1);
+              alertOpen({
+                type: "warning",
+                title: "Warning",
+                message: "Are you sure you want to discard all changes",
+                primaryLabel: "Continue",
+                secondaryLabel: "Cancel",
+                primaryFn: () => {
+                  clearAll();
+                  navigate(-1);
+                  alertClose();
+                },
+                secondaryFn: () => {
+                  alertClose();
+                },
+              });
             }}
             className="cursor-pointer"
           >
@@ -440,7 +456,7 @@ export default function ItemsForm({
                     <PSelect
                       value={parcel.currency}
                       isLoading={isLoading}
-                      placeholder="Select Cunrrency"
+                      placeholder="Select Currency"
                       options={[{ value: "NGN", label: "Nigeria Naira (N)" }]}
                       onChange={(value) => {
                         if (value) {

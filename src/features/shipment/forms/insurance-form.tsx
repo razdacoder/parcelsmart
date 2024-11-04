@@ -1,6 +1,7 @@
 import logoImage from "@/assets/parcels icon.png";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { formatNaira } from "@/lib/utils";
 import { Loader, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +27,8 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
 
     next?.();
   }
+
+  const { onOpen: alertOpen, onClose: alertClose } = useAlertModal();
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
@@ -39,8 +42,21 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
         </div>
         <button
           onClick={() => {
-            clearAll();
-            navigate(-1);
+            alertOpen({
+              type: "warning",
+              title: "Warning",
+              message: "Are you sure you want to discard all changes",
+              primaryLabel: "Continue",
+              secondaryLabel: "Cancel",
+              primaryFn: () => {
+                clearAll();
+                navigate(-1);
+                alertClose();
+              },
+              secondaryFn: () => {
+                alertClose();
+              },
+            });
           }}
           className="cursor-pointer"
         >

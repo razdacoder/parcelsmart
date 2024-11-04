@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { formatNaira, isLeastExpensiveRate } from "@/lib/utils";
 import { Loader, RefreshCw, XCircle } from "lucide-react";
 import { useState } from "react";
@@ -30,11 +31,12 @@ export default function CarrierForm({ next, prev }: StepsProps) {
   } = useGetRates({ shipment_id: shipmentID });
   const [selectedCarrier, setSelectedCarrier] = useState<string | null>(() => {
     if (carrier) {
-      return carrier.slug
+      return carrier.slug;
     }
-    return null
+    return null;
   });
   const isLoading = loading || isRefetching;
+  const { onOpen: alertOpen, onClose: alertClose } = useAlertModal();
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between">
@@ -48,8 +50,21 @@ export default function CarrierForm({ next, prev }: StepsProps) {
         </div>
         <button
           onClick={() => {
-            clearAll();
-            navigate(-1);
+            alertOpen({
+              type: "warning",
+              title: "Warning",
+              message: "Are you sure you want to discard all changes",
+              primaryLabel: "Continue",
+              secondaryLabel: "Cancel",
+              primaryFn: () => {
+                clearAll();
+                navigate(-1);
+                alertClose();
+              },
+              secondaryFn: () => {
+                alertClose();
+              },
+            });
           }}
           className="cursor-pointer"
         >

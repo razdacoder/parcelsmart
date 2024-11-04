@@ -23,6 +23,7 @@ import useCountries from "@/features/address/api/useCountries";
 import useCreateAddress from "@/features/address/api/useCreateAddress";
 import useEditAddress from "@/features/address/api/useEditAddress";
 import useStateList from "@/features/address/api/useState";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -160,7 +161,7 @@ export default function SenderForm({
 
   function clearValues() {
     clearSenderValues();
-    setAddressId(undefined)
+    setAddressId(undefined);
     form.reset({
       first_name: "",
       last_name: "",
@@ -204,6 +205,8 @@ export default function SenderForm({
     }
   };
 
+  const { onOpen: alertOpen, onClose: alertClose } = useAlertModal();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-row justify-between gap-8">
@@ -215,8 +218,21 @@ export default function SenderForm({
         </div>
         <button
           onClick={() => {
-            clearAll();
-            navigate(-1);
+            alertOpen({
+              type: "warning",
+              title: "Warning",
+              message: "Are you sure you want to discard all changes",
+              primaryLabel: "Continue",
+              secondaryLabel: "Cancel",
+              primaryFn: () => {
+                clearAll();
+                navigate(-1);
+                alertClose();
+              },
+              secondaryFn: () => {
+                alertClose();
+              },
+            });
           }}
           className="cursor-pointer"
         >
@@ -225,13 +241,13 @@ export default function SenderForm({
       </div>
 
       <AddressBookSearch
-          value={addressId}
+        value={addressId}
         onChange={(value) => {
           setAddressId(value);
         }}
       />
       <div className="space-y-1">
-        <Label htmlFor="addresss">Address</Label>
+        <Label htmlFor="addresses">Address</Label>
         <div className="relative">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
 

@@ -88,7 +88,10 @@ export default function Home() {
               </div>
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
-            <div className="bg-white rounded-xl text-text p-4 flex items-start justify-between">
+            <Link
+              to="/get-quote"
+              className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
+            >
               <div className="space-y-8">
                 <svg
                   width="81"
@@ -108,7 +111,7 @@ export default function Home() {
                 </span>
               </div>
               <ArrowUpRight className="size-5 text-primary" />
-            </div>
+            </Link>
             <Link
               to="/track"
               className="bg-white rounded-xl text-text p-4 flex items-start justify-between"
