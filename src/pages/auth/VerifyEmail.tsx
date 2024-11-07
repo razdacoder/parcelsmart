@@ -1,10 +1,12 @@
 import logoPrimary from "@/assets/logo-primary.svg";
 import verifyImage from "@/assets/verify-email.svg";
 import { Button } from "@/components/ui/button";
+import useResendEmailVerification from "@/features/auth/api/useResendEmailverification";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function VerifyEmail() {
   const { state } = useLocation();
+  const { mutate } = useResendEmailVerification();
 
   const navigate = useNavigate();
   const locationState = state as { email?: string };
@@ -56,6 +58,7 @@ export default function VerifyEmail() {
             <p className="text-text text-sm text-center font-medium">
               Don&apos;t receive an email?&nbsp;
               <Button
+                onClick={() => mutate({ email: state.email })}
                 variant="link"
                 className="text-primary hover:no-underline p-0"
               >
