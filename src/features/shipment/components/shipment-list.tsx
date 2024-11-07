@@ -71,14 +71,11 @@ export default function ShipmentList() {
   ) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
 
-    // Update the 'filter' parameter or remove it if filter is null
     if (filter) {
       newSearchParams.set("status", filter);
     } else {
       newSearchParams.delete("status");
     }
-
-    // Update the URL with the new search parameters
     setSearchParams(newSearchParams);
   };
 
@@ -196,7 +193,7 @@ export default function ShipmentList() {
                 setSearchInput(currentTarget.value);
               }}
               placeholder="Search..."
-              className="py-2 h-11 w-full md:w-1/2 lg:w-56"
+              className="py-2 h-9 w-full md:w-1/2 lg:w-56"
             />
             <DatePickerWithRange
               value={dateRange}

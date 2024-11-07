@@ -149,7 +149,7 @@ export default function TransactionList() {
                 setSearchInput(currentTarget.value);
               }}
               placeholder="Search..."
-              className="py-2 h-11 w-full md:w-1/2 lg:w-56"
+              className="py-2 h-9 w-full md:w-1/2 lg:w-56"
             />
             <DatePickerWithRange
               value={dateRange}

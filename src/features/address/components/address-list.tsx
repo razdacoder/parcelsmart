@@ -57,7 +57,7 @@ export default function AddressList() {
               setSearchInput(currentTarget.value);
             }}
             placeholder="Search..."
-            className="py-2 h-11 w-full lg:w-56"
+            className="py-2 h-9 w-full lg:w-56"
           />
         </div>
       </div>
