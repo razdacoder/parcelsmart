@@ -1,7 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 
 type StatusProps = {
-  status: "draft" | "confirmed" | "in_transit" | "delivered" | "cancelled" | "pending";
+  status:
+    | "draft"
+    | "confirmed"
+    | "in_transit"
+    | "delivered"
+    | "cancelled"
+    | "pending";
 };
 
 export default function StatusBadge({ status }: StatusProps) {
@@ -38,9 +44,17 @@ export default function StatusBadge({ status }: StatusProps) {
 
   if (status === "pending") {
     return (
-        <Badge className="bg-yellow-500  py-1 px-3 w-fit flex justify-center hover:bg-yellow-600 hover:text-white">
-          Pending
-        </Badge>
+      <Badge className="bg-yellow-500  py-1 px-3 w-fit flex justify-center hover:bg-yellow-600 hover:text-white">
+        Pending
+      </Badge>
+    );
+  }
+
+  if (status === "delivered") {
+    return (
+      <Badge className="bg-[#E0FEE9B2] py-1 px-3 text-[#24D164] w-fit flex justify-center hover:bg-[#E0FEE9B2] hover:text-[#24D164]">
+        Delivered
+      </Badge>
     );
   }
 }

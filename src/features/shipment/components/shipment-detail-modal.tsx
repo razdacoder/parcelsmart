@@ -19,12 +19,14 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import useShipmentDetail from "../api/useShipmentDetail";
+import { useNewReview } from "../hooks/use-review";
 import { useShipmentDetailModal } from "../hooks/use-shipment-detail-modal";
 import StatusBadge from "./status-badge";
 
 export default function ShipmentDetailModal() {
   const { isOpen, onClose, id } = useShipmentDetailModal();
   const { data, isLoading } = useShipmentDetail({ id });
+  const { onOpen } = useNewReview();
   const navigate = useNavigate();
 
   const calculateTotalWeight = (parcels: Parcel[]): number => {
@@ -209,14 +211,17 @@ export default function ShipmentDetailModal() {
                         </span>
                       </div>
                       {data.data.carrier_tracking_url && (
-                        <div className="flex flex-col md:flex-row gap-4">
-                          <span className=" block font-medium text-sm">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium text-sm">
                             Carrier URL:
                           </span>
-                          <span className=" font-semibold text-sm  flex items-center gap-1.5">
-                            <span className="truncate underline text-primary">
+                          <span className="font-semibold text-sm  flex items-center gap-1.5">
+                            <Link
+                              to={data.data.carrier_tracking_url}
+                              className="flex-1 truncate underline text-primary"
+                            >
                               {data.data.carrier_tracking_url}
-                            </span>
+                            </Link>
                             <button
                               onClick={() =>
                                 copyText(data.data.carrier_tracking_url)
@@ -272,6 +277,21 @@ export default function ShipmentDetailModal() {
                   }}
                 >
                   Resume Shipment Booking <ArrowRight className="size-4" />
+                </Button>
+              </div>
+            )}
+
+            {(data.data.status === "confirmed" ||
+              data.data.status === "delivered") && (
+              <div className="flex justify-center items-center">
+                <Button
+                  className="gap-2"
+                  onClick={() => {
+                    onClose();
+                    onOpen(data.data.id);
+                  }}
+                >
+                  Review Shipment
                 </Button>
               </div>
             )}

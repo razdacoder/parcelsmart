@@ -189,3 +189,10 @@ export const packagingSchema = z.object({
 });
 
 export type PackagingValues = z.infer<typeof packagingSchema>;
+
+export const reviewSchema = z.object({
+  stars: z.coerce.number(),
+  review: z.string(),
+});
+
+export type ReviewValues = z.infer<typeof reviewSchema>;

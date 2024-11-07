@@ -8,6 +8,7 @@ import UpdateProfileModal from "@/features/settings/components/update-profile-mo
 import DropOffModal from "@/features/shipment/components/drop-off-modal";
 import EditItemModal from "@/features/shipment/components/edit-item-modal";
 import NewItemModal from "@/features/shipment/components/new-item-modal";
+import ReviewModal from "@/features/shipment/components/review-modal";
 import ShipmentDetailModal from "@/features/shipment/components/shipment-detail-modal";
 import TopUpModal from "@/features/wallet/components/top-up-modal";
 import TransactionDetailModal from "@/features/wallet/components/transaction-detail-modal";
@@ -33,6 +34,7 @@ export default function ModalProvider() {
       <AlertPopUp />
       <NewPackageModal />
       <EditPackageModal />
+      <ReviewModal />
     </>
   );
 }
