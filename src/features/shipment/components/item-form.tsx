@@ -87,6 +87,8 @@ export default function ItemForm({ item }: ItemFormProps) {
     if (item && hsValues) {
       if (item.itemType === "items") {
         // Reset form for "items" type
+        setChapterId(hsValues.chapter);
+        setCategoryId(hsValues.hs_category_code);
         form.reset({
           itemType: "items",
           name: item.name,
@@ -95,11 +97,9 @@ export default function ItemForm({ item }: ItemFormProps) {
           quantity: item.quantity,
           value: item.value, // Required for "items"
           category: hsValues.chapter, // Required for "items"
-          subCategory: hsValues.hs_category_code, // Required for "items"
+          subCategory: hsValues.sub_category, // Required for "items"
           hsCode: item.hsCode, // Required for "items"
         });
-        setChapterId(hsValues.chapter);
-        setCategoryId(hsValues.hs_category_code);
       } else if (item.itemType === "documents") {
         // Reset form for "documents" type
         form.reset({
