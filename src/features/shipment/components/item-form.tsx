@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { itemSchema, ItemValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import useHSCodesValues from "../api/get-hs-code-values";
 import useHSCodeCategories from "../api/useHSCodeCategories";
 import useHSCodes from "../api/useHSCodes";
 import useHSCodesChapters from "../api/useHSCodesChapters";
@@ -38,6 +39,9 @@ export default function ItemForm({ item }: ItemFormProps) {
   } = useEditItemModal();
 
   const { addItem, editItem } = useShipmentApplication();
+  const { data: hsValues, isLoading: hsValuesLoading } = useHSCodesValues({
+    hs_code: item?.itemType === "items" ? item.hsCode : undefined,
+  });
   const { data: chapterCodes, isLoading: chapterLoading } =
     useHSCodesChapters();
   const [chapterId, setChapterId] = useState<string | undefined>(() => {
@@ -62,29 +66,53 @@ export default function ItemForm({ item }: ItemFormProps) {
   const form = useForm<ItemValues>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
-      itemType: item ? item.itemType : itemType,
-      value:
-        itemType === "items" && item && item.itemType === "items"
-          ? item.value || 0
-          : undefined,
-      weight: item ? item.weight : 1,
-      quantity: item ? item.quantity : 1,
-      category:
-        itemType === "items" && item && item.itemType === "items"
-          ? item.category || ""
-          : undefined,
-      subCategory:
-        itemType === "items" && item && item.itemType === "items"
-          ? item.subCategory || ""
-          : undefined,
-      description: item ? item.description : "",
-      name: item ? item.name : "",
-      hsCode:
-        itemType === "items" && item && item.itemType === "items"
-          ? item.hsCode || ""
-          : undefined,
+      itemType: item ? item.itemType : "items",
+      name: item?.name ?? "",
+      description: item?.description ?? "",
+      weight: item?.weight ?? 1,
+      quantity: item?.quantity ?? 1,
+      // Conditionally include fields based on itemType
+      ...(item?.itemType === "items"
+        ? {
+            category: item.category ?? "",
+            subCategory: item.subCategory ?? "",
+            hsCode: item.hsCode ?? "",
+            value: item.value ?? 0,
+          }
+        : {}),
     },
   });
+
+  useEffect(() => {
+    if (item && hsValues) {
+      if (item.itemType === "items") {
+        // Reset form for "items" type
+        form.reset({
+          itemType: "items",
+          name: item.name,
+          description: item.description,
+          weight: item.weight,
+          quantity: item.quantity,
+          value: item.value, // Required for "items"
+          category: hsValues.chapter, // Required for "items"
+          subCategory: hsValues.hs_category_code, // Required for "items"
+          hsCode: item.hsCode, // Required for "items"
+        });
+        setChapterId(hsValues.chapter);
+        setCategoryId(hsValues.hs_category_code);
+      } else if (item.itemType === "documents") {
+        // Reset form for "documents" type
+        form.reset({
+          itemType: "documents",
+          name: item.name,
+          description: item.description,
+          weight: item.weight,
+          quantity: item.quantity,
+        });
+      }
+      form.trigger();
+    }
+  }, [form, hsValues, item]);
 
   function reset() {
     form.reset({
@@ -215,8 +243,8 @@ export default function ItemForm({ item }: ItemFormProps) {
                     <FormControl>
                       <PSelect
                         value={field.value}
-                        disabled={chapterLoading}
-                        isLoading={chapterLoading}
+                        disabled={chapterLoading || hsValuesLoading}
+                        isLoading={chapterLoading || hsValuesLoading}
                         options={chapterOptions}
                         onChange={(value) => {
                           if (value) {
@@ -241,8 +269,8 @@ export default function ItemForm({ item }: ItemFormProps) {
                     <FormControl>
                       <PSelect
                         value={field.value}
-                        disabled={categoryLoading}
-                        isLoading={categoryLoading}
+                        disabled={categoryLoading || hsValuesLoading}
+                        isLoading={categoryLoading || hsValuesLoading}
                         options={categoryOptions}
                         onChange={(value) => {
                           if (value) {
@@ -269,8 +297,8 @@ export default function ItemForm({ item }: ItemFormProps) {
                     <FormControl>
                       <PSelect
                         value={field.value}
-                        disabled={codesLoading}
-                        isLoading={codesLoading}
+                        disabled={codesLoading || hsValuesLoading}
+                        isLoading={codesLoading || hsValuesLoading}
                         options={hsCodeOptions}
                         onChange={(value) => {
                           if (value) {

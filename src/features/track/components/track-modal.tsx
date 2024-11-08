@@ -16,20 +16,18 @@ export default function TrackResult({
             Tracking Status
           </h4>
           <div className="flex flex-col gap-10">
-            {data?.data.tracking_events.map((event) => (
+            {data?.data.tracking_events.map((event, index) => (
               <div className="flex gap-3 items-center">
                 <div
                   className={cn(
                     "size-10 rounded-full flex justify-center items-center border border-primary bg-white relative after:absolute after:block after:top-10 after:h-10 after:border after:border-dashed",
                     event.status === "in-transit" &&
-                      "border-orange-500 after:hidden"
+                      "border-orange-500 after:hidden",
+                    index === data.data.tracking_events.length - 1 &&
+                      "after:hidden"
                   )}
                 >
-                  {(event.status === "confirmed" ||
-                    event.status === "delivered" ||
-                    event.status === "completed") && (
-                    <Circle className="size-6 fill-primary stroke-none" />
-                  )}
+                  <Circle className="size-6 fill-primary stroke-none" />
                 </div>
                 <div className="">
                   <h6 className="text-sm leading-[10px] text-text font-medium">

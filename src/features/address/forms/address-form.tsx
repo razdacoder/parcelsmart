@@ -21,6 +21,7 @@ import Autocomplete from "react-google-autocomplete";
 
 import { Search } from "lucide-react";
 import { useForm } from "react-hook-form";
+import useSetDefaultAddress from "../api/use-set-default-address";
 import useCity from "../api/useCity";
 import useCountries from "../api/useCountries";
 import useCreateAddress from "../api/useCreateAddress";
@@ -30,14 +31,20 @@ import { useNewAddress } from "../hooks/use-new-address";
 
 type AddressFormProps = {
   address?: AddressBook;
+  defaultMode?: boolean;
 };
 
-export default function AddressForm({ address }: AddressFormProps) {
+export default function AddressForm({
+  address,
+  defaultMode,
+}: AddressFormProps) {
   const { onClose } = useNewAddress();
   const isEditMode = Boolean(address);
   const [stateCode, setStateCode] = useState<string>();
   const { mutate: createAddress, isPending: createPending } =
     useCreateAddress();
+  const { mutate: setDefaultAddress, isPending: setPending } =
+    useSetDefaultAddress();
   const { mutate: editAddress, isPending: editPending } = useEditAddress({
     id: address?.id,
   });
@@ -76,7 +83,7 @@ export default function AddressForm({ address }: AddressFormProps) {
     value: `${state.name}-${state.state_code}`,
   }));
 
-  const isPending = createPending || editPending;
+  const isPending = createPending || editPending || setPending;
 
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
@@ -126,8 +133,11 @@ export default function AddressForm({ address }: AddressFormProps) {
       editAddress(values);
     } else {
       createAddress(values, {
-        onSuccess: () => {
+        onSuccess: (data) => {
           onClose();
+          if (defaultMode) {
+            setDefaultAddress({ address_id: data.data.id });
+          }
         },
       });
     }
@@ -135,7 +145,7 @@ export default function AddressForm({ address }: AddressFormProps) {
   return (
     <div className="space-y-6 mt-6">
       <div className="space-y-1">
-        <Label htmlFor="addresss">Address</Label>
+        <Label htmlFor="addresses">Address</Label>
         <div className="relative">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground z-10" />
 

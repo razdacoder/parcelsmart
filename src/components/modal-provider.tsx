@@ -1,4 +1,5 @@
 import AddressDetailModal from "@/features/address/components/address-detail-modal";
+import DefaultAddressModal from "@/features/address/components/default-address-modal";
 import EditAddressModal from "@/features/address/components/edit-address-modal";
 import NewAddressModal from "@/features/address/components/new-address-modal";
 import EditPackageModal from "@/features/settings/components/edit-package-modal";
@@ -35,6 +36,7 @@ export default function ModalProvider() {
       <NewPackageModal />
       <EditPackageModal />
       <ReviewModal />
+      <DefaultAddressModal />
     </>
   );
 }

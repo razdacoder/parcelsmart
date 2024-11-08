@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDefaultAddress } from "@/features/address/hooks/use-default-address";
 import useMe from "@/features/auth/api/useMe";
 import { getInitials } from "@/lib/utils";
 import { ArrowRight, Edit, MapPin } from "lucide-react";
@@ -11,6 +12,7 @@ export default function ProfileView() {
   const { onOpen } = useUpdateProfileModal();
   const { onOpen: openPasswordModal } = useUpdatePasswordModal();
   const { data, isLoading } = useMe();
+  const { onOpen: openDefaultAddress } = useDefaultAddress();
   return (
     <div className="space-y-2">
       <div className="flex flex-col md:flex-row gap-2 justify-between border-2 rounded-xl p-3">
@@ -66,7 +68,10 @@ export default function ProfileView() {
             <p className="text-xs">Click to add a default pickup address</p>
           </div>
         </div>
-        <Button className="w-full md:w-fit gap-2 items-center text-sm">
+        <Button
+          onClick={() => openDefaultAddress()}
+          className="w-full md:w-fit gap-2 items-center text-sm"
+        >
           Set Default Address <ArrowRight className="size-4" />
         </Button>
       </div>

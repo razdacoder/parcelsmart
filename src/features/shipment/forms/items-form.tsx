@@ -145,8 +145,7 @@ export default function ItemsForm({
         },
       ]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parcelsToEdit]);
+  }, [data?.data.packaging, parcelsToEdit, setNewIDS, setParcels]);
 
   async function createParcelsAndShipment() {
     const parcelCreationPromises = parcels.map((parcel, index) => {
@@ -419,6 +418,7 @@ export default function ItemsForm({
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="packaging">Select Packaging</Label>
+
                     <PSelect
                       value={`${parcel.packaging}_${parcel.packaging_value}`}
                       isLoading={isLoading}
