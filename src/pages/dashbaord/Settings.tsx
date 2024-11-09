@@ -5,6 +5,7 @@ import APIKeyView from "@/features/settings/components/api-keys-view";
 import NotificationsView from "@/features/settings/components/notifications-view";
 import PackagingView from "@/features/settings/components/packaging-view";
 import ProfileView from "@/features/settings/components/profile-view";
+import { useKycModal } from "@/features/settings/hooks/use-kyc-modal";
 import { useNewPackage } from "@/features/settings/hooks/use-new-package";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
@@ -14,13 +15,16 @@ export default function Settings() {
     "profile" | "packaging" | "api_keys" | "notifications"
   >("profile");
   const { onOpen } = useNewPackage();
+  const { onOpen: openKycModal } = useKycModal();
 
   function callAction() {
     if (currentTab === "profile") {
+      openKycModal();
       return;
     }
     if (currentTab === "packaging") {
       onOpen();
+      return;
     }
   }
   return (

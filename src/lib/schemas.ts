@@ -196,3 +196,17 @@ export const reviewSchema = z.object({
 });
 
 export type ReviewValues = z.infer<typeof reviewSchema>;
+
+export const document_types: readonly [string, ...string[]] = [
+  "drivers_license",
+  "id_card",
+  "passport",
+];
+
+export const kycSchema = z.object({
+  document_type: z.enum(document_types).default("drivers_license"),
+  id_number: z.string(),
+  document_file: z.string().url(),
+});
+
+export type KYCValues = z.infer<typeof kycSchema>;

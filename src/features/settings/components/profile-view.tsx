@@ -1,10 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDefaultAddress } from "@/features/address/hooks/use-default-address";
 import useMe from "@/features/auth/api/useMe";
 import { getInitials } from "@/lib/utils";
-import { ArrowRight, Edit, MapPin } from "lucide-react";
+import { ArrowRight, Edit, MapPin, MoreVertical, Trash2 } from "lucide-react";
 import { useUpdatePasswordModal } from "../hooks/use-update-password-modal";
 import { useUpdateProfileModal } from "../hooks/use-update-profile-modal";
 
@@ -15,7 +21,7 @@ export default function ProfileView() {
   const { onOpen: openDefaultAddress } = useDefaultAddress();
   return (
     <div className="space-y-2">
-      <div className="flex flex-col md:flex-row gap-2 justify-between border-2 rounded-xl p-3">
+      <div className="flex flex-row gap-2 justify-between items-center border-2 rounded-xl p-3">
         <div className="flex items-center gap-4">
           {isLoading && (
             <>
@@ -41,24 +47,33 @@ export default function ProfileView() {
             </>
           )}
         </div>
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          <Button
-            onClick={onOpen}
-            variant="outline"
-            size="sm"
-            className="gap-2 items-center h-8 text-sm text-primary border-primary w-full"
-          >
-            <Edit className="size-4" /> Edit Profile
-          </Button>
-          <Button
-            onClick={openPasswordModal}
-            variant="outline"
-            size="sm"
-            className="gap-2 items-center h-8 text-sm text-primary border-primary w-full"
-          >
-            <Edit className="size-4" /> Change Password
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="p-0 focus:ring-0 ">
+              <span className="sr-only">Open menu</span>
+              <MoreVertical className="size-8" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onOpen} className="cursor-pointer">
+              <Edit className="size-4" /> Edit profile
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={openPasswordModal}
+              className="cursor-pointer"
+            >
+              <Edit className="size-4" /> Change password
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={openPasswordModal}
+              className="text-destructive hover:text-destructive cursor-pointer"
+            >
+              <Trash2 className="size-4" /> Delete account
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex flex-col md:flex-row gap-2 justify-between items-center border-2 rounded-xl p-3">
         <div className="flex items-center gap-4">
