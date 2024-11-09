@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useReviewMode } from "../hooks/use-review-mode";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
 
-type ResquestType = {
+type RequestType = {
   shipment_id: string;
   rate_id: string;
   dropoff_id?: string;
@@ -57,7 +57,7 @@ export default function useArrangeShipment() {
     onOpen({
       type: "success",
       title: "Success",
-      message: "Congratulations! Your shipemnt has been arranged successfully",
+      message: "Congratulations! Your shipment has been arranged successfully",
       primaryLabel: "Track Shipment",
       secondaryLabel: "Back to Home",
       primaryFn: () => {
@@ -81,36 +81,34 @@ export default function useArrangeShipment() {
     console.log("closed");
   };
 
-  return useMutation<ResponseType, AxiosError<ErrorResponseType>, ResquestType>(
-    {
-      mutationFn: async (data) => {
-        const response = await client.post("/shipments/shipping/arrange", data);
-        return response.data;
-      },
-      onError: (error) => {
-        console.log(error);
-        toast.error(error.response?.data.message);
-        onOpen({
-          type: "error",
-          title: "Error",
-          message: error.response?.data.message || "",
-          primaryLabel: "Retry",
-          secondaryLabel: "Cancel",
-          primaryFn: () => {
-            alertClose();
-          },
-          secondaryFn: () => {
-            alertClose();
-          },
-        });
-      },
-      onSuccess: (data) => {
-        config.amount = data.data.amount * 100;
-        config.email = (user && user?.data.email) || "";
-        config.reference = data.data.reference;
-        console.log(config);
-        initializePayment({ onSuccess, onClose, config });
-      },
-    }
-  );
+  return useMutation<ResponseType, AxiosError<ErrorResponseType>, RequestType>({
+    mutationFn: async (data) => {
+      const response = await client.post("/shipments/shipping/arrange", data);
+      return response.data;
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.response?.data.message);
+      onOpen({
+        type: "error",
+        title: "Error arranging shipment",
+        message: error.response?.data.message || "",
+        primaryLabel: "Retry",
+        secondaryLabel: "Cancel",
+        primaryFn: () => {
+          alertClose();
+        },
+        secondaryFn: () => {
+          alertClose();
+        },
+      });
+    },
+    onSuccess: (data) => {
+      config.amount = data.data.amount * 100;
+      config.email = (user && user?.data.email) || "";
+      config.reference = data.data.reference;
+      console.log(config);
+      initializePayment({ onSuccess, onClose, config });
+    },
+  });
 }
