@@ -1,8 +1,8 @@
 import useMe from "@/features/auth/api/useMe";
 import { getInitials } from "@/lib/utils";
 import { QuestionMarkIcon } from "@radix-ui/react-icons";
-import { Bell } from "lucide-react";
 import { HelpSupportModal } from "./help-modal";
+import NotificationBox from "./notification-box";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
@@ -24,9 +24,7 @@ export default function AppNavBar({ title }: { title: string }) {
           </Button>
         </HelpSupportModal>
 
-        <Button variant="ghost" size="icon">
-          <Bell className="size-4" />
-        </Button>
+        <NotificationBox />
         {data && (
           <Avatar>
             <AvatarImage src="" />
