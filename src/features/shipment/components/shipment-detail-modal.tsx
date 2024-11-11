@@ -18,6 +18,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import useGetReview from "../api/use-get-review";
 import useShipmentDetail from "../api/useShipmentDetail";
 import { useNewReview } from "../hooks/use-review";
 import { useShipmentDetailModal } from "../hooks/use-shipment-detail-modal";
@@ -26,6 +27,9 @@ import StatusBadge from "./status-badge";
 export default function ShipmentDetailModal() {
   const { isOpen, onClose, id } = useShipmentDetailModal();
   const { data, isLoading } = useShipmentDetail({ id });
+  const { data: shipment_review, isLoading: reviewLoading } = useGetReview({
+    shipment_id: id,
+  });
   const { onOpen } = useNewReview();
   const navigate = useNavigate();
 
@@ -66,12 +70,12 @@ export default function ShipmentDetailModal() {
             <XCircle className="size-5" />
           </DialogClose>
         </DialogHeader>
-        {isLoading && (
+        {(isLoading || reviewLoading) && (
           <div className="py-12 flex justify-center items-center">
             <Loader className="size-6 text-primary animate-spin" />
           </div>
         )}
-        {data && (
+        {data && shipment_review && (
           <div className="space-y-2 md:space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F4FDF8] p-2 md:p-4 space-y-2 md:space-y-4">
@@ -281,20 +285,20 @@ export default function ShipmentDetailModal() {
               </div>
             )}
 
-            {(data.data.status === "confirmed" ||
-              data.data.status === "delivered") && (
-              <div className="flex justify-center items-center">
-                <Button
-                  className="gap-2"
-                  onClick={() => {
-                    onClose();
-                    onOpen(data.data.id);
-                  }}
-                >
-                  Review Shipment
-                </Button>
-              </div>
-            )}
+            {data.data.status === "delivered" &&
+              shipment_review?.data.length === 0 && (
+                <div className="flex justify-center items-center">
+                  <Button
+                    className="gap-2"
+                    onClick={() => {
+                      onClose();
+                      onOpen(data.data.id);
+                    }}
+                  >
+                    Review Shipment
+                  </Button>
+                </div>
+              )}
           </div>
         )}
       </DialogContent>

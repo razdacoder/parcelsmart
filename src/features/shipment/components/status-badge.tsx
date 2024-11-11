@@ -37,7 +37,7 @@ export default function StatusBadge({ status }: StatusProps) {
   if (status === "confirmed") {
     return (
       <Badge className="bg-[#EFF6FF] py-1 px-3 text-[#2563EB] w-fit flex justify-center hover:bg-[#EFF6FF] hover:text-[#2563EB]">
-        Completed
+        Confirmed
       </Badge>
     );
   }

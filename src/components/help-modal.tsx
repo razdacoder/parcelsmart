@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,25 +7,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { QuestionMarkIcon } from "@radix-ui/react-icons";
 import { XCircle } from "lucide-react";
 
 import instagram from "@/assets/instagram.svg";
 import phone from "@/assets/phone.svg";
 import whatsapp from "@/assets/whatsapp.svg";
 import x from "@/assets/x.svg";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-export function HelpSupportModal() {
+type HelpModalProps = {
+  children: ReactNode;
+};
+
+export function HelpSupportModal({ children }: HelpModalProps) {
   return (
     <Dialog>
       <DialogOverlay className="bg-black/80" />
-      <DialogTrigger asChild>
-        <Button className="gap-2 hidden md:inline-flex h-8" size="sm">
-          <QuestionMarkIcon />
-          Help
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="w-11/12 md:max-w-xl rounded-lg">
         <DialogHeader className="flex-row justify-between items-center">
           <DialogTitle className="text-xl">

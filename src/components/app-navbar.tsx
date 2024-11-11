@@ -1,5 +1,6 @@
 import useMe from "@/features/auth/api/useMe";
 import { getInitials } from "@/lib/utils";
+import { QuestionMarkIcon } from "@radix-ui/react-icons";
 import { Bell } from "lucide-react";
 import { HelpSupportModal } from "./help-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -16,7 +17,12 @@ export default function AppNavBar({ title }: { title: string }) {
       </div>
 
       <div className="flex items-center gap-4">
-        <HelpSupportModal />
+        <HelpSupportModal>
+          <Button className="gap-2 hidden md:inline-flex h-8" size="sm">
+            <QuestionMarkIcon />
+            Help
+          </Button>
+        </HelpSupportModal>
 
         <Button variant="ghost" size="icon">
           <Bell className="size-4" />

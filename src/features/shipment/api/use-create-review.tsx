@@ -12,15 +12,7 @@ type RequestType = {
 type ResponseType = {
   status: boolean;
   message: string;
-  data: {
-    user_id: string;
-    shipment_id: string;
-    star_rating: number;
-    review: string;
-    id: string;
-    updated_at: Date;
-    created_at: Date;
-  };
+  data: Review[];
 };
 
 export default function useCreateReview() {

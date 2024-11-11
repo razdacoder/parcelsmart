@@ -373,3 +373,14 @@ type QuoteParcel = {
     weight: number;
   }[];
 };
+
+type Review = {
+  user_id: string;
+  shipment_id: string;
+  star_rating: number;
+  review: string;
+  id: string;
+  updated_at: Date;
+  created_at: Date;
+  deleted_at: Date | null;
+};
