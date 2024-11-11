@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -15,15 +16,15 @@ export default function EditAddressModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="max-w-4xl">
-        <DialogHeader className="flex-row justify-between items-center">
+      <DialogContent className="w-11/12 md:max-w-4xl rounded-lg">
+        <DialogHeader className="flex-row justify-between gap-2 items-center">
           <div className="flex flex-col gap-2">
-            <DialogTitle className="text-2xl font-bold">
+            <DialogTitle className="text-2xl font-bold text-left">
               Edit Address
             </DialogTitle>
-            {/* <DialogDescription>
-             Edit 
-            </DialogDescription> */}
+            <DialogDescription className="sr-only text-left">
+              Edit Address
+            </DialogDescription>
           </div>
           <DialogClose>
             <XCircle className="size-6" />

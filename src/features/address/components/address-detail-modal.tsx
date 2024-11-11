@@ -37,7 +37,7 @@ export default function AddressDetailModal() {
       <AlertModal />
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogOverlay className="bg-black/80" />
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="w-11/12 rounded-lg md:max-w-3xl p-4">
           <DialogHeader className="flex-row justify-between items-center">
             <div className="flex flex-col gap-2">
               <DialogTitle className="text-2xl font-bold">
@@ -65,14 +65,14 @@ export default function AddressDetailModal() {
             <>
               <div className="bg-[#F4FDF8] p-4 rounded-lg space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-primary text-lg font-bold">
+                  <h3 className="text-primary md:text-lg font-bold">
                     Personal Information
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
                       disabled={isPending}
                       onClick={() => onOpen(data.data)}
-                      className="inline-flex items-center gap-2 text-primary px-6 py-1 rounded-xl text-sm border border-primary"
+                      className="inline-flex items-center gap-2 text-primary px-4 md:px-6 py-1 rounded-xl text-sm border border-primary"
                     >
                       <Edit className="text-primary size-4" />
                       Edit
@@ -91,7 +91,7 @@ export default function AddressDetailModal() {
                           );
                         }
                       }}
-                      className="inline-flex items-center gap-2 text-destructive px-6 py-1 rounded-xl text-sm border border-destructive"
+                      className="inline-flex items-center gap-2 text-destructive px-4 md:px-6 py-1 rounded-xl text-sm border border-destructive"
                     >
                       <Trash2 className="text-destructive size-4" />
                       Delete
@@ -99,17 +99,17 @@ export default function AddressDetailModal() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-lg font-medium text-text">
+                  <p className="md:text-lg font-medium text-text">
                     <span className="font-medium">Name: </span>
                     <span className="font-bold">
                       {data.data.first_name} {data.data.last_name}
                     </span>
                   </p>
-                  <p className="text-lg font-medium text-text">
+                  <p className="md:text-lg font-medium text-text">
                     <span className="font-medium">Email: </span>
                     <span className="font-bold">{data.data.email}</span>
                   </p>
-                  <p className="text-lg font-medium text-text">
+                  <p className="md:text-lg font-medium text-text">
                     <span className="font-medium">Phone Number: </span>
                     <span className="font-bold">{data.data.phone_number}</span>
                   </p>
@@ -136,14 +136,14 @@ export default function AddressDetailModal() {
                   </Button>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-lg font-medium text-text">
+                  <p className="md:text-lg font-medium text-text">
                     <span className="font-medium">Address: </span>
                     <span className="font-bold">
                       {data.data.line_1} {data.data.city} {data.data.state}{" "}
                       {data.data.country}
                     </span>
                   </p>
-                  <p className="text-lg font-medium text-text">
+                  <p className="md:text-lg font-medium text-text">
                     <span className="font-medium">Zip Code: </span>
                     <span className="font-bold">{data.data.zip_code}</span>
                   </p>

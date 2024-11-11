@@ -16,13 +16,13 @@ export default function NewAddressModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-black/80" />
-      <DialogContent className="max-w-4xl">
-        <DialogHeader className="flex-row justify-between items-center">
+      <DialogContent className="w-11/12 md:max-w-4xl rounded-lg">
+        <DialogHeader className="flex-row justify-between gap-2 items-center">
           <div className="flex flex-col gap-2">
-            <DialogTitle className="text-2xl font-bold">
+            <DialogTitle className="text-2xl font-bold text-left">
               Create New Address
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-left">
               Add new Address to your address book to make shipping faster. you
               can edit later
             </DialogDescription>
