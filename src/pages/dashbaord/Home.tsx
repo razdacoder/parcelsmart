@@ -148,7 +148,7 @@ export default function Home() {
               <ArrowUpRight className="size-5 text-primary" />
             </Link>
             <HelpSupportModal>
-              <div className="bg-white rounded-xl text-text p-4 flex items-start justify-between">
+              <div className="bg-white cursor-pointer rounded-xl text-text p-4 flex items-start justify-between">
                 <div className="space-y-8">
                   <svg
                     width="77"

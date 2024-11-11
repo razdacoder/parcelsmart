@@ -1,6 +1,7 @@
 import useMe from "@/features/auth/api/useMe";
 import { getInitials } from "@/lib/utils";
 import { QuestionMarkIcon } from "@radix-ui/react-icons";
+import { useNavigate } from "react-router-dom";
 import { HelpSupportModal } from "./help-modal";
 import NotificationBox from "./notification-box";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -9,6 +10,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 
 export default function AppNavBar({ title }: { title: string }) {
   const { data } = useMe();
+  const navigate = useNavigate();
   return (
     <header className="bg-white py-5 shadow-sm px-4 md:px-8 flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -26,7 +28,10 @@ export default function AppNavBar({ title }: { title: string }) {
 
         <NotificationBox />
         {data && (
-          <Avatar>
+          <Avatar
+            onClick={() => navigate("/settings")}
+            className="cursor-pointer"
+          >
             <AvatarImage src="" />
             <AvatarFallback className="bg-primary font-semibold text-white">
               {getInitials(data?.data.first_name, data?.data.last_name)}
