@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDefaultAddress } from "@/features/address/hooks/use-default-address";
+import useDeleteAccount from "@/features/auth/api/use-delete-account";
 import useMe from "@/features/auth/api/useMe";
+import { useAlertModal } from "@/hooks/use-alert-modal";
 import { getInitials } from "@/lib/utils";
 import { ArrowRight, Edit, MapPin, MoreVertical, Trash2 } from "lucide-react";
 import { useUpdatePasswordModal } from "../hooks/use-update-password-modal";
@@ -19,6 +21,9 @@ export default function ProfileView() {
   const { onOpen: openPasswordModal } = useUpdatePasswordModal();
   const { data, isLoading } = useMe();
   const { onOpen: openDefaultAddress } = useDefaultAddress();
+  const { onOpen: alertOpen, onClose: alertClose } = useAlertModal();
+  const { mutate: deleteAccount } = useDeleteAccount();
+
   return (
     <div className="space-y-2">
       <div className="flex flex-row gap-2 justify-between items-center border-2 rounded-xl p-3">
@@ -67,7 +72,22 @@ export default function ProfileView() {
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onClick={openPasswordModal}
+              onClick={() => {
+                alertOpen({
+                  type: "warning",
+                  title: "Are you sure!",
+                  message: "This action is not reversible",
+                  primaryLabel: "Continue",
+                  secondaryLabel: "Cancel",
+                  primaryFn: () =>
+                    deleteAccount(undefined, {
+                      onSuccess: () => {
+                        alertClose();
+                      },
+                    }),
+                  secondaryFn: () => alertClose(),
+                });
+              }}
               className="text-destructive hover:text-destructive cursor-pointer"
             >
               <Trash2 className="size-4" /> Delete account

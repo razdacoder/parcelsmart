@@ -11,6 +11,7 @@ type Response = {
 export default function useMe() {
   return useQuery<Response, AxiosError>({
     queryKey: ["me"],
+    staleTime: Infinity,
     queryFn: async () => {
       const response = await client.get(`/users`, {
         headers: {
