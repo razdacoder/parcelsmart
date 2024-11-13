@@ -20,17 +20,17 @@ export default function TrackResult({
               <div className="flex gap-3 items-center">
                 <div
                   className={cn(
-                    "size-10 rounded-full flex justify-center items-center border border-primary bg-white relative after:absolute after:block after:top-10 after:h-10 after:border after:border-dashed",
+                    "size-6 md:size-10 rounded-full flex justify-center items-center border border-primary bg-white relative after:absolute after:block after:top-10 after:h-10 after:border after:border-dashed",
                     event.status === "in-transit" &&
                       "border-orange-500 after:hidden",
                     index === data.data.tracking_events.length - 1 &&
                       "after:hidden"
                   )}
                 >
-                  <Circle className="size-6 fill-primary stroke-none" />
+                  <Circle className="size-4 md:size-6 fill-primary stroke-none" />
                 </div>
                 <div className="">
-                  <h6 className="text-sm leading-[10px] text-text font-medium">
+                  <h6 className="text-xs md:text-sm leading-[10px] text-text font-medium w-56 truncate">
                     {event.description}
                   </h6>
                   <span className="text-xs leading-[8px] text-text">
