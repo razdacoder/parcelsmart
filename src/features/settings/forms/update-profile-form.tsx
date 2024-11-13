@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import {
   Form,
   FormControl,
@@ -14,23 +14,36 @@ import { Mail, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import useUpdateProfile from "../api/use-update-profile";
+import { useUpdateProfileModal } from "../hooks/use-update-profile-modal";
 
 export default function UpdateProfileForm() {
   const { data } = useMe();
+  const { mutate, isPending } = useUpdateProfile();
+  const { onClose } = useUpdateProfileModal();
   const form = useForm<UpdateProfileValues>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      firstName: data?.data.first_name,
-      lastName: data?.data.last_name,
-      phoneNumber: data?.data.phone_number,
-      email: data?.data.email,
+      first_name: data ? data.data.first_name : undefined,
+      last_name: data ? data.data.last_name : undefined,
+      phone_number: data ? data.data.phone_number : undefined,
+      email: data ? data.data.email : undefined,
     },
   });
+
+  function onSubmit(values: UpdateProfileValues) {
+    console.log(values);
+    mutate(values, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
+  }
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
-          name="firstName"
+          name="first_name"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -42,6 +55,7 @@ export default function UpdateProfileForm() {
                     type="text"
                     placeholder="Enter First Name"
                     {...field}
+                    disabled={isPending}
                   />
                 </div>
               </FormControl>
@@ -50,7 +64,7 @@ export default function UpdateProfileForm() {
           )}
         />
         <FormField
-          name="lastName"
+          name="last_name"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -62,6 +76,7 @@ export default function UpdateProfileForm() {
                     type="text"
                     placeholder="Enter Last Name"
                     {...field}
+                    disabled={isPending}
                   />
                 </div>
               </FormControl>
@@ -71,7 +86,7 @@ export default function UpdateProfileForm() {
         />
 
         <FormField
-          name="phoneNumber"
+          name="phone_number"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -82,6 +97,7 @@ export default function UpdateProfileForm() {
                   placeholder="Enter phone number"
                   className="flex h-11 w-full rounded-md border border-primary bg-transparent px-4 py-2 text-sm shadow-sm transition-colors  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 outline-none"
                   {...field}
+                  disabled={isPending}
                 />
               </FormControl>
               <FormMessage />
@@ -102,6 +118,7 @@ export default function UpdateProfileForm() {
                     type="email"
                     placeholder="Enter Email"
                     {...field}
+                    disabled
                   />
                 </div>
               </FormControl>
@@ -109,9 +126,9 @@ export default function UpdateProfileForm() {
             </FormItem>
           )}
         />
-        <Button size="lg" className="w-full">
+        <SubmitButton isPending={isPending} disabled={isPending}>
           Update Profile
-        </Button>
+        </SubmitButton>
       </form>
     </Form>
   );

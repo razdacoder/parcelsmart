@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import SubmitButton from "@/components/submit-button";
 import {
   Form,
   FormControl,
@@ -11,26 +11,42 @@ import { updatePasswordSchema, UpdatePasswordValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import "react-phone-number-input/style.css";
+import useChangePassword from "../api/use-change-password";
+import { useUpdatePasswordModal } from "../hooks/use-update-password-modal";
 
 export default function UpdatePasswordForm() {
+  const { mutate, isPending } = useChangePassword();
+  const { onClose } = useUpdatePasswordModal();
   const form = useForm<UpdatePasswordValues>({
     resolver: zodResolver(updatePasswordSchema),
     defaultValues: {
       current_password: "",
-      password: "",
+      new_password: "",
       password_confirm: "",
     },
   });
+
+  function onSubmit(values: UpdatePasswordValues) {
+    mutate(values, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
+  }
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           name="current_password"
           control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="Current Password" />
+                <PasswordInput
+                  {...field}
+                  placeholder="Current Password"
+                  disabled={isPending}
+                />
               </FormControl>
 
               <FormMessage />
@@ -38,12 +54,16 @@ export default function UpdatePasswordForm() {
           )}
         />
         <FormField
-          name="password"
+          name="new_password"
           control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="New Password" />
+                <PasswordInput
+                  {...field}
+                  placeholder="New Password"
+                  disabled={isPending}
+                />
               </FormControl>
 
               <FormMessage />
@@ -57,16 +77,20 @@ export default function UpdatePasswordForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <PasswordInput {...field} placeholder="Confirm New Password" />
+                <PasswordInput
+                  {...field}
+                  placeholder="Confirm New Password"
+                  disabled={isPending}
+                />
               </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button size="lg" className="w-full">
-          Update Profile
-        </Button>
+        <SubmitButton disabled={isPending} isPending={isPending}>
+          Update Password
+        </SubmitButton>
       </form>
     </Form>
   );
