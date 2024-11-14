@@ -55,6 +55,7 @@ export default function ItemsForm({
     setNewIDS,
     // setItems
     setParcels,
+    addParcelId,
   } = useShipmentApplication();
 
   const { data, isLoading } = useGetPackaging();
@@ -81,7 +82,7 @@ export default function ItemsForm({
     }
   }, [data, openNewPackage]);
 
-  const isResuming = Boolean(parcelsToEdit) || parcels_id.length;
+  const isResuming = Boolean(parcelsToEdit) && parcels_id.length > 0;
 
   const isPending =
     creating || creatingShipment || updating || updatingShipment;
@@ -144,6 +145,7 @@ export default function ItemsForm({
           currency: "NGN",
         },
       ]);
+      setNewIDS([]);
     }
   }, [data?.data.packaging, parcelsToEdit, setNewIDS, setParcels]);
 
@@ -278,7 +280,7 @@ export default function ItemsForm({
       .filter((result) => result.status === "fulfilled")
       .map((result) => (result as PromiseFulfilledResult<string>).value);
 
-    setNewIDS(parcelIds);
+    parcelIds.forEach((id) => addParcelId(id));
 
     // Ensure to update only parcels that were successfully created/updated
     if (parcelIds.length !== parcels.length) {
@@ -501,7 +503,17 @@ export default function ItemsForm({
                 ))}
               </div>
             </div>
-            <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
+            <Label
+              htmlFor="proof_of_purchase"
+              className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between cursor-pointer hover:bg-primary transition"
+            >
+              <input
+                type="file"
+                className="hidden"
+                id="proof_of_purchase"
+                accept="application/pdf"
+                disabled={isPending}
+              />
               <div className="flex items-center gap-4">
                 <div className="bg-white p-2 rounded-lg ">
                   <Upload className="size-6 md:size-8 text-primary " />
@@ -510,15 +522,7 @@ export default function ItemsForm({
                   Click to upload Proof of Purchase
                 </h3>
               </div>
-              <Button
-                disabled={isPending}
-                size="sm"
-                variant="secondary"
-                className="px-6 text-primary h-10"
-              >
-                Upload
-              </Button>
-            </div>
+            </Label>
             <div className="p-4 space-y-2">
               {parcel.proofOfPayment.map((proof, proof_index) => (
                 <div
@@ -548,7 +552,17 @@ export default function ItemsForm({
                 </div>
               ))}
             </div>
-            <div className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between">
+            <Label
+              htmlFor="proof_of_weight"
+              className="py-4 px-6 rounded-t-xl bg-[#5F9EA0] flex items-center justify-between cursor-pointer hover:bg-primary transition"
+            >
+              <input
+                type="file"
+                className="hidden"
+                id="proof_of_weight"
+                accept="application/pdf"
+                disabled={isPending}
+              />
               <div className="flex items-center gap-4">
                 <div className="bg-white p-2 rounded-lg ">
                   <Upload className="size-6 md:size-8 text-primary " />
@@ -558,14 +572,7 @@ export default function ItemsForm({
                   measuring tape
                 </h3>
               </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="px-6 text-primary h-10"
-              >
-                Upload
-              </Button>
-            </div>
+            </Label>
             <div className="p-4 space-y-2">
               {parcel.proofOfWeight.map((proof, proof_index) => (
                 <div
