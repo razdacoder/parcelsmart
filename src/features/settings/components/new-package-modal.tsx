@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -30,6 +31,9 @@ export default function NewPackageModal() {
           <DialogTitle className="text-2xl md:text-3xl font-medium text-text">
             Add Packaging
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Add Packaging
+          </DialogDescription>
         </DialogHeader>
         <div className="p-4 md:p-8 space-y-4">
           <PackageForm />

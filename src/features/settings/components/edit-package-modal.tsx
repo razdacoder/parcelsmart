@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -32,6 +33,9 @@ export default function EditPackageModal() {
           <DialogTitle className="text-2xl md:text-3xl font-medium text-text">
             Edit Packaging
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit Packaging
+          </DialogDescription>
         </DialogHeader>
         <div className="p-4 md:p-8 space-y-4">
           {isLoading && (

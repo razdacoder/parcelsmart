@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -12,10 +13,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader, MapPin, X } from "lucide-react";
 import { useState } from "react";
 
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import useDropLocations from "@/features/shipment/api/useDropLocations.tsx";
 import { useDropOff } from "../hooks/use-drop-off";
 import { useShipmentApplication } from "../hooks/use-shipment-application-store";
-import useDropLocations from "@/features/shipment/api/useDropLocations.tsx";
-import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 export default function DropOffModal() {
   const { isOpen, onClose, required, carrier } = useDropOff();
@@ -36,16 +37,19 @@ export default function DropOffModal() {
     } else {
       if (dropLocation) {
         setDropOffId(dropLocation);
-        onClose()
+        onClose();
       }
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {
-      setDropOff("no")
-      onClose()
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setDropOff("no");
+        onClose();
+      }}
+    >
       <DialogOverlay className="bg-black/80" />
       <DialogContent className=" w-11/12 md:max-w-xl p-0 rounded-lg">
         <DialogClose className="absolute -top-12 z-50 right-0 size-10 rounded-full bg-white flex justify-center items-center">
@@ -55,6 +59,9 @@ export default function DropOffModal() {
           <DialogTitle className="text-3xl font-medium text-text">
             Drop off your package
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Drop off your package
+          </DialogDescription>
         </DialogHeader>
         <div className="p-6 space-y-3">
           {!required && (

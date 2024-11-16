@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -30,6 +31,9 @@ export function HelpSupportModal({ children }: HelpModalProps) {
           <DialogTitle className="text-xl">
             Contact Customer Support
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Contact Customer Support
+          </DialogDescription>
           <DialogClose>
             <XCircle className="size-6 fill-black stroke-white" />
           </DialogClose>

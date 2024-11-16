@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -43,7 +44,9 @@ export default function AddressDetailModal() {
               <DialogTitle className="text-2xl font-bold">
                 Address Detail
               </DialogTitle>
-              {/* <DialogDescription></DialogDescription> */}
+              <DialogDescription className="sr-only">
+                Address Detail
+              </DialogDescription>
             </div>
             <DialogClose>
               <XCircle className="size-6" />

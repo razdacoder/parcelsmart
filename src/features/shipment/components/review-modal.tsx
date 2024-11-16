@@ -33,7 +33,7 @@ export default function ReviewModal() {
           <DialogTitle className="text-2xl md:text-3xl font-medium text-text">
             Review
           </DialogTitle>
-          <DialogDescription className="hidden">{""}</DialogDescription>
+          <DialogDescription className="sr-only">Review</DialogDescription>
         </DialogHeader>
         <div className="p-4  ">
           <ShipmentReviewForm />

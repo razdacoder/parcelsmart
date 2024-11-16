@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
 } from "@/components/ui/dialog";
@@ -66,6 +67,9 @@ export default function ShipmentDetailModal() {
             {isLoading && <Skeleton className="h-8 w-12" />}
             {data && <StatusBadge status={data.data.status} />}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Shipment Details
+          </DialogDescription>
           <DialogClose className="cursor-pointer">
             <XCircle className="size-5" />
           </DialogClose>
