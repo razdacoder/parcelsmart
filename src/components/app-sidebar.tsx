@@ -1,5 +1,3 @@
-"use client";
-
 import logowhite from "@/assets/logo.svg";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -43,11 +41,6 @@ const data = {
       url: "/transactions",
       icon: WalletCards,
     },
-    // {
-    //   title: "Insight",
-    //   url: "/insight",
-    //   icon: ChartNoAxesCombinedIcon,
-    // },
     {
       title: "Address Book",
       url: "/address-book",

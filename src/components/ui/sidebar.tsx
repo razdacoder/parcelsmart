@@ -54,7 +54,7 @@ const SidebarLayout = React.forwardRef<
           } as React.CSSProperties
         }
         className={cn(
-          "flex min-h-screen w- bg-accent/50 pl-0 transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 lg:pl-[--sidebar-width]",
+          "flex min-h-screen w- bg-accent/50 pl-0 transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 xl:pl-[--sidebar-width]",
           className
         )}
         {...props}
@@ -114,7 +114,12 @@ const Sidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
     }
 
     return (
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[--sidebar-width] transition-all duration-300 ease-in-out md:block [[data-sidebar=closed]_&]:left-[calc(var(--sidebar-width)*-1)]">
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-10 hidden w-[--sidebar-width] transition-all duration-300 ease-in-out lg:block [[data-sidebar=closed]_&]:left-[calc(var(--sidebar-width)*-1)]",
+          isMobile && "hidden"
+        )}
+      >
         {sidebar}
       </aside>
     );
