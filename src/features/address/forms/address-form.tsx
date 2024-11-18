@@ -28,6 +28,7 @@ import useCountries from "../api/useCountries";
 import useCreateAddress from "../api/useCreateAddress";
 import useEditAddress from "../api/useEditAddress";
 import useStateList from "../api/useState";
+import { useDefaultAddress } from "../hooks/use-default-address";
 import { useNewAddress } from "../hooks/use-new-address";
 
 type AddressFormProps = {
@@ -40,6 +41,7 @@ export default function AddressForm({
   defaultMode,
 }: AddressFormProps) {
   const { onClose } = useNewAddress();
+  const { onClose: defaultClose } = useDefaultAddress();
   const isEditMode = Boolean(address);
   const [stateCode, setStateCode] = useState<string>();
   const { mutate: createAddress, isPending: createPending } =
@@ -136,6 +138,7 @@ export default function AddressForm({
       createAddress(values, {
         onSuccess: (data) => {
           onClose();
+          defaultClose();
           if (defaultMode) {
             setDefaultAddress({ address_id: data.data.id });
           }
