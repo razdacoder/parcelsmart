@@ -59,13 +59,12 @@ type Pagination = {
   has_next_page: boolean;
 };
 
-type RegsiterUserData = {
+type RegisterUserData = {
   email: string;
   first_name: string;
   last_name: string;
   password: string;
   phone_number: string;
-  username: string;
   confirm_password: string;
   account_type: string;
 };

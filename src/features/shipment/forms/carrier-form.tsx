@@ -58,7 +58,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
               secondaryLabel: "Cancel",
               primaryFn: () => {
                 clearAll();
-                navigate(-1);
+                navigate("/shipments");
                 alertClose();
               },
               secondaryFn: () => {
@@ -77,7 +77,7 @@ export default function CarrierForm({ next, prev }: StepsProps) {
             <SelectValue placeholder="" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="recomendation" className="text-sm">
+            <SelectItem value="recommendation" className="text-sm">
               Sort by: Recommendation
             </SelectItem>
           </SelectContent>

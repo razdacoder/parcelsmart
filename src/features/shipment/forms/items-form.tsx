@@ -367,7 +367,7 @@ export default function ItemsForm({
                 secondaryLabel: "Cancel",
                 primaryFn: () => {
                   clearAll();
-                  navigate(-1);
+                  navigate("/shipments");
                   alertClose();
                 },
                 secondaryFn: () => {

@@ -62,7 +62,7 @@ export default function ShipmentReview() {
                         onSuccess: () => {
                           clearAll();
                           setReviewMode(false);
-                          navigate(-1);
+                          navigate("/shipments");
                         },
                       }
                     );

@@ -226,7 +226,7 @@ export default function SenderForm({
               secondaryLabel: "Cancel",
               primaryFn: () => {
                 clearAll();
-                navigate(-1);
+                navigate("/shipments");
                 alertClose();
               },
               secondaryFn: () => {

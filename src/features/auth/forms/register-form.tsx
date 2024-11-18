@@ -37,27 +37,24 @@ export default function RegisterForm() {
       phone_number: "",
       email: "",
       password: "",
-      confirm_password: "",
-      username: "",
       acceptTerms: false,
     },
   });
 
-  function onSumbit(values: RegisterValues) {
+  function onSubmit(values: RegisterValues) {
     if (!values.acceptTerms) {
       form.setError("acceptTerms", {
         message: "Please accept our terms and conditions to register!",
       });
       return;
     }
-    const data: RegsiterUserData = {
+    const data: RegisterUserData = {
       first_name: values.first_name,
       last_name: values.last_name,
-      username: values.username,
       email: values.email,
       phone_number: values.phone_number,
       password: values.password,
-      confirm_password: values.confirm_password,
+      confirm_password: values.password,
       account_type: "personal",
     };
     mutate(data, {
@@ -84,54 +81,9 @@ export default function RegisterForm() {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSumbit)} className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            name="first_name"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative">
-                    <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-                    <Input
-                      disabled={isPending}
-                      className="ps-10"
-                      type="text"
-                      placeholder="Enter First Name"
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="last_name"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative">
-                    <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
-                    <Input
-                      disabled={isPending}
-                      className="ps-10"
-                      type="text"
-                      placeholder="Enter Last Name"
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
-          name="username"
+          name="first_name"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -142,7 +94,28 @@ export default function RegisterForm() {
                     disabled={isPending}
                     className="ps-10"
                     type="text"
-                    placeholder="Enter Username"
+                    placeholder="Enter First Name"
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="last_name"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="relative">
+                  <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground" />
+                  <Input
+                    disabled={isPending}
+                    className="ps-10"
+                    type="text"
+                    placeholder="Enter Last Name"
                     {...field}
                   />
                 </div>
@@ -193,44 +166,26 @@ export default function RegisterForm() {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            name="password"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <PasswordInput
-                    disabled={isPending}
-                    {...field}
-                    placeholder="Enter Password"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Your password must have at least 8 characters
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            name="confirm_password"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <PasswordInput
-                    disabled={isPending}
-                    {...field}
-                    placeholder="Confirm Password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <PasswordInput
+                  disabled={isPending}
+                  {...field}
+                  placeholder="Enter Password"
+                />
+              </FormControl>
+              <FormDescription>
+                Your password must have at least 8 characters
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

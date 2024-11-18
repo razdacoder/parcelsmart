@@ -50,7 +50,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
               secondaryLabel: "Cancel",
               primaryFn: () => {
                 clearAll();
-                navigate(-1);
+                navigate("/shipments");
                 alertClose();
               },
               secondaryFn: () => {
