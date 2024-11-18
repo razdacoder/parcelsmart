@@ -17,7 +17,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
   function continueToReview() {
     if (useInsurance) {
       setInsurance({
-        id: "chnage_later",
+        id: "change_later",
         name: "Parcel Mart Insurance",
         price: data ? data.data.converted_premium : 0,
       });
@@ -89,7 +89,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    name="insurace"
+                    name="insurance"
                     checked={useInsurance}
                     className="hidden peer"
                     onChange={(e) => setUseInsurance(e.target.checked)}
@@ -102,7 +102,7 @@ export default function InsuranceForm({ next, prev }: StepsProps) {
                     htmlFor="in1"
                     className="px-6 py-3 rounded-xl border-2 cursor-pointer peer-checked:bg-primary peer-checked:text-white"
                   >
-                    {useInsurance ? "Selceted" : "Select"}
+                    {useInsurance ? "Selected" : "Select"}
                   </Label>
                 </div>
               </div>
