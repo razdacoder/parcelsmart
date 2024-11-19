@@ -118,7 +118,7 @@ export default function ShipmentList() {
 
       <div className="bg-white w-full p-8 space-y-2">
         <div className="flex flex-col lg:flex-row md:justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="grid grid-cols-2 md:flex items-center gap-2 flex-wrap">
             <Button
               onClick={() => handleFilterClick(null)}
               size="sm"
@@ -145,7 +145,7 @@ export default function ShipmentList() {
               onClick={() => handleFilterClick("draft")}
               size="sm"
               className={cn(
-                "px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
+                " px-8 h-9 bg-transparent text-text shadow-none hover:bg-transparent hover:text-primary  font-semibold",
                 currentFilter === "draft" &&
                   "bg-[#DCFFEB] text-primary hover:bg-[#DCFFEB] hover:text-primary"
               )}
